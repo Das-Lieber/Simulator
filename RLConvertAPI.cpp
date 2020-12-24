@@ -135,9 +135,9 @@ void RLConvertAPI::SetJointValue(const rl::math::Vector &aVector)
     for(int i=0;i<aReaderAPI->MotionAxis.size();++i)
     {
         gp_Trsf aTrsf = aReaderAPI->JointAISShapes.at(i+1)->Shape().Location().Transformation();
-        if(aReaderAPI->JointType.at(i))
+        if(aReaderAPI->JointType.at(i)==RLAPI_JointType::Revolute)
             aTrsf.SetRotation(aReaderAPI->MotionAxis.at(i),aVector(i));
-        else
+        else if(aReaderAPI->JointType.at(i)==RLAPI_JointType::Prismatic)
             aTrsf.SetTranslation(gp_Vec(aReaderAPI->MotionAxis.at(i).Direction())*aVector(i));
         CumulativeTrsf.Multiply(aTrsf);
 
