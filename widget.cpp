@@ -18,7 +18,7 @@ Widget::Widget(QWidget *parent)
     QString JoingtSgFile = "./scene/GP_DMISModel.xml";
     QString JointModelFile = "./brep/GP8";
     aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);
-    aConvertAPI->LoadFiles();
+    aConvertAPI->InitLoadData();
 
     aMdlWidget = new OCCWidget();
     aMdlWidget->resize(881,510);
@@ -45,10 +45,7 @@ Widget::Widget(QWidget *parent)
     displayJointPosition();
     displayOperationalPosition();
 
-    for(int i=0;i<aConvertAPI->GetMeasureModelShapes().size();++i)
-    {
-        aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShapes().at(i),Standard_False);
-    }
+    aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
 
     ui->doubleSpinBox_joint0->setRange(aConvertAPI->MotionMinValues(0),aConvertAPI->MotionMaxValues(0));
@@ -316,26 +313,18 @@ void Widget::on_pushButton_importModel_clicked()
     if(modelFileName.isEmpty())
         return;
 
-    aConvertAPI->ImportSceneModel(modelFileName);    
-    aMdlWidget->getContext()->RemoveAll(Standard_True);
-    aConvertAPI->Reset();
-    aConvertAPI->LoadFiles();
+    aConvertAPI->ImportSceneModel(modelFileName);
+    aMdlWidget->getContext()->Erase(aConvertAPI->GetMeasureModelShape(),Standard_False);
+    aConvertAPI->ResetSceneModel();
 
     mPlannerThread->deleteLater();
     mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
     connectThread();
 
-    for (int i=0;i<aConvertAPI->GetJointModelShapes().size();++i)
-    {
-        aMdlWidget->getContext()->Display(aConvertAPI->GetJointModelShapes().at(i),Standard_False);
-    }
     displayJointPosition();
     displayOperationalPosition();
 
-    for(int i=0;i<aConvertAPI->GetMeasureModelShapes().size();++i)
-    {
-        aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShapes().at(i),Standard_False);
-    }
+    aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
 }
 

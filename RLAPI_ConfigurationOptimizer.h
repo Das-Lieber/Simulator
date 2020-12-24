@@ -43,7 +43,7 @@ private:
         for( ; i!=EndConfigs.end(); ++i)
         {
             rl::math::Real tmp = theDynamic->distance(thePos, *i);
-            if(dis > tmp)
+            if(tmp < dis)
             {
                 dis = tmp;
                 index = i;

@@ -22,6 +22,14 @@
 #include <BRepTools.hxx>
 #include <BRep_Builder.hxx>
 
+enum RLAPI_JointType {
+    Cylindrical,
+    Helical,
+    Prismatic,
+    Revolute,
+    Spherical
+};
+
 class RLAPI_Reader
 {
 public:
@@ -55,13 +63,13 @@ public:
     std::shared_ptr<rl::mdl::Model> JointModel;
 
     QList<Handle(AIS_Shape)> JointAISShapes;
-    QList<Handle(AIS_Shape)> MeasureAISShapes;
+    Handle(AIS_Shape) MeasureAISShape;
     QList<gp_Trsf> AssembleTrsfs;
     QList<gp_Pnt> MotionCenters;
     QList<gp_Ax1> MotionAxis;
-    QList<bool> IsRevoluteType;
-    QList<gp_Trsf> MeasureModelTrsfs;
-    QList<double> MeasureModelSize;
+    QList<RLAPI_JointType> JointType;
+    gp_Trsf MeasureModelTrsf;
+    double MeasureModelSize;
     QString SceneVrmlFileName;
 
 private:

@@ -30,7 +30,7 @@ RLConvertAPI::~RLConvertAPI()
 //function : LoadFiles
 //purpose  : *
 //=======================================================================
-void RLConvertAPI::LoadFiles()
+void RLConvertAPI::InitLoadData()
 {
     if(aReaderAPI==nullptr)
         aReaderAPI = new RLAPI_Reader;
@@ -42,10 +42,7 @@ void RLConvertAPI::LoadFiles()
     aReaderAPI->ReadJointModels(mJointModelFilePath);
 
     SetJointValue(aReaderAPI->JointModel->getHomePosition());
-    for(int i=0;i<aReaderAPI->MeasureAISShapes.size();++i)
-    {
-        aReaderAPI->MeasureAISShapes.value(i)->SetLocalTransformation(aReaderAPI->MeasureModelTrsfs.value(i));
-    }
+    aReaderAPI->MeasureAISShape->SetLocalTransformation(aReaderAPI->MeasureModelTrsf);
     MotionMaxValues = aReaderAPI->JointModel->getMaximum();
     MotionMinValues = aReaderAPI->JointModel->getMinimum();
     MotionSpeedValues = aReaderAPI->JointModel->getSpeed();
@@ -84,10 +81,20 @@ void RLConvertAPI::ImportSceneModel(const QString &theName)
 //function : Reset
 //purpose  : *
 //=======================================================================
-void RLConvertAPI::Reset()
-{
-    delete aReaderAPI;
-    aReaderAPI = nullptr;
+void RLConvertAPI::ResetSceneModel()
+{    
+    delete aReaderAPI->SceneModel;
+    aReaderAPI->SceneModel = nullptr;
+    aReaderAPI->CollisionScene.reset();
+    aReaderAPI->AssembleTrsfs.clear();
+    aReaderAPI->MotionCenters.clear();
+    aReaderAPI->MeasureAISShape.reset(nullptr);
+
+    aReaderAPI->ReadSceneXMLFile(mJointSgFileName);
+    aReaderAPI->ReadAssembleArgs(mJointSgFileName);
+
+    SetJointValue(aReaderAPI->JointModel->getHomePosition());
+    aReaderAPI->MeasureAISShape->SetLocalTransformation(aReaderAPI->MeasureModelTrsf);
 }
 
 //=======================================================================
@@ -98,10 +105,12 @@ void RLConvertAPI::SetIndexedJointValue(const int &index, const double &angle)
 {
     rl::mdl::Kinematic* aKinematic = dynamic_cast<rl::mdl::Kinematic*>(aReaderAPI->JointModel.get());
     rl::math::Vector pos = aKinematic->getPosition();
-    if(aReaderAPI->IsRevoluteType.at(index))
+    if(aReaderAPI->JointType.at(index)==RLAPI_JointType::Revolute)
         pos(index) = angle * rl::math::constants::deg2rad;//rad used in calculate but deg used in ui
-    else
+    else if(aReaderAPI->JointType.at(index)==RLAPI_JointType::Prismatic)
         pos(index) = angle;
+    else
+        pos(index) = angle * rl::math::constants::deg2rad;
     SetJointValue(pos);
 }
 
@@ -126,7 +135,7 @@ void RLConvertAPI::SetJointValue(const rl::math::Vector &aVector)
     for(int i=0;i<aReaderAPI->MotionAxis.size();++i)
     {
         gp_Trsf aTrsf = aReaderAPI->JointAISShapes.at(i+1)->Shape().Location().Transformation();
-        if(aReaderAPI->IsRevoluteType.at(i))
+        if(aReaderAPI->JointType.at(i))
             aTrsf.SetRotation(aReaderAPI->MotionAxis.at(i),aVector(i));
         else
             aTrsf.SetTranslation(gp_Vec(aReaderAPI->MotionAxis.at(i).Direction())*aVector(i));

@@ -78,7 +78,7 @@ void RLAPI_PlanThread::run()
     QTimer aComputeTimer;
     aComputeTimer.singleShot(8000,this,[=](){
         if(!PlannerSolved)
-//            emit ComputeTimeOut();
+            emit ComputeTimeOut();
         return;
     });
 

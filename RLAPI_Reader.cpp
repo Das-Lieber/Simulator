@@ -21,12 +21,10 @@ RLAPI_Reader::~RLAPI_Reader()
     CollisionScene.reset();//if reset before deleting the SceneModel ptr, the SceneModel will be the hanging ptr,danger!
 
     JointAISShapes.clear();
-    MeasureAISShapes.clear();
     AssembleTrsfs.clear();
     MotionCenters.clear();
     MotionAxis.clear();
-    IsRevoluteType.clear();
-    MeasureModelTrsfs.clear();
+    JointType.clear();
 }
 
 //=======================================================================
@@ -36,6 +34,9 @@ RLAPI_Reader::~RLAPI_Reader()
 void RLAPI_Reader::ReadSceneXMLFile(const QString &aSgFileName)
 {
     rl::sg::XmlFactory aFactory;
+    if(CollisionScene.get()==nullptr)
+        CollisionScene = std::make_shared<rl::sg::pqp::Scene>();
+
     aFactory.load(aSgFileName.toLocal8Bit().toStdString(),CollisionScene.get());
     SceneModel = CollisionScene->getModel(0);
 }
@@ -170,12 +171,12 @@ void RLAPI_Reader::ReadSceneModels(const QString &SceneVrmlFile)
                 continue;
 
             QString tmpFileName = modelFileDir.absolutePath()+"/"+aInfoList.at(j).fileName();
-            Handle(AIS_Shape) anAIS = ReadAModelFile(tmpFileName);
-            anAIS->SetColor(Quantity_Color(0.596,0.759,0.778,Quantity_TOC_RGB));
-            anAIS->BoundingBox().Get(theXmin,theYmin,theZmin,theXmax,theYmax,theZmax);
+            MeasureAISShape = ReadAModelFile(tmpFileName);
+            MeasureAISShape->SetColor(Quantity_Color(0.596,0.759,0.778,Quantity_TOC_RGB));
+            MeasureAISShape->BoundingBox().Get(theXmin,theYmin,theZmin,theXmax,theYmax,theZmax);
             double theMdlSize = ((theXmax-theXmin)+(theYmax-theYmin)+(theZmax-theZmin))/3;
-            MeasureModelSize.append(theMdlSize);
-            MeasureAISShapes.append(anAIS);
+            MeasureModelSize = theMdlSize;
+            break;
         }
     }
 }
@@ -253,7 +254,7 @@ void RLAPI_Reader::ParseSceneModelTrsf(const QString &aSceneModelFile)
     aModelTrsf.SetValues(1,0,0,transArgs.at(0),
                          0,1,0,transArgs.at(1),
                          0,0,1,transArgs.at(2));
-    MeasureModelTrsfs.append(aModelTrsf);
+    MeasureModelTrsf = aModelTrsf;
 }
 
 //=======================================================================
@@ -280,9 +281,9 @@ void RLAPI_Reader::ReadAixsDirection(const QString &aMdlFileName)
             rl::xml::Path tmpPath(aDocument,transforms.at(k));
 
             if(transforms.at(k).getName()=="prismatic")
-                IsRevoluteType.append(false);
+                JointType.append(RLAPI_JointType::Prismatic);
             else if(transforms.at(k).getName()=="revolute")
-                IsRevoluteType.append(true);
+                JointType.append(RLAPI_JointType::Revolute);
 
             double axisx = tmpPath.eval("number(axis/x)").getValue<rl::math::Real>(0);
             double axisy = tmpPath.eval("number(axis/y)").getValue<rl::math::Real>(0);

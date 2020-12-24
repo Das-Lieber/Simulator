@@ -27,13 +27,13 @@ public:
     ~RLConvertAPI();
 
     //! a convenient api to perform all the read process
-    void LoadFiles();
+    void InitLoadData();
 
     //! the api for import a new model to the scene
     void ImportSceneModel(const QString &theName);
 
     //! used to reset the RL args when import a new model to the scene
-    void Reset();
+    void ResetSceneModel();
 
     //! convenient api to set the index link moves to the angle postion
     //! angle is "rad" unit
@@ -61,13 +61,8 @@ public:
     };
 
     //! get the min size of all model, used for motion planning optimize
-    double GetModelMinSize(){
-        double min=aReaderAPI->MeasureModelSize.at(0);
-        for(int i=1;i<aReaderAPI->MeasureModelSize.size();++i)
-        {
-            min = (min>aReaderAPI->MeasureModelSize.at(i))?aReaderAPI->MeasureModelSize.at(i):min;
-        }
-        return min;
+    double GetModelMinSize(){        
+        return aReaderAPI->MeasureModelSize;
     }
 
     //! get the scene information,also used for motion planning
@@ -81,8 +76,18 @@ public:
     }
 
     //! get the models' shape in the scene,used for displaying
-    QList<Handle(AIS_Shape)> GetMeasureModelShapes(){
-        return aReaderAPI->MeasureAISShapes;
+    Handle(AIS_Shape) GetMeasureModelShape(){
+        return aReaderAPI->MeasureAISShape;
+    }
+
+    //! get the dof of the CMM
+    std::size_t GetJointModelDof(){
+        return aReaderAPI->JointModel->getDof();
+    }
+
+    //! get the type of each joint
+    QList<RLAPI_JointType> GetJointType(){
+        return aReaderAPI->JointType;
     }
 
     rl::math::Vector MotionMaxValues;
