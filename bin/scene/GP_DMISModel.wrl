@@ -1,0 +1,15 @@
+#VRML V2.0 utf8
+Transform {
+   children [
+     DEF GP Transform {
+         children [
+             Inline {
+                 url "GP8/GP8.wrl" 
+             }
+          ]
+      }
+      DEF DMISModel Inline {
+          url "models/TesaDemo3D.wrl" 
+      }
+   ]
+}
