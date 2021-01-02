@@ -1,6 +1,8 @@
 ﻿#include "RLAPI_PlanThread.h"
 #include <QDebug>
 
+bool RLAPI_PlanThread::PlannerSolved = false;
+
 //=======================================================================
 //function : RLAPI_PlanThread
 //purpose  : *
@@ -31,6 +33,29 @@ void RLAPI_PlanThread::GetComputeArguments(const rl::math::Vector &startPnt, con
 {
     mStartPnt = startPnt;
     mEndPnt = endPnt;
+}
+
+//=======================================================================
+//function : pause
+//purpose  : *
+//=======================================================================
+void RLAPI_PlanThread::pause()
+{
+    if(isRunning())
+        doCollisionWait = true;
+}
+
+//=======================================================================
+//function : resume
+//purpose  : *
+//=======================================================================
+void RLAPI_PlanThread::resume()
+{
+    if(isRunning())
+    {
+        doCollisionWait = false;
+        waitCondition.wakeAll();
+    }
 }
 
 //=======================================================================
@@ -117,17 +142,22 @@ void RLAPI_PlanThread::run()
         for (; i != solvedPath.end() && j != solvedPath.end(); ++i, ++j)
         {
             pathLength += mPlanModel->distance(*i ,*j);
-            rl::math::Real stepLength = std::ceil(mPlanModel->distance(*i, *j) / delta);
+            rl::math::Real stepLength = std::ceil(mPlanModel->distance(*i, *j) / delta);            
+
             for (std::size_t k = 1; k < stepLength + 1; ++k)
             {
-                if(!isInterruptionRequested())
+                if(doCollisionWait)
                 {
-                    mPlanModel->interpolate(*i, *j, k/stepLength, tmpPos);
-                    emit ReadyToSetJointValue(tmpPos);
-                    QThread::usleep(50000);
+                    aMutex.lock();
+                    waitCondition.wait(&aMutex);
+                    aMutex.unlock();
                 }
+                mPlanModel->interpolate(*i, *j, k/stepLength, tmpPos);
+                emit ReadyToSetJointValue(tmpPos);
+                QThread::usleep(50000);
             }
         }
+        PlannerSolved = false;
         emit ComputeOver(pathLength);
     }
     else

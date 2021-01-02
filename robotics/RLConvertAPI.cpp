@@ -158,7 +158,7 @@ void RLConvertAPI::SetJointValue(const rl::math::Vector &aVector)
 //function : SetIndexedInverseValue
 //purpose  : *
 //=======================================================================
-void RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
+bool RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
 {
     if (rl::mdl::Kinematic* kinematic = dynamic_cast<rl::mdl::Kinematic*>(aReaderAPI->JointModel.get()))
     {
@@ -211,13 +211,16 @@ void RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
         {
             rl::math::Vector currentPos = aReaderAPI->JointModel->getPosition();
             SetJointValue(currentPos);
+            return true;
         }
         else
         {
             kinematic->setPosition(q);
             kinematic->forwardPosition();
+            return false;
         }
     }
+    return false;
 }
 
 //=======================================================================

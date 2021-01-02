@@ -14,8 +14,88 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSet_Start_Position"/>
+   <addaction name="actionSet_End_Position"/>
+   <addaction name="separator"/>
+   <addaction name="actionView_Start_Position"/>
+   <addaction name="actionView_End_Position"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="actionImport_Model"/>
+   <addaction name="actionStart_Planner"/>
+   <addaction name="actionPause_Planner"/>
+   <addaction name="actionExit_Planner"/>
+  </widget>
+  <action name="actionView_Start_Position">
+   <property name="text">
+    <string>View Start Position</string>
+   </property>
+  </action>
+  <action name="actionView_End_Position">
+   <property name="text">
+    <string>View End Position</string>
+   </property>
+  </action>
+  <action name="actionSet_Start_Position">
+   <property name="text">
+    <string>Set Start Position</string>
+   </property>
+  </action>
+  <action name="actionSet_End_Position">
+   <property name="text">
+    <string>Set End Position</string>
+   </property>
+  </action>
+  <action name="actionStart_Planner">
+   <property name="text">
+    <string>Start Planner</string>
+   </property>
+  </action>
+  <action name="actionPause_Planner">
+   <property name="text">
+    <string>Pause Planner</string>
+   </property>
+  </action>
+  <action name="actionExit_Planner">
+   <property name="text">
+    <string>Exit Planner</string>
+   </property>
+  </action>
+  <action name="actionImport_Model">
+   <property name="text">
+    <string>Import Model</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

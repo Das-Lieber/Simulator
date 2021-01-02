@@ -10,6 +10,8 @@ QMAKE_CXXFLAGS += /utf-8
 SOURCES += \
     delegate/ConfigurationDelegate.cpp \
     delegate/ConfigurationModel.cpp \
+    delegate/OperationalDelegate.cpp \
+    delegate/OperationalModel.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
@@ -25,6 +27,8 @@ SOURCES += \
 HEADERS += \
     delegate/ConfigurationDelegate.h \
     delegate/ConfigurationModel.h \
+    delegate/OperationalDelegate.h \
+    delegate/OperationalModel.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \

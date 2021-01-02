@@ -45,7 +45,7 @@ public:
 
     //! convenient api to solve inverse motion, if value is an angle, use
     //! "deg" unit
-    void SetIndexedInverseValue(const int &index, const double &value);
+    bool SetIndexedInverseValue(const int &index, const double &value);
 
     //! get all the links' angle/position, return by a dof-count vector
     rl::math::Vector GetJointPosition();

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -69,8 +70,11 @@ void MainWindow::initRL()
 
     connect(aConvertAPI,&RLConvertAPI::JointPositionChanged,this,[=](){
         aMdlWidget->getView()->Update();
-        displayJointPosition();
-        displayOperationalPosition();
+        if(RLAPI_PlanThread::PlannerSolved)
+        {
+            displayJointPosition();
+            displayOperationalPosition();
+        }
     });
     connect(aConvertAPI,&RLConvertAPI::JointCollision,this,[=](int index){
         ui->statusbar->showMessage(tr("Joint %1 COLLISION!!!").arg(index));
@@ -85,8 +89,6 @@ void MainWindow::initRL()
     {
         aMdlWidget->getContext()->Display(aConvertAPI->GetJointModelShapes().at(i),Standard_False);
     }
-    displayJointPosition();
-    displayOperationalPosition();
 
     aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
@@ -95,17 +97,32 @@ void MainWindow::initRL()
 void MainWindow::creatConfigDock()
 {
     QTableView *configTable = new QTableView;
+    configTable->setWindowTitle(tr("Configuration"));
+    configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    configTable->horizontalHeader()->hide();
+    configTable->setAlternatingRowColors(true);
+
     ConfigurationDelegate *configDelegate = new ConfigurationDelegate;
-    ConfigurationModel *configModel = new ConfigurationModel;
     configDelegate->setMaxValue(aConvertAPI->MotionMaxValues);
     configDelegate->setMinValue(aConvertAPI->MotionMinValues);
     configDelegate->setJointType(aConvertAPI->GetJointType());
-    configModel->setMaxValue(aConvertAPI->MotionMaxValues);
-    configModel->setMinValue(aConvertAPI->MotionMinValues);
-    configModel->setJointType(aConvertAPI->GetJointType());
-    configModel->setJointModelDofs(aConvertAPI->GetJointModelDof());
+
+    mConfigModel = new ConfigurationModel;
+    mConfigModel->SetMaxValue(aConvertAPI->MotionMaxValues);
+    mConfigModel->SetMinValue(aConvertAPI->MotionMinValues);
+    mConfigModel->SetJointType(aConvertAPI->GetJointType());
+    mConfigModel->SetJointModelDofs(aConvertAPI->GetJointModelDof());
+    mConfigModel->initData(aConvertAPI->GetJointPosition());
+
     configTable->setItemDelegate(configDelegate);
-    configTable->setModel(configModel);
+    configTable->setModel(mConfigModel);
+
+    connect(mConfigModel,&ConfigurationModel::dataChanged,this,[=](const QModelIndex& topLeft, const QModelIndex& bottomRight){
+        Q_UNUSED(bottomRight)
+        aConvertAPI->SetIndexedJointValue(topLeft.row(),
+                                          topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
+        displayOperationalPosition();
+    });
 
     mConfigDock = new CustomDockWidget;
     connect(mConfigDock, &CustomDockWidget::signal_pinned, this, &MainWindow::dockWidgetPinned);
@@ -118,23 +135,48 @@ void MainWindow::creatConfigDock()
 
 void MainWindow::creatOperationDock()
 {
+    QTableView *operationTable = new QTableView;
+    operationTable->setWindowTitle(tr("Operation"));
+    operationTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    operationTable->verticalHeader()->hide();
+    operationTable->setAlternatingRowColors(true);
+
+    OperationalDelegate *operationDelegate = new OperationalDelegate;
+
+    mOperationModel = new OperationalModel;
+    mOperationModel->initData(aConvertAPI->GetOperationalPosition());
+
+    operationTable->setItemDelegate(operationDelegate);
+    operationTable->setModel(mOperationModel);
+
+    connect(mOperationModel,&OperationalModel::dataChanged,this,[=](const QModelIndex& topLeft, const QModelIndex& bottomRight){
+        Q_UNUSED(bottomRight)
+        bool solve = aConvertAPI->SetIndexedInverseValue(topLeft.column(),
+                                            topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
+        if(!solve)
+            mOperationModel->initData(aConvertAPI->GetOperationalPosition());
+        displayJointPosition();
+    });
 
     mOperationDock = new CustomDockWidget;
     connect(mOperationDock, &CustomDockWidget::signal_pinned, this, &MainWindow::dockWidgetPinned);
     connect(mOperationDock, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
     connect(mOperationDock, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
     connect(mOperationDock, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
-//    addDockWidget(Qt::LeftDockWidgetArea,mOperationDock);
+    mOperationDock->setWidget(operationTable);
+    addDockWidget(Qt::BottomDockWidgetArea,mOperationDock);
 }
 
 void MainWindow::displayJointPosition()
 {
-
+    mConfigModel->initData(aConvertAPI->GetJointPosition());
+    mConfigModel->operationalChanged();
 }
 
 void MainWindow::displayOperationalPosition()
 {
-
+    mOperationModel->initData(aConvertAPI->GetOperationalPosition());
+    mOperationModel->configurationChanged();
 }
 
 void MainWindow::drawPathLine()
@@ -387,4 +429,113 @@ void MainWindow::showDockWidget(CustomDockWidget *dockWidget)
     {
         hideDockWidget(dockWidget);
     }
+}
+
+void MainWindow::on_actionView_Start_Position_triggered()
+{
+    aConvertAPI->SetJointValue(mStartVec);
+    displayJointPosition();
+    displayOperationalPosition();
+}
+
+void MainWindow::on_actionView_End_Position_triggered()
+{
+    aConvertAPI->SetJointValue(*mEndList.begin());
+    displayJointPosition();
+    displayOperationalPosition();
+}
+
+void MainWindow::on_actionSet_Start_Position_triggered()
+{
+    mStartVec = aConvertAPI->GetJointPosition();
+    ui->statusbar->showMessage(tr("start position set"));
+
+    QList<double> currentPos = aConvertAPI->GetOperationalPosition();
+    currentPahtPnt = gp_Pnt(currentPos.value(0),
+                            currentPos.value(1),
+                            currentPos.value(2)-1);//don't set them as same ,or can't draw the first part of the path line
+}
+
+void MainWindow::on_actionSet_End_Position_triggered()
+{
+    rl::math::Vector EndPos = aConvertAPI->GetJointPosition();
+    mEndList.push_back(EndPos);
+    ui->statusbar->showMessage(tr("end position set"));
+}
+
+void MainWindow::on_actionStart_Planner_triggered()
+{
+    ui->statusbar->showMessage(tr("Solving......"));
+
+    AIS_ListOfInteractive aList;
+    aMdlWidget->getContext()->DisplayedObjects(aList);
+    AIS_ListIteratorOfListOfInteractive anIterator;
+    if(pathLines.size()>0)
+    {
+        for(anIterator.Init(aList);anIterator.More();anIterator.Next())
+        {
+            Handle(AIS_Shape) anAIS = Handle(AIS_Shape)::DownCast(anIterator.Value());
+            for(int i=0;i<pathLines.size();++i)
+            {
+                if(anAIS->Shape().IsSame(pathLines.at(i)->Shape()))
+                {
+                    aMdlWidget->getContext()->Erase(anAIS,false);
+                    pathLines.removeAt(i);
+                }
+            }
+        }
+    }
+
+    if(mEndList.size()>1)
+    {
+        RLAPI_ConfigurationOptimizer anOptimizer;
+        anOptimizer.SetStartConfigurations(mStartVec);
+        anOptimizer.SetEndConfigurations(mEndList);
+        anOptimizer.theDynamic = aConvertAPI->GetMdlDynamic();
+        optimizedEndList = anOptimizer.Process();
+    }
+    else optimizedEndList = mEndList;
+
+    totalPathLen=0;
+    endsIterator=optimizedEndList.begin();
+    mPlannerThread->GetComputeArguments(mStartVec,*endsIterator);
+    lastEndVect = *endsIterator;
+    endsIterator++;
+    mPlannerThread->start();
+}
+
+void MainWindow::on_actionPause_Planner_triggered()
+{
+    if(mPlannerThread->isRunning())
+        mPlannerThread->pause();
+}
+
+void MainWindow::on_actionExit_Planner_triggered()
+{
+    if(mPlannerThread->isRunning())
+        mPlannerThread->resume();
+}
+
+void MainWindow::on_actionImport_Model_triggered()
+{
+    QString modelFileName = QFileDialog::getOpenFileName(this,"choose file","",tr("Support Type(*.stp *.step *.STP *.STEP *.iges *.igs *.IGES *.IGS *.brep *.brp\n)"
+                                                                                  "*.stp *.step *.STP *.STEP\n"
+                                                                                  "*.iges *.igs *.IGES *.IGS\n"
+                                                                                  "*.brep *.brp"));
+    if(modelFileName.isEmpty())
+        return;
+
+    aConvertAPI->ImportSceneModel(modelFileName);
+    aMdlWidget->getContext()->Erase(aConvertAPI->GetMeasureModelShape(),Standard_False);
+    aConvertAPI->ResetSceneModel();
+
+    mPlannerThread->deleteLater();
+    mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
+    connectThread();
+
+    mConfigModel->initData(aConvertAPI->GetJointPosition());
+    mOperationModel->initData(aConvertAPI->GetOperationalPosition());
+
+    aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
+    aMdlWidget->getView()->FitAll();
 }

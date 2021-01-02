@@ -16,14 +16,14 @@ QWidget* ConfigurationDelegate::createEditor(QWidget* parent, const QStyleOption
 
     if (RLAPI_JointType::Revolute == Types.at(index.row()))
 	{
-		editor->setDecimals(2);
+        editor->setDecimals(4);//角度达到1"
         editor->setMinimum(Mins(index.row()) * rl::math::constants::rad2deg);
         editor->setMaximum(Maxs(index.row()) * rl::math::constants::rad2deg);
 		editor->setSingleStep(1.0);
 	}
 	else
 	{
-		editor->setDecimals(4);
+        editor->setDecimals(3);//位移精度达到0.001mm
         editor->setMinimum(Mins(index.row()));
         editor->setMaximum(Maxs(index.row()));
         editor->setSingleStep(3.0);
@@ -47,7 +47,7 @@ void ConfigurationDelegate::setModelData(QWidget* editor, QAbstractItemModel* mo
 	
 	if (!model->setData(index, doubleSpinBox->value(), Qt::EditRole))
 	{
-		doubleSpinBox->setValue(index.model()->data(index, Qt::EditRole).toDouble());
+        doubleSpinBox->setValue(index.model()->data(index, Qt::EditRole).toDouble());
 	}
 }
 

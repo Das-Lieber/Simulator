@@ -6,9 +6,6 @@
 
 #include <rl/math/Vector.h>
 #include <rl/math/Constants.h>
-#include <rl/mdl/Kinematic.h>
-#include <rl/mdl/Revolute.h>
-#include <rl/sg/Body.h>
 
 #include "robotics/RLAPI_Reader.h"
 
@@ -20,21 +17,22 @@ public:
 	ConfigurationModel(QObject* parent = nullptr);	
 	virtual ~ConfigurationModel();	
 	
-    void setMaxValue(const rl::math::Vector &max) {
+    void SetMaxValue(const rl::math::Vector &max) {
         Maxs = max;
     }
-    void setMinValue(const rl::math::Vector &min) {
+    void SetMinValue(const rl::math::Vector &min) {
         Mins = min;
     }
-    void setJointType(const QList<RLAPI_JointType> &type) {
+    void SetJointType(const QList<RLAPI_JointType> &type) {
         Types = type;
     }
-    void setJointModelDofs(const std::size_t &dof) {
+    void SetJointModelDofs(const std::size_t &dof) {
         Dofs = dof;
     }
-		
+    void initData(const rl::math::Vector &homePos);
+
 public slots:
-	void operationalChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+    void operationalChanged();
 	
 protected:
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -49,6 +47,7 @@ private:
     rl::math::Vector Mins;
     QList<RLAPI_JointType> Types;
     std::size_t Dofs;
+    rl::math::Vector Pos;
 
 };
 

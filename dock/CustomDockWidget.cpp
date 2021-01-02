@@ -55,6 +55,7 @@ CustomDockWidget::CustomDockWidget(QWidget *parent):
 void CustomDockWidget::setWidget(QWidget *widget)
 {
     globalLayout->addWidget(widget);
+    setWindowTitle(widget->windowTitle());
 }
 
 void CustomDockWidget::setDockWidgetState(DockWidgetState state)

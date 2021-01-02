@@ -5,6 +5,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QWaitCondition>
+#include <QMutex>
 
 #include <rl/plan/SimpleModel.h>
 #include <rl/plan/Prm.h>
@@ -36,6 +38,14 @@ public:
     //! which contains the position each link is at
     void GetComputeArguments(const rl::math::Vector &startPnt, const rl::math::Vector &endPnt);
 
+    //! pause the thread
+    void pause();
+
+    //! resume the thread if it has been paused
+    void resume();
+
+    static bool PlannerSolved;
+
 protected:
     //! override function, solve and optimize the path
     void run() override;
@@ -46,8 +56,9 @@ private:
     rl::math::Vector mStartPnt;
     rl::math::Vector mEndPnt;
     const double minMdlSize;
-
-    bool PlannerSolved;
+    bool doCollisionWait = false;
+    QWaitCondition waitCondition;
+    QMutex aMutex;
 
 signals:
     //! if planner solve the path, send this signal

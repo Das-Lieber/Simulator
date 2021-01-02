@@ -173,10 +173,10 @@ void RLAPI_Writer::GenerateSceneVrmlFile(const QString &aVrmlFileName, const QSt
     QString vrmlContent = QString("#VRML V2.0 utf8\n"
                                   "Transform {\n"
                                   "   children [\n"
-                                  "     DEF LHY Transform {\n"
+                                  "     DEF GP Transform {\n"
                                   "         children [\n"
                                   "             Inline {\n"
-                                  "                 url \"LHY/%1\" \n"
+                                  "                 url \"GP8/%1\" \n"
                                   "             }\n"
                                   "          ]\n"
                                   "      }\n"
@@ -184,7 +184,7 @@ void RLAPI_Writer::GenerateSceneVrmlFile(const QString &aVrmlFileName, const QSt
                                   "          url \"models/%2\" \n"
                                   "      }\n"
                                   "   ]\n"
-                                  "}").arg("LHY.wrl").arg(aInfo.fileName());
+                                  "}").arg("GP8.wrl").arg(aInfo.fileName());
     sceneVRML.open(QIODevice::WriteOnly);
     sceneVRML.write(vrmlContent.toLocal8Bit());
     sceneVRML.close();
@@ -200,13 +200,16 @@ void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QS
     QString xmlContent = QString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                                      "<rlsg xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"rlsg.xsd\">\n"
                                      "    <scene href=\"%1\">\n"
-                                     "        <model name=\"LHY\">\n"
+                                     "        <model name=\"GP\">\n"
                                      "            <body name=\"link0\"/>\n"
                                      "            <body name=\"link1\"/>\n"
                                      "            <body name=\"link2\"/>\n"
                                      "            <body name=\"link3\"/>\n"
                                      "            <body name=\"link4\"/>\n"
                                      "            <body name=\"link5\"/>\n"
+                                     "            <body name=\"link6\"/>\n"
+                                     "            <body name=\"link7\"/>\n"
+                                     "            <body name=\"link8\"/>\n"
                                      "        </model>\n"
                                      "        <model name=\"DMISModel\">\n"
                                      "            <body name=\"\"/>\n"
