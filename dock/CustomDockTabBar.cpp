@@ -2,6 +2,7 @@
 
 CustomDockTabBar::CustomDockTabBar(Qt::DockWidgetArea area) : m_area(area)
 {
+    setAttribute(Qt::WA_StyledBackground);
     setFloatable(false);
     setMovable(false);
     setContextMenuPolicy(Qt::PreventContextMenu);

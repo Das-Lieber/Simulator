@@ -8,6 +8,7 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
+    QRibbon/QRibbon.cpp \
     delegate/ConfigurationDelegate.cpp \
     delegate/ConfigurationModel.cpp \
     delegate/OperationalDelegate.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     robotics/RLConvertAPI.cpp
 
 HEADERS += \
+    QRibbon/QRibbon.h \
     delegate/ConfigurationDelegate.h \
     delegate/ConfigurationModel.h \
     delegate/OperationalDelegate.h \
@@ -42,6 +44,7 @@ HEADERS += \
     robotics/RLConvertAPI.h
 
 FORMS += \
+    QRibbon/qribbon.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -50,17 +53,17 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    res.qrc
+    QRibbon/QRibbon.qrc \
+    Simulator.qrc \
+    dock/CustomDock.qrc
 
 INCLUDEPATH += D:/OpenCASCADE/inc
 LIBS += D:\OpenCASCADE\lib\*.lib
-CONFIG(debug, debug|release) {
-    INCLUDEPATH += D:/RoboticsLibrary/Debug/include
-    LIBS += -LD:\RoboticsLibrary\Debug\lib
+INCLUDEPATH += D:/RoboticsLibrary/include
+LIBS += -LD:\RoboticsLibrary\lib
+CONFIG(debug, debug|release) {    
     LIBS += -lrlsgsd -lrlmdlsd -lrlplansd -llibxml2d -llibxsltd -lPQPd -lrlkinsd
 } else {
-    INCLUDEPATH += D:/RoboticsLibrary/Release/include
-    LIBS += -LD:\RoboticsLibrary\Release\lib
     LIBS += -lrlsgs -lrlmdls -lrlplans -llibxml2 -llibxslt -lPQP -lrlkins
 }
 

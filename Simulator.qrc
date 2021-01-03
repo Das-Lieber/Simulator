@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/Simulator">
+        <file>icons/import_file.png</file>
+        <file>icons/set_end.png</file>
+        <file>icons/set_start.png</file>
+        <file>icons/thread_exit.png</file>
+        <file>icons/thread_pause.png</file>
+        <file>icons/thread_resume.png</file>
+        <file>icons/thread_start.png</file>
+        <file>icons/view_end.png</file>
+        <file>icons/view_start.png</file>
+    </qresource>
+</RCC>

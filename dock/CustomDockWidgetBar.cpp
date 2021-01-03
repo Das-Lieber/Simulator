@@ -5,13 +5,14 @@ static const QString s_autoHideDisabledStyle =
         {
         border: 0px;
         width: 15px; height: 15px;
-        image: url(:/new/img/resources/pin_dockwidget_normal.png);
+        background: transparent;
+        image: url(:/dock/icons/pin_dockwidget_normal.png);
         }
         QPushButton:hover {
-        image: url(:/new/img/resources/pin_dockwidget_hover.png);
+        image: url(:/dock/icons/pin_dockwidget_hover.png);
         }
         QPushButton:pressed:hover {
-        image: url(:/new/img/resources/pin_dockwidget_normal.png);
+        image: url(:/dock/icons/pin_dockwidget_normal.png);
         })";
 
 static const QString s_autoHideEnabledStyle =
@@ -19,13 +20,14 @@ static const QString s_autoHideEnabledStyle =
         {
         border: 0px;
         width: 15px; height: 15px;
-        image: url(:/new/img/resources/unpin_dockwidget_normal.png);
+        background: transparent;
+        image: url(:/dock/icons/unpin_dockwidget_normal.png);
         }
         QPushButton:hover {
-        image: url(:/new/img/resources/unpin_dockwidget_hover.png);
+        image: url(:/dock/icons/unpin_dockwidget_hover.png);
         }
         QPushButton:pressed:hover {
-        image: url(:/new/img/resources/unpin_dockwidget_pressed.png);
+        image: url(:/dock/icons/unpin_dockwidget_pressed.png);
         })";
 
 static const QString s_closeButtonStyle =
@@ -33,13 +35,14 @@ static const QString s_closeButtonStyle =
         {
         border: 0px;
         width: 15px; height: 15px;
-        image: url(:/new/img/resources/close_dockwidget_normal.png);
+        background: transparent;
+        image: url(:/dock/icons/close_dockwidget_normal.png);
         }
         QPushButton:hover {
-        image: url(:/new/img/resources/close_dockwidget_hover.png);
+        image: url(:/dock/icons/close_dockwidget_hover.png);
         }
         QPushButton:pressed:hover {
-        image: url(:/new/img/resources/close_dockwidget_pressed.png);
+        image: url(:/dock/icons/close_dockwidget_pressed.png);
         })";
 
 static const QString s_menuButtonStyle =
@@ -47,13 +50,14 @@ static const QString s_menuButtonStyle =
         {
         border: 0px;
         width: 15px; height: 15px;
-        image: url(:/new/img/resources/menu_dockwidget_normal.png);
+        background: transparent;
+        image: url(:/dock/icons/menu_dockwidget_normal.png);
         }
         QPushButton:hover {
-        image: url(:/new/img/resources/menu_dockwidget_hover.png);
+        image: url(:/dock/icons/menu_dockwidget_hover.png);
         }
         QPushButton:pressed:hover {
-        image: url(:/new/img/resources/menu_dockwidget_pressed.png);
+        image: url(:/dock/icons/menu_dockwidget_pressed.png);
         })";
 
 CustomDockWidgetBar::CustomDockWidgetBar(QWidget *parent)
@@ -62,6 +66,7 @@ CustomDockWidgetBar::CustomDockWidgetBar(QWidget *parent)
       titleLabel(nullptr),
       autoHideEnabled(false)
 {
+    setAttribute(Qt::WA_StyledBackground);
     QHBoxLayout* layout = new QHBoxLayout();
     setLayout(layout);
 

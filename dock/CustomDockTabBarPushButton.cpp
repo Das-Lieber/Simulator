@@ -16,10 +16,10 @@ CustomDockTabBarPushButton::CustomDockTabBarPushButton(const QString &text, Qt::
     fw = (fw > 120) ? 121 : fw;
 
     if(m_orientation == Qt::Vertical) {
-        setFixedSize(25, fw);
+        setFixedSize(25, fw+8);
     }
     else if(m_orientation == Qt::Horizontal) {
-        setFixedSize(fw, 25);
+        setFixedSize(fw+8, 25);
     }
 }
 

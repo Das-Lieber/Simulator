@@ -15,17 +15,19 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <AIS_ListOfInteractive.hxx>
 
-#include "robotics/RLAPI_PlanThread.h"
-#include "robotics/RLAPI_ConfigurationOptimizer.h"
-#include "robotics/RLConvertAPI.h"
-
-#include "dock/CustomDockWidget.h"
-#include "dock/CustomDockTabBar.h"
-
 #include "delegate/ConfigurationDelegate.h"
 #include "delegate/ConfigurationModel.h"
 #include "delegate/OperationalDelegate.h"
 #include "delegate/OperationalModel.h"
+
+#include "dock/CustomDockWidget.h"
+#include "dock/CustomDockTabBar.h"
+
+#include "QRibbon/QRibbon.h"
+
+#include "robotics/RLAPI_PlanThread.h"
+#include "robotics/RLAPI_ConfigurationOptimizer.h"
+#include "robotics/RLConvertAPI.h"
 
 #include "occWidget.h"
 
@@ -69,6 +71,7 @@ private:
     rl::plan::VectorList::iterator endsIterator;
     rl::math::Vector lastEndVect;
     double totalPathLen;
+    bool threadWait;
 
     gp_Pnt currentPahtPnt;
     gp_Pnt endPnt;

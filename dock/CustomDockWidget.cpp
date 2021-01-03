@@ -7,6 +7,7 @@ CustomDockWidget::CustomDockWidget(QWidget *parent):
 {
     titleWidget = new CustomDockWidgetBar;
     this->setTitleBarWidget(titleWidget);
+    setAttribute(Qt::WA_StyledBackground);//use qss to set this object
 
     globalLayout = new QVBoxLayout;
     globalLayout->setContentsMargins(0, 2, 0, 0);

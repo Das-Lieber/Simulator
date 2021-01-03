@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , mDockWidget(nullptr)
+    , threadWait(false)
 {
     ui->setupUi(this);
 
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Simulator");
 #endif
 
+    //init occ
     aMdlWidget = new OCCWidget();
     QGridLayout *centerLayOut = new QGridLayout;
     centerLayOut->addWidget(aMdlWidget);
@@ -26,32 +28,34 @@ MainWindow::MainWindow(QWidget *parent)
     creatConfigDock();
     creatOperationDock();
 
-//    mStartVec.resize(5);
-//    mStartVec(0) = 4;
-//    mStartVec(1) = 154;
-//    mStartVec(2) = -417;
-//    mStartVec(3) = 90*rl::math::constants::deg2rad;
-//    mStartVec(4) = 90*rl::math::constants::deg2rad;
+    //    mStartVec.resize(5);
+    //    mStartVec(0) = 4;
+    //    mStartVec(1) = 154;
+    //    mStartVec(2) = -417;
+    //    mStartVec(3) = 90*rl::math::constants::deg2rad;
+    //    mStartVec(4) = 90*rl::math::constants::deg2rad;
 
-//    rl::math::Vector defaultEndPos(5);
-//    defaultEndPos(0) = -93;
-//    defaultEndPos(1) = 57;
-//    defaultEndPos(2) = -506;
-//    defaultEndPos(3) = 0*rl::math::constants::deg2rad;
-//    defaultEndPos(4) = 90*rl::math::constants::deg2rad;
-//    mEndList.push_back(defaultEndPos);
-//    rl::math::Vector defaultEndPos1(5);
-//    defaultEndPos1(0) = -90;
-//    defaultEndPos1(1) = 12;
-//    defaultEndPos1(2) = -410;
-//    defaultEndPos1(3) = 0*rl::math::constants::deg2rad;
-//    defaultEndPos1(4) = 70*rl::math::constants::deg2rad;
-//    mEndList.push_back(defaultEndPos1);
+    //    rl::math::Vector defaultEndPos(5);
+    //    defaultEndPos(0) = -93;
+    //    defaultEndPos(1) = 57;
+    //    defaultEndPos(2) = -506;
+    //    defaultEndPos(3) = 0*rl::math::constants::deg2rad;
+    //    defaultEndPos(4) = 90*rl::math::constants::deg2rad;
+    //    mEndList.push_back(defaultEndPos);
+    //    rl::math::Vector defaultEndPos1(5);
+    //    defaultEndPos1(0) = -90;
+    //    defaultEndPos1(1) = 12;
+    //    defaultEndPos1(2) = -410;
+    //    defaultEndPos1(3) = 0*rl::math::constants::deg2rad;
+    //    defaultEndPos1(4) = 70*rl::math::constants::deg2rad;
+    //    mEndList.push_back(defaultEndPos1);
 
     mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
     qRegisterMetaType<rl::math::Vector>("rl::math::Vector");
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
+
+    QRibbon::install(this);
 }
 
 MainWindow::~MainWindow()
@@ -100,7 +104,6 @@ void MainWindow::creatConfigDock()
     configTable->setWindowTitle(tr("Configuration"));
     configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     configTable->horizontalHeader()->hide();
-    configTable->setAlternatingRowColors(true);
 
     ConfigurationDelegate *configDelegate = new ConfigurationDelegate;
     configDelegate->setMaxValue(aConvertAPI->MotionMaxValues);
@@ -138,8 +141,7 @@ void MainWindow::creatOperationDock()
     QTableView *operationTable = new QTableView;
     operationTable->setWindowTitle(tr("Operation"));
     operationTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    operationTable->verticalHeader()->hide();
-    operationTable->setAlternatingRowColors(true);
+    operationTable->verticalHeader()->hide();    
 
     OperationalDelegate *operationDelegate = new OperationalDelegate;
 
@@ -152,7 +154,7 @@ void MainWindow::creatOperationDock()
     connect(mOperationModel,&OperationalModel::dataChanged,this,[=](const QModelIndex& topLeft, const QModelIndex& bottomRight){
         Q_UNUSED(bottomRight)
         bool solve = aConvertAPI->SetIndexedInverseValue(topLeft.column(),
-                                            topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
+                                                         topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
         if(!solve)
             mOperationModel->initData(aConvertAPI->GetOperationalPosition());
         displayJointPosition();
@@ -163,8 +165,9 @@ void MainWindow::creatOperationDock()
     connect(mOperationDock, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
     connect(mOperationDock, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
     connect(mOperationDock, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
-    mOperationDock->setWidget(operationTable);
+    mOperationDock->setWidget(operationTable);    
     addDockWidget(Qt::BottomDockWidgetArea,mOperationDock);
+    this->resizeDocks({mOperationDock},{100},Qt::Vertical);
 }
 
 void MainWindow::displayJointPosition()
@@ -232,9 +235,9 @@ void MainWindow::connectThread()
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeFailed,this,[=](const ComputeError &errorCode){
         if(errorCode==ComputeError::InvalidConfig)
-            QMessageBox::critical(this,"error","Invalid start point or end point!");
+            QMessageBox::critical(this,tr("error"),tr("Invalid start point or end point!"));
         else if(errorCode==ComputeError::ArgumentError)
-            QMessageBox::critical(this,"error","Unsuitable planner arguments");
+            QMessageBox::critical(this,tr("error"),tr("Unsuitable planner arguments"));
 
         mPlannerThread->quit();
         ui->statusbar->showMessage(tr("Compute Failed!"));
@@ -379,12 +382,12 @@ Qt::ToolBarArea MainWindow::dockAreaToToolBarArea(Qt::DockWidgetArea area)
 {
     switch(area)
     {
-        case Qt::LeftDockWidgetArea: return Qt::LeftToolBarArea;
-        case Qt::RightDockWidgetArea: return Qt::RightToolBarArea;
-        case Qt::TopDockWidgetArea: return Qt::TopToolBarArea;
-        case Qt::BottomDockWidgetArea: return Qt::BottomToolBarArea;
-        default:
-            return Qt::ToolBarArea(0);
+    case Qt::LeftDockWidgetArea: return Qt::LeftToolBarArea;
+    case Qt::RightDockWidgetArea: return Qt::RightToolBarArea;
+    case Qt::TopDockWidgetArea: return Qt::TopToolBarArea;
+    case Qt::BottomDockWidgetArea: return Qt::BottomToolBarArea;
+    default:
+        return Qt::ToolBarArea(0);
     }
 }
 
@@ -506,22 +509,30 @@ void MainWindow::on_actionStart_Planner_triggered()
 
 void MainWindow::on_actionPause_Planner_triggered()
 {
-    if(mPlannerThread->isRunning())
+    if(mPlannerThread->isRunning()&&!threadWait)
+    {
+        threadWait = true;
+        ui->actionPause_Planner->setIcon(QIcon(":/new/img/resources/thread_resume.png"));
         mPlannerThread->pause();
+    }
+    else if(mPlannerThread->isRunning()&&threadWait)
+    {
+        threadWait = false;
+        ui->actionPause_Planner->setIcon(QIcon(":/new/img/resources/thread_pause.png"));
+        mPlannerThread->resume();
+    }
 }
 
 void MainWindow::on_actionExit_Planner_triggered()
-{
-    if(mPlannerThread->isRunning())
-        mPlannerThread->resume();
+{  
 }
 
 void MainWindow::on_actionImport_Model_triggered()
 {
-    QString modelFileName = QFileDialog::getOpenFileName(this,"choose file","",tr("Support Type(*.stp *.step *.STP *.STEP *.iges *.igs *.IGES *.IGS *.brep *.brp\n)"
-                                                                                  "*.stp *.step *.STP *.STEP\n"
-                                                                                  "*.iges *.igs *.IGES *.IGS\n"
-                                                                                  "*.brep *.brp"));
+    QString modelFileName = QFileDialog::getOpenFileName(this,tr("choose file"),"",tr("Support Type(*.stp *.step *.STP *.STEP *.iges *.igs *.IGES *.IGS *.brep *.brp\n)"
+                                                                                      "*.stp *.step *.STP *.STEP\n"
+                                                                                      "*.iges *.igs *.IGES *.IGS\n"
+                                                                                      "*.brep *.brp"));
     if(modelFileName.isEmpty())
         return;
 

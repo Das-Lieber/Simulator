@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QCoreApplication>
 #include <QDockWidget>
+#include <QSizePolicy>
 
 class CustomDockWidgetBar : public QWidget
 {

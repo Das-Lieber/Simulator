@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/dock">
+        <file>icons/close_dockwidget_hover.png</file>
+        <file>icons/close_dockwidget_normal.png</file>
+        <file>icons/close_dockwidget_pressed.png</file>
+        <file>icons/menu_dockwidget_hover.png</file>
+        <file>icons/menu_dockwidget_normal.png</file>
+        <file>icons/menu_dockwidget_pressed.png</file>
+        <file>icons/pin_dockwidget_hover.png</file>
+        <file>icons/pin_dockwidget_normal.png</file>
+        <file>icons/pin_dockwidget_pressed.png</file>
+        <file>icons/unpin_dockwidget_hover.png</file>
+        <file>icons/unpin_dockwidget_normal.png</file>
+        <file>icons/unpin_dockwidget_pressed.png</file>
+    </qresource>
+</RCC>
