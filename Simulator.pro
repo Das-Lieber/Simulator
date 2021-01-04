@@ -2,6 +2,8 @@ QT       += core gui widgets
 
 CONFIG += c++11
 
+RC_ICONS += Simulator.ico
+
 DEFINES += QT_DEPRECATED_WARNINGS \
             M_PI=3.1415926535
 
@@ -46,6 +48,9 @@ HEADERS += \
 FORMS += \
     QRibbon/qribbon.ui \
     mainwindow.ui
+
+#TRANSLATIONS += Simulator_CN.ts \
+#                Simulator_EN.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

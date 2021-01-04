@@ -9,5 +9,7 @@
         <file>icons/thread_start.png</file>
         <file>icons/view_end.png</file>
         <file>icons/view_start.png</file>
+        <file>Simulator_CN.qm</file>
+        <file>Simulator_EN.qm</file>
     </qresource>
 </RCC>

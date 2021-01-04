@@ -38,7 +38,7 @@ CustomDockWidgetBar QLabel
      <x>0</x>
      <y>0</y>
      <width>1111</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -64,9 +64,16 @@ CustomDockWidgetBar QLabel
     <addaction name="actionPause_Planner"/>
     <addaction name="actionExit_Planner"/>
    </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
+    </property>
+    <addaction name="actionDH_Setting"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_motionPlan"/>
    <addaction name="menu_thread"/>
+   <addaction name="menuSetting"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -160,6 +167,11 @@ CustomDockWidgetBar QLabel
    </property>
    <property name="text">
     <string>Import Model</string>
+   </property>
+  </action>
+  <action name="actionDH_Setting">
+   <property name="text">
+    <string>DH Setting</string>
    </property>
   </action>
  </widget>

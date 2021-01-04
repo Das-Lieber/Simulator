@@ -512,13 +512,15 @@ void MainWindow::on_actionPause_Planner_triggered()
     if(mPlannerThread->isRunning()&&!threadWait)
     {
         threadWait = true;
-        ui->actionPause_Planner->setIcon(QIcon(":/new/img/resources/thread_resume.png"));
+        ui->actionPause_Planner->setIcon(QIcon(":/Simulator/icons/thread_resume.png"));
+        ui->actionPause_Planner->setToolTip(tr("Resume Thread"));
         mPlannerThread->pause();
     }
     else if(mPlannerThread->isRunning()&&threadWait)
     {
         threadWait = false;
-        ui->actionPause_Planner->setIcon(QIcon(":/new/img/resources/thread_pause.png"));
+        ui->actionPause_Planner->setIcon(QIcon(":/Simulator/icons/thread_pause.png"));
+        ui->actionPause_Planner->setToolTip(tr("Pause Thread"));
         mPlannerThread->resume();
     }
 }

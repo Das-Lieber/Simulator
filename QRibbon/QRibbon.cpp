@@ -63,9 +63,9 @@ QRibbon::QRibbon()
 	_styleMenu = new QMenu(this);
 	_styleMenu->setStyleSheet("QMenu::item{ color:black }");
 	auto styleActionGroup = new QActionGroup(_styleMenu);
-	styleActionGroup->addAction(_styleMenu->addAction("蓝色", [&]() {setColor("rgb(43, 87, 154)"); }));
-	styleActionGroup->addAction(_styleMenu->addAction("绿色", [&]() {setColor("rgb(33,115,70)"); }));
-	styleActionGroup->addAction(_styleMenu->addAction("红色", [&]() {setColor("rgb(183, 71, 42)"); }));
+    styleActionGroup->addAction(_styleMenu->addAction(tr("blue"), [&]() {setColor("rgb(43, 87, 154)"); }));
+    styleActionGroup->addAction(_styleMenu->addAction(tr("green"), [&]() {setColor("rgb(33,115,70)"); }));
+    styleActionGroup->addAction(_styleMenu->addAction(tr("red"), [&]() {setColor("rgb(183, 71, 42)"); }));
 	for (auto a : styleActionGroup->actions())
 		a->setCheckable(true);
 	ui->pushButtonStyle->setMenu(_styleMenu);
@@ -165,7 +165,7 @@ void QRibbon::initialize(QMainWindow* window)
 				// 无图标则自动添加默认图标
 				if ( a->icon().isNull() )
 				{
-					static QIcon defaultIcon(":/Resource/icon/unknow.png");
+                    static QIcon defaultIcon(":/QRibbon/icons/unknow.png");
 					a->setIcon(defaultIcon);
 				}
 				btn->setDefaultAction(a);
