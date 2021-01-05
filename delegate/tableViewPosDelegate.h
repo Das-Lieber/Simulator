@@ -5,13 +5,13 @@
 #include <QDoubleSpinBox>
 #include <QModelIndex>
 
-class OperationalDelegate : public QItemDelegate
+class tableViewPosDelegate : public QItemDelegate
 {
 	Q_OBJECT
 	
 public:
-	OperationalDelegate(QObject* parent = nullptr);	
-	virtual ~OperationalDelegate();	
+    tableViewPosDelegate(QObject* parent = nullptr);
+    virtual ~tableViewPosDelegate();
 	
 public slots:
 	void valueChanged(double d);

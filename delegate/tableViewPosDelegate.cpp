@@ -1,15 +1,15 @@
-#include "OperationalDelegate.h"
+#include "tableViewPosDelegate.h"
 
-OperationalDelegate::OperationalDelegate(QObject* parent) :
+tableViewPosDelegate::tableViewPosDelegate(QObject* parent) :
 	QItemDelegate(parent)
 {
 }
 
-OperationalDelegate::~OperationalDelegate()
+tableViewPosDelegate::~tableViewPosDelegate()
 {
 }
 
-QWidget* OperationalDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+QWidget* tableViewPosDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option)
 	QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
@@ -40,13 +40,13 @@ QWidget* OperationalDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 	return editor;
 }
 
-void OperationalDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void tableViewPosDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	QDoubleSpinBox* doubleSpinBox = static_cast<QDoubleSpinBox*>(editor);
 	doubleSpinBox->setValue(index.model()->data(index, Qt::EditRole).toDouble());
 }
 
-void OperationalDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void tableViewPosDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	QDoubleSpinBox* doubleSpinBox = static_cast<QDoubleSpinBox*>(editor);
 	doubleSpinBox->interpretText();
@@ -57,13 +57,13 @@ void OperationalDelegate::setModelData(QWidget* editor, QAbstractItemModel* mode
 	}
 }
 
-void OperationalDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void tableViewPosDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(index)
 	editor->setGeometry(option.rect);
 }
 
-void OperationalDelegate::valueChanged(double d)
+void tableViewPosDelegate::valueChanged(double d)
 {
     Q_UNUSED(d)
 	emit commitData(static_cast<QWidget*>(QObject::sender()));

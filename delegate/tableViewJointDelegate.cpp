@@ -1,15 +1,15 @@
-#include "ConfigurationDelegate.h"
+#include "tableViewJointDelegate.h"
 
-ConfigurationDelegate::ConfigurationDelegate(QObject* parent) :
+tableViewJointDelegate::tableViewJointDelegate(QObject* parent) :
     QItemDelegate(parent)
 {
 }
 
-ConfigurationDelegate::~ConfigurationDelegate()
+tableViewJointDelegate::~tableViewJointDelegate()
 {
 }
 
-QWidget* ConfigurationDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+QWidget* tableViewJointDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option)
 	QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
@@ -34,13 +34,13 @@ QWidget* ConfigurationDelegate::createEditor(QWidget* parent, const QStyleOption
 	return editor;
 }
 
-void ConfigurationDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void tableViewJointDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	QDoubleSpinBox* doubleSpinBox = static_cast<QDoubleSpinBox*>(editor);
 	doubleSpinBox->setValue(index.model()->data(index, Qt::EditRole).toDouble());
 }
 
-void ConfigurationDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void tableViewJointDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	QDoubleSpinBox* doubleSpinBox = static_cast<QDoubleSpinBox*>(editor);
 	doubleSpinBox->interpretText();
@@ -51,13 +51,13 @@ void ConfigurationDelegate::setModelData(QWidget* editor, QAbstractItemModel* mo
 	}
 }
 
-void ConfigurationDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void tableViewJointDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(index)
 	editor->setGeometry(option.rect);
 }
 
-void ConfigurationDelegate::valueChanged(double d)
+void tableViewJointDelegate::valueChanged(double d)
 {
     Q_UNUSED(d)
 	emit commitData(static_cast<QWidget*>(QObject::sender()));

@@ -32,7 +32,7 @@ public:
     void GenerateSceneVrmlFile(const QString &aVrmlFileName, const QString &aSgVrmlFileName);
 
     //! rewrite the scene xml file
-    void GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QString &aMdlFileName);
+    void GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QString &aMdlFileName, const std::size_t Dof);
 };
 
 #endif // RLAPI_WRITER_H

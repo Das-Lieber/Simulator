@@ -11,10 +11,10 @@ QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
     QRibbon/QRibbon.cpp \
-    delegate/ConfigurationDelegate.cpp \
-    delegate/ConfigurationModel.cpp \
-    delegate/OperationalDelegate.cpp \
-    delegate/OperationalModel.cpp \
+    delegate/tableViewJointDelegate.cpp \
+    delegate/tableViewJointModel.cpp \
+    delegate/tableViewPosDelegate.cpp \
+    delegate/tableViewPosModel.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
@@ -29,10 +29,10 @@ SOURCES += \
 
 HEADERS += \
     QRibbon/QRibbon.h \
-    delegate/ConfigurationDelegate.h \
-    delegate/ConfigurationModel.h \
-    delegate/OperationalDelegate.h \
-    delegate/OperationalModel.h \
+    delegate/tableViewJointDelegate.h \
+    delegate/tableViewJointModel.h \
+    delegate/tableViewPosDelegate.h \
+    delegate/tableViewPosModel.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \

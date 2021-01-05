@@ -6,20 +6,20 @@
 
 #include <rl/math/Constants.h>
 
-#include "ConfigurationModel.h"
+#include "tableViewJointModel.h"
 
-class OperationalModel : public QAbstractTableModel
+class tableViewPosModel : public QAbstractTableModel
 {
 	Q_OBJECT
 	
 public:
-	OperationalModel(QObject* parent = nullptr);
-    virtual ~OperationalModel();
+    tableViewPosModel(QObject* parent = nullptr);
+    virtual ~tableViewPosModel();
 
     void initData(QList<double> Pos);
 		
 public slots:
-    void configurationChanged();
+    void updateModel();
 	
 protected:
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -31,6 +31,9 @@ protected:
 	
 private:
     QList<double> OperationPos;
+
+signals:
+    void changePositionAndValue(const int& index,const double& value);
 };
 
 #endif // OPERATIONALMODEL_H

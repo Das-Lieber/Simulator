@@ -54,6 +54,12 @@ public:
     //! in which a,b,c has been changed into "deg" unit
     QList<double> GetOperationalPosition();
 
+    //! get the speed value of each joint
+    QList<double> GetJointVelocity();
+
+    //! get the acceleration value of each joint
+    QList<double> GetJointAcceleration();
+
     //! get the dynamic value, used for motion planning
     rl::mdl::Dynamic *GetMdlDynamic(){
         rl::mdl::Dynamic *aDynamic = dynamic_cast<rl::mdl::Dynamic*>(aReaderAPI->JointModel.get());

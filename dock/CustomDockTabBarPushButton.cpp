@@ -145,13 +145,20 @@ Qt::Orientation CustomDockTabBarPushButton::areaToOrientation(Qt::DockWidgetArea
 
     switch(area)
     {
-        case Qt::LeftDockWidgetArea:
-        case Qt::RightDockWidgetArea:
-            return Qt::Vertical;
-        case Qt::TopDockWidgetArea:
-        case Qt::BottomDockWidgetArea:
-            return Qt::Horizontal;
-        default:
-            return Qt::Orientation(0);
+    case Qt::LeftDockWidgetArea:
+    {
+        m_mirrored = false;
+        return Qt::Vertical;
+    }
+    case Qt::RightDockWidgetArea:
+    {
+        m_mirrored = true;
+        return Qt::Vertical;
+    }
+    case Qt::TopDockWidgetArea:
+    case Qt::BottomDockWidgetArea:
+        return Qt::Horizontal;
+    default:
+        return Qt::Orientation(0);
     }
 }

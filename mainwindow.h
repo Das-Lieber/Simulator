@@ -15,10 +15,10 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <AIS_ListOfInteractive.hxx>
 
-#include "delegate/ConfigurationDelegate.h"
-#include "delegate/ConfigurationModel.h"
-#include "delegate/OperationalDelegate.h"
-#include "delegate/OperationalModel.h"
+#include "delegate/tableViewJointDelegate.h"
+#include "delegate/tableViewJointModel.h"
+#include "delegate/tableViewPosDelegate.h"
+#include "delegate/tableViewPosModel.h"
 
 #include "dock/CustomDockWidget.h"
 #include "dock/CustomDockTabBar.h"
@@ -61,8 +61,8 @@ private:
     RLConvertAPI *aConvertAPI;
     CustomDockWidget *mConfigDock;
     CustomDockWidget *mOperationDock;
-    ConfigurationModel *mConfigModel;
-    OperationalModel *mOperationModel;
+    tableViewJointModel *mConfigModel;
+    tableViewPosModel *mOperationModel;
 
     std::map<Qt::DockWidgetArea, CustomDockTabBar*> mDockWidgetToolBar;
     rl::math::Vector mStartVec;

@@ -1,32 +1,32 @@
-#include "OperationalModel.h"
+#include "tableViewPosModel.h"
 
-OperationalModel::OperationalModel(QObject* parent) :
+tableViewPosModel::tableViewPosModel(QObject* parent) :
     QAbstractTableModel(parent)
 {
 }
 
-OperationalModel::~OperationalModel()
+tableViewPosModel::~tableViewPosModel()
 {
 }
 
-void OperationalModel::initData(QList<double> Pos)
+void tableViewPosModel::initData(QList<double> Pos)
 {
     OperationPos = Pos;
 }
 
-int OperationalModel::columnCount(const QModelIndex& parent) const
+int tableViewPosModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
 	return 6;
 }
 
-void OperationalModel::configurationChanged()
+void tableViewPosModel::updateModel()
 {
 	this->beginResetModel();
 	this->endResetModel();
 }
 
-QVariant OperationalModel::data(const QModelIndex& index, int role) const
+QVariant tableViewPosModel::data(const QModelIndex& index, int role) const
 {	
 	if (!index.isValid())
 	{
@@ -77,7 +77,7 @@ QVariant OperationalModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
-Qt::ItemFlags OperationalModel::flags(const QModelIndex &index) const
+Qt::ItemFlags tableViewPosModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
 	{
@@ -87,29 +87,29 @@ Qt::ItemFlags OperationalModel::flags(const QModelIndex &index) const
 	return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-QVariant OperationalModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant tableViewPosModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (Qt::DisplayRole == role && Qt::Horizontal == orientation)
 	{
 		switch (section)
 		{
 		case 0:
-			return "x";
+            return "X(mm)";
 			break;
 		case 1:
-			return "y";
+            return "Y(mm)";
 			break;
 		case 2:
-			return "z";
+            return "Z(mm)";
 			break;
 		case 3:
-			return "a";
+            return "a(°)";
 			break;
 		case 4:
-			return "b";
+            return "b(°)";
 			break;
 		case 5:
-			return "c";
+            return "c(°)";
 			break;
 		default:
 			break;
@@ -124,18 +124,18 @@ QVariant OperationalModel::headerData(int section, Qt::Orientation orientation, 
 	return QVariant();
 }
 
-int OperationalModel::rowCount(const QModelIndex& parent) const
+int tableViewPosModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
     return 1;
 }
 
-bool OperationalModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool tableViewPosModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {	
 	if (index.isValid() && Qt::EditRole == role)
 	{
         OperationPos.replace(index.column(),value.value<rl::math::Real>());
 	}
-    emit dataChanged(index,index);
+    emit changePositionAndValue(index.column(),value.value<rl::math::Real>());
 	return false;
 }

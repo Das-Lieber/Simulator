@@ -1,26 +1,26 @@
-#include "ConfigurationModel.h"
+#include "tableViewJointModel.h"
 
-ConfigurationModel::ConfigurationModel(QObject* parent) :
+tableViewJointModel::tableViewJointModel(QObject* parent) :
     QAbstractTableModel(parent)
 {
 }
 
-ConfigurationModel::~ConfigurationModel()
+tableViewJointModel::~tableViewJointModel()
 {
 }
 
-void ConfigurationModel::initData(const rl::math::Vector &homePos)
+void tableViewJointModel::initData(const rl::math::Vector &homePos)
 {
     Pos = homePos;
 }
 
-int ConfigurationModel::columnCount(const QModelIndex& parent) const
+int tableViewJointModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
 	return 1;
 }
 
-QVariant ConfigurationModel::data(const QModelIndex& index, int role) const
+QVariant tableViewJointModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
@@ -61,7 +61,7 @@ QVariant ConfigurationModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
+Qt::ItemFlags tableViewJointModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
 	{
@@ -71,7 +71,7 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-QVariant ConfigurationModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant tableViewJointModel::headerData(int section, Qt::Orientation orientation, int role) const
 {	
 	if (Qt::DisplayRole == role && Qt::Vertical == orientation)
 	{
@@ -90,32 +90,32 @@ QVariant ConfigurationModel::headerData(int section, Qt::Orientation orientation
 	return QVariant();
 }
 
-void ConfigurationModel::operationalChanged()
+void tableViewJointModel::updateModel()
 {
 	this->beginResetModel();
 	this->endResetModel();
 }
 
-int ConfigurationModel::rowCount(const QModelIndex& parent) const
+int tableViewJointModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
     return Dofs;
 }
 
-bool ConfigurationModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool tableViewJointModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if (index.isValid() && Qt::EditRole == role)
 	{
         Pos.resize(Dofs);
         if (Types.at(index.row())==RLAPI_JointType::Revolute)
         {
-            Pos(index.row()) = value.value<rl::math::Real>() * rl::math::constants::deg2rad;
+            Pos(index.row()) = value.value<rl::math::Real>() * rl::math::constants::deg2rad;            
         }
         else
         {
-            Pos(index.row()) = value.value<rl::math::Real>();
+            Pos(index.row()) = value.value<rl::math::Real>();            
         }
-        emit dataChanged(index, index);
+        emit changePositionAndValue(index.row(),value.value<rl::math::Real>());//units has been converted in RLConvertAPI,don't need here
     }
 	return false;
 }

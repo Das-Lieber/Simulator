@@ -9,13 +9,13 @@
 
 #include "robotics/RLAPI_Reader.h"
 
-class ConfigurationModel : public QAbstractTableModel
+class tableViewJointModel : public QAbstractTableModel
 {
 	Q_OBJECT
 	
 public:
-	ConfigurationModel(QObject* parent = nullptr);	
-	virtual ~ConfigurationModel();	
+    tableViewJointModel(QObject* parent = nullptr);
+    virtual ~tableViewJointModel();
 	
     void SetMaxValue(const rl::math::Vector &max) {
         Maxs = max;
@@ -32,7 +32,7 @@ public:
     void initData(const rl::math::Vector &homePos);
 
 public slots:
-    void operationalChanged();
+    void updateModel();
 	
 protected:
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -48,6 +48,9 @@ private:
     QList<RLAPI_JointType> Types;
     std::size_t Dofs;
     rl::math::Vector Pos;
+
+signals:
+    void changePositionAndValue(const int& index,const double& value);
 
 };
 

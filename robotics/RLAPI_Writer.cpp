@@ -1,4 +1,5 @@
 ﻿#include "RLAPI_Writer.h"
+#include <QDebug>
 
 //=======================================================================
 //function : RLAPI_Writer
@@ -167,55 +168,59 @@ void RLAPI_Writer::WriteMeshToVrml(const Poly_Triangulation &aMesh, const QStrin
 //=======================================================================
 void RLAPI_Writer::GenerateSceneVrmlFile(const QString &aVrmlFileName, const QString &aSgVrmlFileName)
 {
-    QFile sceneVRML(aSgVrmlFileName);
+    QFile aFile(aSgVrmlFileName);
     QFileInfo aInfo(aVrmlFileName);
 
-    QString vrmlContent = QString("#VRML V2.0 utf8\n"
-                                  "Transform {\n"
-                                  "   children [\n"
-                                  "     DEF GP Transform {\n"
-                                  "         children [\n"
-                                  "             Inline {\n"
-                                  "                 url \"GP8/%1\" \n"
-                                  "             }\n"
-                                  "          ]\n"
-                                  "      }\n"
-                                  "      DEF DMISModel Inline {\n"
-                                  "          url \"models/%2\" \n"
-                                  "      }\n"
-                                  "   ]\n"
-                                  "}").arg("GP8.wrl").arg(aInfo.fileName());
-    sceneVRML.open(QIODevice::WriteOnly);
-    sceneVRML.write(vrmlContent.toLocal8Bit());
-    sceneVRML.close();
+    aFile.open(QIODevice::ReadOnly);
+    QTextStream aStream(&aFile);
+    QString vrmlContent;
+    while(!aStream.atEnd())
+    {
+        QString aLine = aStream.readLine();
+
+        //replace the model name to the aVrmlFileName
+        if(aLine.contains("url")&&aLine.contains("models"))
+        {
+            aLine = QString("          url \"models/%1\" \n").arg(aInfo.fileName());
+            vrmlContent.append(aLine);
+        }
+        else
+        {
+            vrmlContent.append(aLine+"\n");
+            continue;
+        }
+    }
+    aFile.close();
+    aFile.open(QIODevice::WriteOnly);
+    aFile.write(vrmlContent.toLocal8Bit());
+    aFile.close();
 }
 
 //=======================================================================
 //function : GenerateSceneXMLFile
 //purpose  : *
 //=======================================================================
-void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QString &aMdlFileName)
+void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QString &aMdlFileName, const std::size_t Dof)
 {
     QFileInfo aInfo(aSgVrmlFileName);
     QString xmlContent = QString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                                      "<rlsg xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"rlsg.xsd\">\n"
                                      "    <scene href=\"%1\">\n"
-                                     "        <model name=\"GP\">\n"
-                                     "            <body name=\"link0\"/>\n"
-                                     "            <body name=\"link1\"/>\n"
-                                     "            <body name=\"link2\"/>\n"
-                                     "            <body name=\"link3\"/>\n"
-                                     "            <body name=\"link4\"/>\n"
-                                     "            <body name=\"link5\"/>\n"
-                                     "            <body name=\"link6\"/>\n"
-                                     "            <body name=\"link7\"/>\n"
-                                     "            <body name=\"link8\"/>\n"
-                                     "        </model>\n"
-                                     "        <model name=\"DMISModel\">\n"
-                                     "            <body name=\"\"/>\n"
-                                     "        </model>\n"
-                                     "    </scene>\n"
-                                     "</rlsg>\n").arg(aInfo.fileName());
+                                     "        <model name=\"Robot\">\n").arg(aInfo.fileName());
+
+    for(std::size_t i=0;i<Dof+1;++i)
+    {
+        QString tmp = QString("            <body name=\"link%1\"/>\n").arg(i);
+        xmlContent.append(tmp);
+    }
+
+    xmlContent.append(QString("        </model>\n"
+                              "        <model name=\"DMISModel\">\n"
+                              "            <body name=\"\"/>\n"
+                              "        </model>\n"
+                              "    </scene>\n"
+                              "</rlsg>\n"));
+
     QFile out(aMdlFileName);
     out.open(QIODevice::WriteOnly);
     out.write(xmlContent.toLocal8Bit());

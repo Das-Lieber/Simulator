@@ -9,13 +9,13 @@
 
 #include "robotics/RLAPI_Reader.h"
 
-class ConfigurationDelegate : public QItemDelegate
+class tableViewJointDelegate : public QItemDelegate
 {
 	Q_OBJECT
 	
 public:
-	ConfigurationDelegate(QObject* parent = nullptr);	
-	virtual ~ConfigurationDelegate();
+    tableViewJointDelegate(QObject* parent = nullptr);
+    virtual ~tableViewJointDelegate();
 
     void setMaxValue(const rl::math::Vector &max) {
         Maxs = max;

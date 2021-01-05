@@ -105,12 +105,12 @@ void MainWindow::creatConfigDock()
     configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     configTable->horizontalHeader()->hide();
 
-    ConfigurationDelegate *configDelegate = new ConfigurationDelegate;
+    tableViewJointDelegate *configDelegate = new tableViewJointDelegate;
     configDelegate->setMaxValue(aConvertAPI->MotionMaxValues);
     configDelegate->setMinValue(aConvertAPI->MotionMinValues);
     configDelegate->setJointType(aConvertAPI->GetJointType());
 
-    mConfigModel = new ConfigurationModel;
+    mConfigModel = new tableViewJointModel;
     mConfigModel->SetMaxValue(aConvertAPI->MotionMaxValues);
     mConfigModel->SetMinValue(aConvertAPI->MotionMinValues);
     mConfigModel->SetJointType(aConvertAPI->GetJointType());
@@ -120,10 +120,8 @@ void MainWindow::creatConfigDock()
     configTable->setItemDelegate(configDelegate);
     configTable->setModel(mConfigModel);
 
-    connect(mConfigModel,&ConfigurationModel::dataChanged,this,[=](const QModelIndex& topLeft, const QModelIndex& bottomRight){
-        Q_UNUSED(bottomRight)
-        aConvertAPI->SetIndexedJointValue(topLeft.row(),
-                                          topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
+    connect(mConfigModel,&tableViewJointModel::changePositionAndValue,this,[=](const int& index,const double& value){
+        aConvertAPI->SetIndexedJointValue(index,value);
         displayOperationalPosition();
     });
 
@@ -143,18 +141,16 @@ void MainWindow::creatOperationDock()
     operationTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     operationTable->verticalHeader()->hide();    
 
-    OperationalDelegate *operationDelegate = new OperationalDelegate;
+    tableViewPosDelegate *operationDelegate = new tableViewPosDelegate;
 
-    mOperationModel = new OperationalModel;
+    mOperationModel = new tableViewPosModel;
     mOperationModel->initData(aConvertAPI->GetOperationalPosition());
 
     operationTable->setItemDelegate(operationDelegate);
     operationTable->setModel(mOperationModel);
 
-    connect(mOperationModel,&OperationalModel::dataChanged,this,[=](const QModelIndex& topLeft, const QModelIndex& bottomRight){
-        Q_UNUSED(bottomRight)
-        bool solve = aConvertAPI->SetIndexedInverseValue(topLeft.column(),
-                                                         topLeft.model()->data(topLeft, Qt::EditRole).toDouble());
+    connect(mOperationModel,&tableViewPosModel::changePositionAndValue,this,[=](const int& index,const double& value){
+        bool solve = aConvertAPI->SetIndexedInverseValue(index,value);
         if(!solve)
             mOperationModel->initData(aConvertAPI->GetOperationalPosition());
         displayJointPosition();
@@ -173,13 +169,13 @@ void MainWindow::creatOperationDock()
 void MainWindow::displayJointPosition()
 {
     mConfigModel->initData(aConvertAPI->GetJointPosition());
-    mConfigModel->operationalChanged();
+    mConfigModel->updateModel();
 }
 
 void MainWindow::displayOperationalPosition()
 {
     mOperationModel->initData(aConvertAPI->GetOperationalPosition());
-    mOperationModel->configurationChanged();
+    mOperationModel->updateModel();
 }
 
 void MainWindow::drawPathLine()

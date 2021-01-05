@@ -74,7 +74,7 @@ void RLConvertAPI::ImportSceneModel(const QString &theName)
     aWriterAPI->GenerateSceneVrmlFile(theVrmlFile ,aReaderAPI->SceneVrmlFileName);
 
     //4、creat the scene xml file
-    aWriterAPI->GenerateSceneXMLFile(aReaderAPI->SceneVrmlFileName,mJointSgFileName);
+    aWriterAPI->GenerateSceneXMLFile(aReaderAPI->SceneVrmlFileName,mJointSgFileName,aReaderAPI->JointModel->getDof());
 }
 
 //=======================================================================
@@ -280,4 +280,34 @@ QList<double> RLConvertAPI::GetOperationalPosition()
     pos.append(OR(2)* rl::math::constants::rad2deg);
 
     return pos;
+}
+
+//=======================================================================
+//function : GetJointVelocity
+//purpose  : *
+//=======================================================================
+QList<double> RLConvertAPI::GetJointVelocity()
+{
+    QList<double> speed;
+    rl::math::Vector s = aReaderAPI->JointModel->getVelocity();
+    for (int i=0;i<s.size();++i)
+    {
+        speed.append(s[i]);
+    }
+    return speed;
+}
+
+//=======================================================================
+//function : GetJointAcceleration
+//purpose  : *
+//=======================================================================
+QList<double> RLConvertAPI::GetJointAcceleration()
+{
+    QList<double> Acceleration;
+    rl::math::Vector a = aReaderAPI->JointModel->getAcceleration();
+    for (int i=0;i<a.size();++i)
+    {
+        Acceleration.append(a[i]);
+    }
+    return Acceleration;
 }
