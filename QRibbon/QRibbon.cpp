@@ -148,10 +148,10 @@ void QRibbon::initialize(QMainWindow* window)
 				btn->setStatusTip(a->text());
 
 				a->setToolTip(a->text());
-				a->setStatusTip(a->text());
+                a->setStatusTip(a->text());
 
 				btn->setIconSize(QSize(32, 32));
-				btn->setAutoRaise(true);
+                btn->setAutoRaise(true);
 
 				if (a->menu())
 				{

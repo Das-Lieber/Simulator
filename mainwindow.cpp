@@ -21,12 +21,14 @@ MainWindow::MainWindow(QWidget *parent)
     QGridLayout *centerLayOut = new QGridLayout;
     centerLayOut->addWidget(aMdlWidget);
     ui->centralwidget->setLayout(centerLayOut);
+    statusLabel = new QLabel(this);
+    statusLabel->setMinimumWidth(200);
+    ui->statusbar->addPermanentWidget(statusLabel);
 
-    creatDockWidgetToolBar();
+    creatDockWidgetToolBar(); 
 
-    initRL();
-    creatConfigDock();
-    creatOperationDock();
+    QRibbon::install(this);
+    ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
 
     //    mStartVec.resize(5);
     //    mStartVec(0) = 4;
@@ -49,13 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
     //    defaultEndPos1(3) = 0*rl::math::constants::deg2rad;
     //    defaultEndPos1(4) = 70*rl::math::constants::deg2rad;
     //    mEndList.push_back(defaultEndPos1);
-
-    mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
-    qRegisterMetaType<rl::math::Vector>("rl::math::Vector");
-    qRegisterMetaType<ComputeError>("ComputeError");
-    connectThread();
-
-    QRibbon::install(this);
 }
 
 MainWindow::~MainWindow()
@@ -81,21 +76,33 @@ void MainWindow::initRL()
         }
     });
     connect(aConvertAPI,&RLConvertAPI::JointCollision,this,[=](int index){
-        ui->statusbar->showMessage(tr("Joint %1 COLLISION!!!").arg(index));
+        statusLabel->setText(tr("Joint %1 COLLISION!!!").arg(index));
         aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_RED4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
     });
     connect(aConvertAPI,&RLConvertAPI::NoCollision,this,[=](){
-        ui->statusbar->showMessage(tr("NOT COLLISION"));
+        statusLabel->setText(tr("NOT COLLISION"));
         aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_BLUE4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
     });
 
     for (int i=0;i<aConvertAPI->GetJointModelShapes().size();++i)
     {
-        aMdlWidget->getContext()->Display(aConvertAPI->GetJointModelShapes().at(i),Standard_False);
+        Handle(AIS_Shape) aShape = aConvertAPI->GetJointModelShapes().at(i);
+        aMdlWidget->getContext()->Display(aShape,Standard_False);
+        aMdlWidget->getContext()->Deactivate(aShape);
     }
 
     aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
+
+    creatConfigDock();
+    creatOperationDock();
+
+    mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
+    qRegisterMetaType<rl::math::Vector>("rl::math::Vector");
+    qRegisterMetaType<ComputeError>("ComputeError");
+    connectThread();
+
+    ui->statusbar->showMessage(tr("Init Success!"));
 }
 
 void MainWindow::creatConfigDock()
@@ -161,7 +168,7 @@ void MainWindow::creatOperationDock()
     connect(mOperationDock, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
     connect(mOperationDock, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
     connect(mOperationDock, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
-    mOperationDock->setWidget(operationTable);    
+    mOperationDock->setWidget(operationTable);
     addDockWidget(Qt::BottomDockWidgetArea,mOperationDock);
     this->resizeDocks({mOperationDock},{100},Qt::Vertical);
 }
@@ -202,7 +209,7 @@ void MainWindow::drawPathLine()
 void MainWindow::connectThread()
 {
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeSuccess,this,[=](int time){
-        ui->statusbar->showMessage(tr("Solved %1ms,Optimizing...").arg(time));
+        statusLabel->setText(tr("Solved %1ms,Optimizing...").arg(time));
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ReadyToSetJointValue,this,[=](const rl::math::Vector &thePos){
         aConvertAPI->SetJointValue(thePos);
@@ -210,7 +217,7 @@ void MainWindow::connectThread()
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeOver,this,[=](double pathLength){
         totalPathLen += pathLength;
-        ui->statusbar->showMessage(tr("Solved, Value %1").arg(totalPathLen));
+        statusLabel->setText(tr("Solved, Value %1").arg(totalPathLen));
         if(endsIterator!=optimizedEndList.end())
         {
             mPlannerThread->GetComputeArguments(lastEndVect,*endsIterator);
@@ -227,7 +234,7 @@ void MainWindow::connectThread()
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeTimeOut,this,[=](){
         mPlannerThread->terminate();//joints in mess ,need to init position after!!!
         aConvertAPI->SetJointValue(mStartVec);
-        ui->statusbar->showMessage(tr("Compute Time Out!"));
+        statusLabel->setText(tr("Compute Time Out!"));
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeFailed,this,[=](const ComputeError &errorCode){
         if(errorCode==ComputeError::InvalidConfig)
@@ -236,7 +243,7 @@ void MainWindow::connectThread()
             QMessageBox::critical(this,tr("error"),tr("Unsuitable planner arguments"));
 
         mPlannerThread->quit();
-        ui->statusbar->showMessage(tr("Compute Failed!"));
+        statusLabel->setText(tr("Compute Failed!"));
     });
 }
 
@@ -447,7 +454,7 @@ void MainWindow::on_actionView_End_Position_triggered()
 void MainWindow::on_actionSet_Start_Position_triggered()
 {
     mStartVec = aConvertAPI->GetJointPosition();
-    ui->statusbar->showMessage(tr("start position set"));
+    statusLabel->setText(tr("start position set"));
 
     QList<double> currentPos = aConvertAPI->GetOperationalPosition();
     currentPahtPnt = gp_Pnt(currentPos.value(0),
@@ -459,12 +466,12 @@ void MainWindow::on_actionSet_End_Position_triggered()
 {
     rl::math::Vector EndPos = aConvertAPI->GetJointPosition();
     mEndList.push_back(EndPos);
-    ui->statusbar->showMessage(tr("end position set"));
+    statusLabel->setText(tr("end position set"));
 }
 
 void MainWindow::on_actionStart_Planner_triggered()
 {
-    ui->statusbar->showMessage(tr("Solving......"));
+    statusLabel->setText(tr("Solving......"));
 
     AIS_ListOfInteractive aList;
     aMdlWidget->getContext()->DisplayedObjects(aList);
@@ -522,7 +529,16 @@ void MainWindow::on_actionPause_Planner_triggered()
 }
 
 void MainWindow::on_actionExit_Planner_triggered()
-{  
+{
+    if(!mPlannerThread->isRunning())
+        return;
+
+    int result = QMessageBox::warning(this,tr("warning"),tr("Sure to exit the plan thread?\n"
+                                               "This may cause uncertain consequences."),QMessageBox::Yes,QMessageBox::No);
+    if(result==QMessageBox::Yes)
+        mPlannerThread->terminate();
+    else
+        return;
 }
 
 void MainWindow::on_actionImport_Model_triggered()
@@ -547,4 +563,75 @@ void MainWindow::on_actionImport_Model_triggered()
 
     aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionOperate_Model_triggered()
+{
+    if(!aMdlWidget->getManipulator()->IsAttached())
+        aMdlWidget->getManipulator()->Attach(aConvertAPI->GetJointModelShapes().at(0));    
+    else
+        aMdlWidget->getManipulator()->Detach();
+
+    aMdlWidget->getView()->Update();
+}
+
+void MainWindow::on_actionSave_As_Picture_triggered()
+{
+    QString picName = QFileDialog::getSaveFileName(this,tr("save file"),"","*.bmp *.png *.jpg");
+    if(picName.isEmpty())
+        return;
+
+    Image_PixMap map;
+    aMdlWidget->getView()->ToPixMap(map,aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
+    QImage image = QImage(map.Data(),aMdlWidget->width(),aMdlWidget->height(),QImage::Format_RGBA8888);
+    image = image.mirrored(false, true);//need to mirror
+    image.save(picName);
+}
+
+void MainWindow::on_actionView_Back_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Ypos);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Top_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Zpos);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Front_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Yneg);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Bottom_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Zneg);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Left_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Xneg);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Right_triggered()
+{
+    aMdlWidget->getView()->SetProj(V3d_Xpos);
+    aMdlWidget->getView()->FitAll();
+}
+
+void MainWindow::on_actionView_Shade_triggered()
+{
+    aMdlWidget->getContext()->SetDisplayMode(AIS_Shaded,Standard_True);
+    ui->menuDisplay_Model->setIcon(QIcon(":/Simulator/icons/view_shade.png"));
+}
+
+void MainWindow::on_actionView_Wire_triggered()
+{
+    aMdlWidget->getContext()->SetDisplayMode(AIS_WireFrame,Standard_True);
+    ui->menuDisplay_Model->setIcon(QIcon(":/Simulator/icons/view_wire.png"));
 }

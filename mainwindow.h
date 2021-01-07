@@ -43,18 +43,41 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void initRL();
+
 private slots:
+    //motion planning
     void on_actionView_Start_Position_triggered();
     void on_actionView_End_Position_triggered();
     void on_actionSet_Start_Position_triggered();
     void on_actionSet_End_Position_triggered();
+
+    //thread
     void on_actionStart_Planner_triggered();
     void on_actionPause_Planner_triggered();
     void on_actionExit_Planner_triggered();
+
+    //file
     void on_actionImport_Model_triggered();
+
+    //setting
+    void on_actionOperate_Model_triggered();
+
+    //view
+    void on_actionSave_As_Picture_triggered();
+    void on_actionView_Back_triggered();
+    void on_actionView_Top_triggered();
+    void on_actionView_Front_triggered();
+    void on_actionView_Bottom_triggered();
+    void on_actionView_Left_triggered();
+    void on_actionView_Right_triggered();
+    void on_actionView_Shade_triggered();
+    void on_actionView_Wire_triggered();
 
 private:
     Ui::MainWindow *ui;
+    QLabel *statusLabel;
+
     CustomDockWidget *mDockWidget;//point to the active dock widget in current window
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;
@@ -78,7 +101,6 @@ private:
     QList<Handle(AIS_Shape)> pathLines;
 
     //init the robot and dock model
-    void initRL();
     void creatConfigDock();
     void creatOperationDock();
 

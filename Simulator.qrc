@@ -11,5 +11,15 @@
         <file>icons/view_start.png</file>
         <file>Simulator_CN.qm</file>
         <file>Simulator_EN.qm</file>
+        <file>icons/operate_model.png</file>
+        <file>icons/save_as_picture.png</file>
+        <file>icons/view_shade.png</file>
+        <file>icons/view_wire.png</file>
+        <file>icons/view-back.png</file>
+        <file>icons/view-bottom.png</file>
+        <file>icons/view-front.png</file>
+        <file>icons/view-left.png</file>
+        <file>icons/view-right.png</file>
+        <file>icons/view-top.png</file>
     </qresource>
 </RCC>

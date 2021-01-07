@@ -7,11 +7,12 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QTranslator aTranslator;
-    aTranslator.load(":/Simulator/Simulator_CN.qm");
-    a.installTranslator(&aTranslator);
+//    QTranslator aTranslator;
+//    aTranslator.load(":/Simulator/Simulator_CN.qm");
+//    a.installTranslator(&aTranslator);
 
-    MainWindow w;
-    w.show();
+    MainWindow window;
+    window.show();
+    QTimer::singleShot(10,&window, &MainWindow::initRL);//show first, then load the data
     return a.exec();
 }

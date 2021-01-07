@@ -46,6 +46,17 @@ OCCWidget::OCCWidget(QWidget *parent) :QWidget(parent)
     m_context->HighlightStyle()->SetTransparency(0.2f);
 
     m_context->MainSelector()->SetPickClosest(Standard_False);
+
+    m_rubberBand = new QRubberBand(QRubberBand::Rectangle,this);
+    m_rubberBand->setStyle(QStyleFactory::create("windows"));
+
+    m_manipulator = new AIS_Manipulator();
+    m_manipulator->SetPart (0, AIS_MM_Scaling, Standard_True);
+    m_manipulator->SetPart (1, AIS_MM_Rotation, Standard_True);
+    m_manipulator->SetPart (2, AIS_MM_Translation, Standard_True);
+    m_manipulator->EnableMode (AIS_MM_Translation);
+    m_manipulator->EnableMode (AIS_MM_Rotation);
+    m_manipulator->EnableMode (AIS_MM_Scaling);
 }
 
 void OCCWidget::paintEvent(QPaintEvent *)
@@ -69,8 +80,13 @@ void OCCWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button()==Qt::LeftButton)
     {
-//        m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);
+        m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);
         startPnt = event->pos();
+
+        if(!m_manipulator->IsAttached())
+            m_rubberBand->setGeometry(QRect(startPnt,QSize(1,1)));
+        else
+            m_manipulator->StartTransform(event->pos().x(),event->pos().y(),m_view);
     }
     else if(event->button() == Qt::MidButton)
     {
@@ -81,9 +97,17 @@ void OCCWidget::mousePressEvent(QMouseEvent *event)
 
 void OCCWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-//    m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);
+    unsetCursor();
+    m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);    
+
     if(event->button()==Qt::LeftButton)
     {
+        if(!m_rubberBand->isHidden()&&!m_manipulator->IsAttached())
+            m_rubberBand->hide();
+
+        if(m_manipulator->IsAttached())
+            m_manipulator->StopTransform();
+
         if(event->pos()==startPnt)
         {
             AIS_StatusOfPick t_pick_status = AIS_SOP_NothingSelected;
@@ -111,17 +135,29 @@ void OCCWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(event->buttons()&Qt::RightButton)
     {
+        setCursor(Qt::ClosedHandCursor);
         m_view->Rotation(event->x(),event->y());
     }
     else if(event->buttons()&Qt::MidButton)
     {
+        setCursor(Qt::SizeAllCursor);
         m_view->Pan(event->pos().x()-midBtn_x,midBtn_y-event->pos().y());
         midBtn_x=event->x();
         midBtn_y=event->y();
     }
+    else if(event->buttons()&Qt::LeftButton)
+    {
+        if(!m_manipulator->IsAttached())
+        {
+            m_rubberBand->show();
+            m_rubberBand->setGeometry(QRect(startPnt,event->pos()).normalized());
+        }
+        else
+            m_manipulator->Transform(event->pos().x(),event->pos().y(),m_view);
+    }
     else
     {
-//        m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);
+        m_context->MoveTo(event->pos().x(),event->pos().y(),m_view,Standard_True);
     }
 }
 

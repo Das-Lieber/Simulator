@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QStyleFactory>
+#include <QRubberBand>
 
 #include <AIS_Shape.hxx>
 #include <AIS_InteractiveContext.hxx>
@@ -15,6 +16,7 @@
 #include <OpenGl_GraphicDriver.hxx>
 #include <V3d_View.hxx>
 #include <WNT_Window.hxx>
+#include <AIS_Manipulator.hxx>
 
 class OCCWidget:public QWidget
 {
@@ -33,6 +35,11 @@ public:
         return m_context;
     }
 
+    Handle(AIS_Manipulator) getManipulator()
+    {
+        return m_manipulator;
+    }
+
 protected:
     void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
@@ -48,11 +55,13 @@ private:
     Handle(V3d_Viewer) m_viewer;
     Handle(V3d_View) m_view;
     Handle(Graphic3d_GraphicDriver) m_graphicDriver;
+    Handle(AIS_Manipulator) m_manipulator;
     Standard_Integer midBtn_x;
     Standard_Integer midBtn_y;
 
     QPoint startPnt;
     QPoint endPnt;
+    QRubberBand *m_rubberBand;
 
 signals:
     void pickPixel(int x ,int y);
