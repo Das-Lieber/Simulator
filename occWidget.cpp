@@ -153,7 +153,10 @@ void OCCWidget::mouseMoveEvent(QMouseEvent *event)
             m_rubberBand->setGeometry(QRect(startPnt,event->pos()).normalized());
         }
         else
+        {
             m_manipulator->Transform(event->pos().x(),event->pos().y(),m_view);
+            m_view->Redraw();
+        }
     }
     else
     {
