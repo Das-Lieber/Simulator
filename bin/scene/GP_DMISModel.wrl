@@ -9,7 +9,7 @@ Transform {
 			]
 		}
 		DEF DMISModel Inline {
-          url "models/TesaDemo3D.wrl" 
+          url "models/init.wrl" 
 		}
 	]
 }
