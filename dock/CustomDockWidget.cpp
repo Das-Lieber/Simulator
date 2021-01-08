@@ -3,7 +3,8 @@
 CustomDockWidget::CustomDockWidget(QWidget *parent):
     QDockWidget(parent),
     dockWidgetState(DockWidgetState::Unknown),
-    m_area(Qt::NoDockWidgetArea)
+    m_area(Qt::NoDockWidgetArea),
+    contents(nullptr)
 {
     titleWidget = new CustomDockWidgetBar;
     this->setTitleBarWidget(titleWidget);
@@ -40,6 +41,9 @@ CustomDockWidget::CustomDockWidget(QWidget *parent):
     });
 
     connect(titleWidget, &CustomDockWidgetBar::closeButton_pressed, this, [=](){
+        if(contents!=nullptr)
+            contents->deleteLater();
+
         if(isMinimized()) {
             emit signal_pinned(this);
         }
@@ -57,6 +61,7 @@ void CustomDockWidget::setWidget(QWidget *widget)
 {
     globalLayout->addWidget(widget);
     setWindowTitle(widget->windowTitle());
+    contents = widget;
 }
 
 void CustomDockWidget::setDockWidgetState(DockWidgetState state)

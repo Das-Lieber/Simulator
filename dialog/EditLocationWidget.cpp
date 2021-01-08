@@ -1,11 +1,16 @@
 #include "EditLocationWidget.h"
 #include "ui_EditLocationWidget.h"
 
+bool EditLocationWidget::existOne = false;
+
 EditLocationWidget::EditLocationWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::EditLocationWidget)
 {
     ui->setupUi(this);
+
+    existOne = true;
+
     QDoubleValidator *aValidator = new QDoubleValidator(-1000,1000,4,this);
     ui->lineEdit_rotationVecX->setValidator(aValidator);
     ui->lineEdit_rotationVecY->setValidator(aValidator);
@@ -19,6 +24,7 @@ EditLocationWidget::EditLocationWidget(QWidget *parent) :
 
 EditLocationWidget::~EditLocationWidget()
 {
+    existOne = false;
     delete ui;
 }
 
