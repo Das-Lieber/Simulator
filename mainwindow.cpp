@@ -91,7 +91,6 @@ void MainWindow::initRL()
         aMdlWidget->getContext()->Deactivate(aShape);
     }
 
-    aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
 
     creatConfigDock();
@@ -568,7 +567,7 @@ void MainWindow::on_actionImport_Model_triggered()
 void MainWindow::on_actionOperate_Model_triggered()
 {
     if(!aMdlWidget->getManipulator()->IsAttached())
-        aMdlWidget->getManipulator()->Attach(aConvertAPI->GetJointModelShapes().at(0));    
+        aMdlWidget->getManipulator()->Attach(aConvertAPI->GetJointModelShapes().at(5));
     else
         aMdlWidget->getManipulator()->Detach();
 
@@ -634,4 +633,18 @@ void MainWindow::on_actionView_Wire_triggered()
 {
     aMdlWidget->getContext()->SetDisplayMode(AIS_WireFrame,Standard_True);
     ui->menuDisplay_Model->setIcon(QIcon(":/Simulator/icons/view_wire.png"));
+}
+
+void MainWindow::on_actionEdit_Location_triggered()
+{
+    EditLocationWidget *aWidget = new EditLocationWidget;
+    QStringList aList;
+    for(std::size_t i=0;i<aConvertAPI->GetJointModelDof()+1;++i)
+        aList<<QString("Link%1").arg(i);
+    aWidget->setEditJointNameList(aList);
+    aWidget->show();
+    connect(aWidget,&EditLocationWidget::applyTrsf,this,[=](const int &index, const gp_Trsf &aTrsf){
+        aConvertAPI->GetJointModelShapes().at(index)->SetLocalTransformation(aTrsf);
+        aMdlWidget->getView()->Update();
+    });
 }

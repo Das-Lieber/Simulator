@@ -21,5 +21,6 @@
         <file>icons/view-left.png</file>
         <file>icons/view-right.png</file>
         <file>icons/view-top.png</file>
+        <file>icons/edit_location.png</file>
     </qresource>
 </RCC>

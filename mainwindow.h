@@ -20,6 +20,8 @@
 #include "delegate/tableViewPosDelegate.h"
 #include "delegate/tableViewPosModel.h"
 
+#include "dialog/EditLocationWidget.h"
+
 #include "dock/CustomDockWidget.h"
 #include "dock/CustomDockTabBar.h"
 
@@ -73,6 +75,7 @@ private slots:
     void on_actionView_Right_triggered();
     void on_actionView_Shade_triggered();
     void on_actionView_Wire_triggered();
+    void on_actionEdit_Location_triggered();
 
 private:
     Ui::MainWindow *ui;

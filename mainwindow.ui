@@ -70,6 +70,7 @@ CustomDockWidgetBar QLabel
     </property>
     <addaction name="actionDH_Setting"/>
     <addaction name="actionOperate_Model"/>
+    <addaction name="actionEdit_Location"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -313,6 +314,15 @@ CustomDockWidgetBar QLabel
    </property>
    <property name="toolTip">
     <string>View Wire</string>
+   </property>
+  </action>
+  <action name="actionEdit_Location">
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/edit_location.png</normaloff>:/Simulator/icons/edit_location.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit_Location</string>
    </property>
   </action>
  </widget>
