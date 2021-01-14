@@ -22,5 +22,6 @@
         <file>icons/view-right.png</file>
         <file>icons/view-top.png</file>
         <file>icons/edit_location.png</file>
+        <file>icons/DH_setting.png</file>
     </qresource>
 </RCC>

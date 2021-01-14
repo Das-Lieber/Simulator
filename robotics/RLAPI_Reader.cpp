@@ -65,7 +65,7 @@ void RLAPI_Reader::ReadJointModels(const QString &aFilePath)
     {
         QString aFileName = jointFileDir.absolutePath()+"/"+aInfoList.at(i).fileName();
         Handle(AIS_Shape) anAIS = ReadAModelFile(aFileName);
-        anAIS->SetColor(Quantity_Color(0.4, 0.4, 0.4,Quantity_TOC_RGB));
+        anAIS->SetColor(Quantity_Color(0, 0.4, 0.4,Quantity_TOC_RGB));
         JointAISShapes.append(anAIS);
     }
 }

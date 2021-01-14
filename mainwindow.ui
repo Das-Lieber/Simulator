@@ -198,6 +198,10 @@ CustomDockWidgetBar QLabel
    </property>
   </action>
   <action name="actionDH_Setting">
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/DH_setting.png</normaloff>:/Simulator/icons/DH_setting.png</iconset>
+   </property>
    <property name="text">
     <string>DH Setting</string>
    </property>

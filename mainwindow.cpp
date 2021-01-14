@@ -87,6 +87,8 @@ void MainWindow::initRL()
     for (int i=0;i<aConvertAPI->GetJointModelShapes().size();++i)
     {
         Handle(AIS_Shape) aShape = aConvertAPI->GetJointModelShapes().at(i);
+        if(i==0||i==1)
+            aShape->SetColor(Quantity_Color(0.4,0.4,0.4,Quantity_TOC_RGB));
         aMdlWidget->getContext()->Display(aShape,Standard_False);
         aMdlWidget->getContext()->Deactivate(aShape);
     }
