@@ -56,6 +56,7 @@ private:
     DockWidgetState dockWidgetState;
     std::vector<CustomDockWidget*> m_tabifieds;
     Qt::DockWidgetArea m_area;
+    QWidget *contents;
 
     void updateDockLocation(Qt::DockWidgetArea area);
     void updateTopLevelState(bool topLevel);

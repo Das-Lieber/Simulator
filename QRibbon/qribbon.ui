@@ -181,14 +181,14 @@ QScrollBar::handle:horizontal:hover {
 QScrollBar::sub-line:horizontal {
   width: 15px;
   background: transparent;
-  image: url(:/White/arrowLeft);
+  image: url(:/QRibbon/icons/arrowLeft);
   subcontrol-position: left;
 }
 
 QScrollBar::add-line:horizontal {
   width: 15px;
   background: transparent;
-  image: url(:/White/arrowRight);
+  image: url(:/QRibbon/icons/arrowRight);
   subcontrol-position: right;
 }
 
@@ -228,14 +228,14 @@ QScrollBar::handle:vertical:hover {
 QScrollBar::sub-line:vertical {
   height: 15px;
   background: transparent;
-  image: url(:/White/topArrow);
+  image: url(:/QRibbon/icons/topArrow);
   subcontrol-position: top;
 }
 
 QScrollBar::add-line:vertical {
   height: 15px;
   background: transparent;
-  image: url(:/White/bottomArrow);
+  image: url(:/QRibbon/icons/bottomArrow);
   subcontrol-position: bottom;
 }
 
@@ -290,7 +290,7 @@ QComboBox::drop-down:hover {
 QComboBox::down-arrow {
   width: 10px;
   height: 10px;
-  image: url(:/White/arrowBottom);
+  image: url(:/QRibbon/icons/arrowBottom);
 }
 
 QComboBox::down-arrow:on {
@@ -330,14 +330,14 @@ QProgressBar {
   text-align: center;
   color: white;
   background-color: transparent;
-  background-image: url(&quot;:/White/progressBar&quot;);
+  background-image: url(&quot;:/QRibbon/icons/progressBar&quot;);
   background-repeat: repeat-x;
 }
 
 QProgressBar::chunk {
   border: none;
   background-color: transparent;
-  background-image: url(&quot;:/White/progressBarChunk&quot;);
+  background-image: url(&quot;:/QRibbon/icons/progressBarChunk&quot;);
   background-repeat: repeat-x;
 }
 
@@ -368,21 +368,21 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:unchecked {
-  image: url(:/White/checkBox);
+  image: url(:/QRibbon/icons/checkBox);
 }
 
 QCheckBox::indicator:unchecked:hover {
-  image: url(:/White/checkBox);
+  image: url(:/QRibbon/icons/checkBox);
 }
 /*QCheckBox::indicator:unchecked:pressed {
         image: url(:/White/checkBoxPressed);
 }*/
 QCheckBox::indicator:checked {
-  image: url(:/White/checkBoxChecked);
+  image: url(:/QRibbon/icons/checkBoxChecked);
 }
 
 QCheckBox::indicator:checked:hover {
-  image: url(:/White/checkBoxChecked);
+  image: url(:/QRibbon/icons/checkBoxChecked);
 }
 /*QCheckBox::indicator:checked:pressed {
         image: url(:/White/checkBoxCheckedPressed);
@@ -424,27 +424,27 @@ QRadioButton::indicator {
 }
 
 QRadioButton::indicator:unchecked {
-  image: url(:/White/radioButton);
+  image: url(:/QRibbon/icons/radioButton);
 }
 
 QRadioButton::indicator:unchecked:hover {
-  image: url(:/White/radioButton);
+  image: url(:/QRibbon/icons/radioButton);
 }
 
 QRadioButton::indicator:unchecked:pressed {
-  image: url(:/White/radioButton);
+  image: url(:/QRibbon/icons/radioButton);
 }
 
 QRadioButton::indicator:checked {
-  image: url(:/White/radioButtonChecked);
+  image: url(:/QRibbon/icons/radioButtonChecked);
 }
 
 QRadioButton::indicator:checked:hover {
-  image: url(:/White/radioButtonChecked);
+  image: url(:/QRibbon/icons/radioButtonChecked);
 }
 
 QRadioButton::indicator:checked:pressed {
-  image: url(:/White/radioButtonChecked);
+  image: url(:/QRibbon/icons/radioButtonChecked);
 }
 
 /**********输入框**********/
@@ -516,7 +516,7 @@ QDoubleSpinBox::up-button {
   width: 18px;
   height: 12px;
   border-top-right-radius: 4px;
-  image: url(:/White/topArrow);
+  image: url(:/QRibbon/icons/topArrow);
 }
 
 QSpinBox::up-button:!enabled {
@@ -533,7 +533,7 @@ QDoubleSpinBox::down-button {
   width: 18px;
   height: 12px;
   border-bottom-right-radius: 4px;
-  image: url(:/White/bottomArrow);
+  image: url(:/QRibbon/icons/bottomArrow);
   subcontrol-origin: border;
   subcontrol-position: bottom right; /* position at bottom right corner */
 }
@@ -553,7 +553,7 @@ QToolButton#nsccButton {
   color: rgb(2, 65, 132);
   background: transparent;
   padding: 10px;
-  qproperty-icon: url(:/White/nscc);
+  qproperty-icon: url(:/QRibbon/icons/nscc);
   qproperty-iconsize: 32px 32px;
   qproperty-toolbuttonstyle: ToolButtonTextUnderIcon;
 }
@@ -567,7 +567,7 @@ QToolButton#transferButton {
   color: rgb(2, 65, 132);
   background: transparent;
   padding: 10px;
-  qproperty-icon: url(:/White/transfer);
+  qproperty-icon: url(:/QRibbon/icons/transfer);
   qproperty-iconsize: 32px 32px;
   qproperty-toolbuttonstyle: ToolButtonTextUnderIcon;
 }
@@ -677,15 +677,15 @@ QTreeView QHeaderView:section {
 }
 
 QTreeView::indicator:checked {
-  image: url(:/Resource/icon/eye.png);
+  image: url(:/QRibbon/icons/eye.png);
 }
 
 QTreeView::indicator:unchecked {
-  image: url(:/Resource/icon/eyeClosed.png);
+  image: url(:/QRibbon/icons/eyeClosed.png);
 }
 
 QTreeView::indicator:indeterminate {
-  image: url(:/Resource/icon/eyeClosed.png);
+  image: url(:/QRibbon/icons/eyeClosed.png);
 }
 
 /*
@@ -713,18 +713,18 @@ QTreeWidget::branch {
 
 QTreeView::branch:has-siblings:!adjoins-item,
 QTreeWidget::branch:has-siblings:!adjoins-item {
-    border-image: url(:/Resource/icon/vline.png) 0;
+    border-image: url(:/QRibbon/icons/vline.png) 0;
 }
 
 QTreeView::branch:has-siblings:adjoins-item,
 QTreeWidget::branch:has-siblings:adjoins-item {
-    border-image: url(:/Resource/icon/branch-more.png) 0;
+    border-image: url(:/QRibbon/icons/branch-more.png) 0;
     
 }
 
 QTreeView::branch:!has-children:!has-siblings:adjoins-item,
 QTreeWidget::branch:!has-children:!has-siblings:adjoins-item{
-    border-image: url(:/Resource/icon/branch-end.png) 0;
+    border-image: url(:/QRibbon/icons/branch-end.png) 0;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,
@@ -733,7 +733,7 @@ QTreeWidget::branch:has-children:!has-siblings:closed,
 QTreeWidget::branch:closed:has-children:has-siblings 
 {
     border-image: none;
-    image: url(:/Resource/icon/branch-closed.png);
+    image: url(:/QRibbon/icons/branch-closed.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
@@ -741,7 +741,7 @@ QTreeView::branch:open:has-children:has-siblings,
 QTreeWidget::branch:open:has-children:!has-siblings,
 QTreeWidget::branch:open:has-children:has-siblings  {
    border-image: none;
-   image: url(:/Resource/icon/branch-open.png);
+   image: url(:/QRibbon/icons/branch-open.png);
 }
 
 

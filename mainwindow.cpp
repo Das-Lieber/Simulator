@@ -25,7 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     statusLabel->setMinimumWidth(200);
     ui->statusbar->addPermanentWidget(statusLabel);
 
-    creatDockWidgetToolBar(); 
+    creatDockWidgetToolBar();
+    creatEditLocationDock();
 
     QRibbon::install(this);
     ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
@@ -438,6 +439,17 @@ void MainWindow::showDockWidget(CustomDockWidget *dockWidget)
     }
 }
 
+void MainWindow::creatEditLocationDock()
+{
+    mEditDockDlg = new CustomDockWidget;
+    connect(mEditDockDlg, &CustomDockWidget::signal_pinned, this, &MainWindow::dockWidgetPinned);
+    connect(mEditDockDlg, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
+    connect(mEditDockDlg, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
+    connect(mEditDockDlg, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
+    addDockWidget(Qt::RightDockWidgetArea,mEditDockDlg);
+    hideDockWidget(mEditDockDlg);
+}
+
 void MainWindow::on_actionView_Start_Position_triggered()
 {
     aConvertAPI->SetJointValue(mStartVec);
@@ -639,14 +651,27 @@ void MainWindow::on_actionView_Wire_triggered()
 
 void MainWindow::on_actionEdit_Location_triggered()
 {
+    if(EditLocationWidget::existOne)
+    {
+        QMessageBox::critical(this,tr("error"),tr("there is an edit widget!"));
+        return;
+    }
+
     EditLocationWidget *aWidget = new EditLocationWidget;
     QStringList aList;
     for(std::size_t i=0;i<aConvertAPI->GetJointModelDof()+1;++i)
         aList<<QString("Link%1").arg(i);
+
     aWidget->setEditJointNameList(aList);
     aWidget->show();
+
     connect(aWidget,&EditLocationWidget::applyTrsf,this,[=](const int &index, const gp_Trsf &aTrsf){
-        aConvertAPI->GetJointModelShapes().at(index)->SetLocalTransformation(aTrsf);
+        gp_Trsf before = aConvertAPI->GetJointModelShapes().at(index)->LocalTransformation();
+        aConvertAPI->GetJointModelShapes().at(index)->SetLocalTransformation(before.Multiplied(aTrsf));
         aMdlWidget->getView()->Update();
     });
+
+    mEditDockDlg->setWidget(aWidget);
+    if(mEditDockDlg->isHidden())
+        showDockWidget(mEditDockDlg);
 }

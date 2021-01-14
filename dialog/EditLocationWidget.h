@@ -21,6 +21,8 @@ public:
     ~EditLocationWidget();
     void setEditJointNameList(const QStringList &aList);
 
+    static bool existOne;
+
 private slots:
     void on_comboBox_editType_currentIndexChanged(int index);
     void on_pushButton_applyEdit_clicked();
@@ -29,7 +31,7 @@ private slots:
     void on_pushButton_inverseRotationVec_clicked();
 
 private:
-    Ui::EditLocationWidget *ui;
+    Ui::EditLocationWidget *ui;    
 
 signals:
     void applyTrsf(const int &index, const gp_Trsf &aTrsf);

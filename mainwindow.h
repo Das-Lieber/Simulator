@@ -89,6 +89,7 @@ private:
     CustomDockWidget *mOperationDock;
     tableViewJointModel *mConfigModel;
     tableViewPosModel *mOperationModel;
+    CustomDockWidget *mEditDockDlg;
 
     std::map<Qt::DockWidgetArea, CustomDockTabBar*> mDockWidgetToolBar;
     rl::math::Vector mStartVec;
@@ -123,5 +124,8 @@ private:
     Qt::ToolBarArea dockAreaToToolBarArea(Qt::DockWidgetArea area);
     CustomDockTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
     void showDockWidget(CustomDockWidget* dockWidget);
+
+    //init the editLocation dock widget
+    void creatEditLocationDock();
 };
 #endif // MAINWINDOW_H
