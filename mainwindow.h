@@ -9,6 +9,8 @@
 #include <QGridLayout>
 #include <QTableView>
 #include <QHeaderView>
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
 
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
@@ -84,6 +86,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QLabel *statusLabel;
+    QWinTaskbarButton *mTaskBarButton;
+    QWinTaskbarProgress *mTaskBarProgress;
 
     CustomDockWidget *mDockWidget;//point to the active dock widget in current window
     RLAPI_PlanThread *mPlannerThread;

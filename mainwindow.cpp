@@ -14,22 +14,34 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Simulator_d");
 #else
     setWindowTitle("Simulator");
-#endif
+#endif    
 
     //init occ
     aMdlWidget = new OCCWidget();
     QGridLayout *centerLayOut = new QGridLayout;
     centerLayOut->addWidget(aMdlWidget);
     ui->centralwidget->setLayout(centerLayOut);
+
     statusLabel = new QLabel(this);
     statusLabel->setMinimumWidth(200);
     ui->statusbar->addPermanentWidget(statusLabel);
 
+    //add the progress on the task bar
+    mTaskBarButton = new QWinTaskbarButton(this);
+    mTaskBarButton->setWindow(this->windowHandle());
+
+    mTaskBarProgress = mTaskBarButton->progress();
+    mTaskBarProgress->setVisible(true);
+    mTaskBarProgress->setValue(10);
+
     creatDockWidgetToolBar();
     creatEditLocationDock();
-    mProcessData = new ProcessDataWidget;
 
-    QRibbon::install(this);
+    QRibbon::install(this);    
+
+    mProcessData = new ProcessDataWidget;
+    mTaskBarProgress->setValue(30);
+
     ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
 }
 
@@ -46,6 +58,8 @@ void MainWindow::initRL()
     QString JointModelFile = "./brep/GP8";
     aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);
     aConvertAPI->InitLoadData();
+
+    mTaskBarProgress->setValue(80);
 
     connect(aConvertAPI,&RLConvertAPI::JointPositionChanged,this,[=](){
         aMdlWidget->getView()->Update();
@@ -73,6 +87,8 @@ void MainWindow::initRL()
         aMdlWidget->getContext()->Deactivate(aShape);
     }
 
+    mTaskBarProgress->setValue(90);
+
     aMdlWidget->getView()->FitAll();
 
     creatConfigDock();
@@ -83,6 +99,8 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
+    mTaskBarProgress->setValue(100);
+    mTaskBarProgress->setVisible(false);
     ui->statusbar->showMessage(tr("Init Success!"));
 }
 
@@ -542,9 +560,17 @@ void MainWindow::on_actionImport_Model_triggered()
     if(modelFileName.isEmpty())
         return;
 
-    aConvertAPI->ImportSceneModel(modelFileName);
+    mTaskBarProgress->setVisible(true);
+    mTaskBarProgress->setValue(10);
+
+    aConvertAPI->ImportSceneModel(modelFileName);    
+    mTaskBarProgress->setValue(30);
+
     aMdlWidget->getContext()->Erase(aConvertAPI->GetMeasureModelShape(),Standard_False);
+    mTaskBarProgress->setValue(40);
+
     aConvertAPI->ResetSceneModel();
+    mTaskBarProgress->setValue(80);
 
     mPlannerThread->deleteLater();
     mPlannerThread = new RLAPI_PlanThread(*aConvertAPI->GetMdlDynamic(),*aConvertAPI->GetSolidScene(),aConvertAPI->GetModelMinSize());
@@ -555,6 +581,9 @@ void MainWindow::on_actionImport_Model_triggered()
 
     aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
+
+    mTaskBarProgress->setValue(10);
+    mTaskBarProgress->setVisible(false);
 }
 
 void MainWindow::on_actionOperate_Model_triggered()

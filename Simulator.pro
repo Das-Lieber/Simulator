@@ -1,4 +1,4 @@
-QT       += core gui widgets sql
+QT       += core gui widgets sql winextras
 
 CONFIG += c++11
 
