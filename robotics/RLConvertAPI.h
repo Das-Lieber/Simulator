@@ -8,7 +8,7 @@
 #include <rl/math/Constants.h>
 #include <rl/mdl/Kinematic.h>
 #include <rl/mdl/Dynamic.h>
-#include <rl/mdl/JacobianInverseKinematics.h>
+#include <rl/mdl/NloptInverseKinematics.h>
 
 #include "RLAPI_Reader.h"
 #include "RLAPI_Writer.h"
@@ -46,6 +46,10 @@ public:
     //! convenient api to solve inverse motion, if value is an angle, use
     //! "deg" unit
     bool SetIndexedInverseValue(const int &index, const double &value);
+
+    //! convenient api to solve inverse if there is already get the
+    //! postion and direction of tcp, the direction unit should be rad
+    bool SetInverseValue(const QList<double> &TCPInfo);
 
     //! get all the links' angle/position, return by a dof-count vector
     rl::math::Vector GetJointPosition();

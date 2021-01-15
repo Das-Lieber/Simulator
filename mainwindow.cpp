@@ -27,31 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     creatDockWidgetToolBar();
     creatEditLocationDock();
+    mProcessData = new ProcessDataWidget;
 
     QRibbon::install(this);
     ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
-
-    //    mStartVec.resize(5);
-    //    mStartVec(0) = 4;
-    //    mStartVec(1) = 154;
-    //    mStartVec(2) = -417;
-    //    mStartVec(3) = 90*rl::math::constants::deg2rad;
-    //    mStartVec(4) = 90*rl::math::constants::deg2rad;
-
-    //    rl::math::Vector defaultEndPos(5);
-    //    defaultEndPos(0) = -93;
-    //    defaultEndPos(1) = 57;
-    //    defaultEndPos(2) = -506;
-    //    defaultEndPos(3) = 0*rl::math::constants::deg2rad;
-    //    defaultEndPos(4) = 90*rl::math::constants::deg2rad;
-    //    mEndList.push_back(defaultEndPos);
-    //    rl::math::Vector defaultEndPos1(5);
-    //    defaultEndPos1(0) = -90;
-    //    defaultEndPos1(1) = 12;
-    //    defaultEndPos1(2) = -410;
-    //    defaultEndPos1(3) = 0*rl::math::constants::deg2rad;
-    //    defaultEndPos1(4) = 70*rl::math::constants::deg2rad;
-    //    mEndList.push_back(defaultEndPos1);
 }
 
 MainWindow::~MainWindow()
@@ -234,9 +213,9 @@ void MainWindow::connectThread()
         currentPahtPnt = gp_Pnt(0,0,0);
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeTimeOut,this,[=](){
-        mPlannerThread->terminate();//joints in mess ,need to init position after!!!
-        aConvertAPI->SetJointValue(mStartVec);
-        statusLabel->setText(tr("Compute Time Out!"));
+//        mPlannerThread->terminate();//joints in mess ,need to init position after!!!
+//        aConvertAPI->SetJointValue(mStartVec);
+//        statusLabel->setText(tr("Compute Time Out!"));
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeFailed,this,[=](const ComputeError &errorCode){
         if(errorCode==ComputeError::InvalidConfig)
@@ -684,4 +663,19 @@ void MainWindow::on_actionDH_Setting_triggered()
 {
     DHSettingWidget *aWidget = new DHSettingWidget;
     aWidget->show();
+}
+
+void MainWindow::on_actionProcess_Data_triggered()
+{    
+    mProcessData->show();
+    QList<gp_Pnt> tcpPnts = mProcessData->getProcessPnts();
+    QList<double> tcpVecs = mProcessData->getProcessVecs();
+    QList<double> tcpInfo;
+    tcpInfo.append(tcpPnts[0].X());
+    tcpInfo.append(tcpPnts[0].Y());
+    tcpInfo.append(tcpPnts[0].Z());
+    tcpInfo.append(tcpVecs[0]);
+    tcpInfo.append(tcpVecs[1]);
+    tcpInfo.append(tcpVecs[2]);qDebug()<<tcpPnts[0].X()<<tcpPnts[0].Y()<<tcpPnts[0].Z()<<tcpVecs[0]<<tcpVecs[1]<<tcpVecs[2];
+//    qDebug()<<aConvertAPI->SetInverseValue(tcpVecs);
 }

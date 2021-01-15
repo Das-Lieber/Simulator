@@ -198,14 +198,76 @@ bool RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
         }
 
         rl::math::Vector q = kinematic->getPosition();
-        rl::mdl::JacobianInverseKinematics* nJacIk = new rl::mdl::JacobianInverseKinematics(kinematic);
+        rl::mdl::NloptInverseKinematics* aInverse = new rl::mdl::NloptInverseKinematics(kinematic);
+        aInverse->setIterations(10000);
+        aInverse->setDuration(std::chrono::milliseconds(500));
 
         for (std::size_t i = 0; i < kinematic->getOperationalDof(); ++i)
         {
-            nJacIk->addGoal(i == 0 ? transform : kinematic->getOperationalPosition(i), i);
+            aInverse->addGoal(i == 0 ? transform : kinematic->getOperationalPosition(i), i);
         }
 
-        bool solved = nJacIk->solve();
+        bool solved = aInverse->solve();
+
+        if (solved)
+        {
+            rl::math::Vector currentPos = aReaderAPI->JointModel->getPosition();
+            SetJointValue(currentPos);
+            return true;
+        }
+        else
+        {
+            kinematic->setPosition(q);
+            kinematic->forwardPosition();
+            return false;
+        }
+    }
+    return false;
+}
+
+//=======================================================================
+//function : SetInverseValue
+//purpose  : *
+//=======================================================================
+bool RLConvertAPI::SetInverseValue(const QList<double> &TCPInfo)
+{
+    Q_ASSERT(TCPInfo.size() != 6);
+
+    if (rl::mdl::Kinematic* kinematic = dynamic_cast<rl::mdl::Kinematic*>(aReaderAPI->JointModel.get()))
+    {
+        rl::math::Transform transform = kinematic->getOperationalPosition(0);
+        rl::math::Vector3 orientation = transform.linear().eulerAngles(2, 1, 0).reverse();
+
+        transform.translation()(0) = TCPInfo[0];
+        transform.translation()(1) = TCPInfo[1];
+        transform.translation()(2) = TCPInfo[2];
+        transform.linear() = (
+                    rl::math::AngleAxis(orientation.z(), rl::math::Vector3::UnitZ()) *
+                    rl::math::AngleAxis(orientation.y(), rl::math::Vector3::UnitY()) *
+                    rl::math::AngleAxis(TCPInfo[3], rl::math::Vector3::UnitX())
+                ).toRotationMatrix();
+        transform.linear() = (
+                    rl::math::AngleAxis(orientation.z(), rl::math::Vector3::UnitZ()) *
+                    rl::math::AngleAxis(TCPInfo[4], rl::math::Vector3::UnitY()) *
+                rl::math::AngleAxis(orientation.x(), rl::math::Vector3::UnitX())
+                ).toRotationMatrix();
+        transform.linear() = (
+                    rl::math::AngleAxis(TCPInfo[5], rl::math::Vector3::UnitZ()) *
+                rl::math::AngleAxis(orientation.y(), rl::math::Vector3::UnitY()) *
+                rl::math::AngleAxis(orientation.x(), rl::math::Vector3::UnitX())
+                ).toRotationMatrix();
+
+        rl::math::Vector q = kinematic->getPosition();
+        rl::mdl::NloptInverseKinematics* aInverse = new rl::mdl::NloptInverseKinematics(kinematic);
+        aInverse->setIterations(10000);
+        aInverse->setDuration(std::chrono::milliseconds(500));
+
+        for (std::size_t i = 0; i < kinematic->getOperationalDof(); ++i)
+        {
+            aInverse->addGoal(i == 0 ? transform : kinematic->getOperationalPosition(i), i);
+        }
+
+        bool solved = aInverse->solve();
 
         if (solved)
         {

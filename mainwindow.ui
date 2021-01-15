@@ -33,7 +33,7 @@ CustomDockWidgetBar QLabel
      <x>0</x>
      <y>0</y>
      <width>1111</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -64,6 +64,7 @@ CustomDockWidgetBar QLabel
      <string>Setting</string>
     </property>
     <addaction name="actionDH_Setting"/>
+    <addaction name="actionProcess_Data"/>
     <addaction name="actionOperate_Model"/>
     <addaction name="actionEdit_Location"/>
    </widget>
@@ -322,6 +323,15 @@ CustomDockWidgetBar QLabel
    </property>
    <property name="text">
     <string>Edit_Location</string>
+   </property>
+  </action>
+  <action name="actionProcess_Data">
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/process_data.png</normaloff>:/Simulator/icons/process_data.png</iconset>
+   </property>
+   <property name="text">
+    <string>Process Data</string>
    </property>
   </action>
  </widget>

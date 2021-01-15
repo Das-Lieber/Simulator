@@ -23,5 +23,6 @@
         <file>icons/view-top.png</file>
         <file>icons/edit_location.png</file>
         <file>icons/DH_setting.png</file>
+        <file>icons/process_data.png</file>
     </qresource>
 </RCC>

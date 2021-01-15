@@ -22,6 +22,7 @@
 
 #include "dialog/EditLocationWidget.h"
 #include "dialog/DHSettingWidget.h"
+#include "dialog/ProcessDataWidget.h"
 
 #include "dock/CustomDockWidget.h"
 #include "dock/CustomDockTabBar.h"
@@ -67,6 +68,7 @@ private slots:
     void on_actionOperate_Model_triggered();
     void on_actionDH_Setting_triggered();
     void on_actionEdit_Location_triggered();
+    void on_actionProcess_Data_triggered();
 
     //view
     void on_actionSave_As_Picture_triggered();
@@ -77,7 +79,7 @@ private slots:
     void on_actionView_Left_triggered();
     void on_actionView_Right_triggered();
     void on_actionView_Shade_triggered();
-    void on_actionView_Wire_triggered();
+    void on_actionView_Wire_triggered();    
 
 private:
     Ui::MainWindow *ui;
@@ -92,6 +94,7 @@ private:
     tableViewJointModel *mConfigModel;
     tableViewPosModel *mOperationModel;
     CustomDockWidget *mEditDockDlg;
+    ProcessDataWidget *mProcessData;
 
     std::map<Qt::DockWidgetArea, CustomDockTabBar*> mDockWidgetToolBar;
     rl::math::Vector mStartVec;

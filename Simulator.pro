@@ -1,4 +1,4 @@
-QT       += core gui widgets
+QT       += core gui widgets sql
 
 CONFIG += c++11
 
@@ -10,6 +10,7 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
+    MiniDumper.cpp \
     QRibbon/QRibbon.cpp \
     delegate/tableViewJointDelegate.cpp \
     delegate/tableViewJointModel.cpp \
@@ -17,6 +18,8 @@ SOURCES += \
     delegate/tableViewPosModel.cpp \
     dialog/DHSettingWidget.cpp \
     dialog/EditLocationWidget.cpp \
+    dialog/ProcessDataWidget.cpp \
+    dialog/SqlTableViewDelegate.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
@@ -30,6 +33,7 @@ SOURCES += \
     robotics/RLConvertAPI.cpp
 
 HEADERS += \
+    MiniDumper.h \
     QRibbon/QRibbon.h \
     delegate/tableViewJointDelegate.h \
     delegate/tableViewJointModel.h \
@@ -37,6 +41,8 @@ HEADERS += \
     delegate/tableViewPosModel.h \
     dialog/DHSettingWidget.h \
     dialog/EditLocationWidget.h \
+    dialog/ProcessDataWidget.h \
+    dialog/SqlTableViewDelegate.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \
@@ -53,6 +59,7 @@ FORMS += \
     QRibbon/qribbon.ui \
     dialog/DHSettingWidget.ui \
     dialog/EditLocationWidget.ui \
+    dialog/ProcessDataWidget.ui \
     mainwindow.ui
 
 #TRANSLATIONS += Simulator_CN.ts \
@@ -72,10 +79,10 @@ INCLUDEPATH += D:/OpenCASCADE/inc
 LIBS += D:\OpenCASCADE\lib\*.lib
 INCLUDEPATH += D:/RoboticsLibrary/include
 LIBS += -LD:\RoboticsLibrary\lib
-CONFIG(debug, debug|release) {    
-    LIBS += -lrlsgsd -lrlmdlsd -lrlplansd -llibxml2d -llibxsltd -lPQPd -lrlkinsd
+CONFIG(debug, debug|release) {
+    LIBS += -lrlsgsd -lrlmdlsd -lrlplansd -llibxml2d -llibxsltd -lPQPd -lrlkinsd -lnloptd
 } else {
-    LIBS += -lrlsgs -lrlmdls -lrlplans -llibxml2 -llibxslt -lPQP -lrlkins
+    LIBS += -lrlsgs -lrlmdls -lrlplans -llibxml2 -llibxslt -lPQP -lrlkins -lnlopt
 }
 
 CONFIG(debug, debug|release) {

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "MiniDumper.h"
 
 #include <QApplication>
 #include <QTranslator>
@@ -6,6 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    MiniDumper dumper;
 
 //    QTranslator aTranslator;
 //    aTranslator.load(":/Simulator/Simulator_CN.qm");

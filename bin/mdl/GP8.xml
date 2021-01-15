@@ -124,8 +124,8 @@
 				<y>0</y>
 				<z>0</z>
 			</axis>
-			<max>500</max>
-			<min>-500</min>
+			<max>600</max>
+			<min>-100</min>
 			<speed>180</speed>
 		</prismatic>
 		<fixed id="fixed2">
@@ -154,8 +154,8 @@
 				<y>1</y>
 				<z>0</z>
 			</axis>
-			<max>500</max>
-			<min>-500</min>
+			<max>600</max>
+			<min>0</min>
 			<speed>180</speed>
 		</prismatic>			
 		<fixed id="fixed3">
