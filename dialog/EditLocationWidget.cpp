@@ -77,7 +77,7 @@ void EditLocationWidget::on_pushButton_inverseTranslationVec_clicked()
 
 void EditLocationWidget::on_pushButton_editCancel_clicked()
 {
-    this->close();
+    emit requestClose();
 }
 
 void EditLocationWidget::on_pushButton_inverseRotationVec_clicked()
@@ -88,4 +88,9 @@ void EditLocationWidget::on_pushButton_inverseRotationVec_clicked()
     ui->lineEdit_rotationVecY->setText(QString::number(0-tmpY));
     double tmpZ = ui->lineEdit_rotationVecZ->text().toDouble();
     ui->lineEdit_rotationVecZ->setText(QString::number(0-tmpZ));
+}
+
+void EditLocationWidget::on_pushButton_ensureEdit_clicked()
+{
+    emit requestClose();
 }

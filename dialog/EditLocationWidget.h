@@ -8,6 +8,8 @@
 #include <gp_Trsf.hxx>
 #include <gp_Ax1.hxx>
 
+#include "dock/CustomDockWidget.h"
+
 namespace Ui {
 class EditLocationWidget;
 }
@@ -29,12 +31,14 @@ private slots:
     void on_pushButton_inverseTranslationVec_clicked();
     void on_pushButton_editCancel_clicked();
     void on_pushButton_inverseRotationVec_clicked();
+    void on_pushButton_ensureEdit_clicked();
 
 private:
     Ui::EditLocationWidget *ui;    
 
 signals:
     void applyTrsf(const int &index, const gp_Trsf &aTrsf);
+    void requestClose();
 };
 
 #endif // EDITLOCATIONWIDGET_H

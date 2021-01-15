@@ -670,8 +670,18 @@ void MainWindow::on_actionEdit_Location_triggered()
         aConvertAPI->GetJointModelShapes().at(index)->SetLocalTransformation(before.Multiplied(aTrsf));
         aMdlWidget->getView()->Update();
     });
+    connect(aWidget,&EditLocationWidget::requestClose,this,[=](){
+        mEditDockDlg->removeWidget();
+        hideDockWidget(mEditDockDlg);
+    });
 
     mEditDockDlg->setWidget(aWidget);
     if(mEditDockDlg->isHidden())
         showDockWidget(mEditDockDlg);
+}
+
+void MainWindow::on_actionDH_Setting_triggered()
+{
+    DHSettingWidget *aWidget = new DHSettingWidget;
+    aWidget->show();
 }

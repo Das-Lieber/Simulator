@@ -21,6 +21,7 @@
 #include "delegate/tableViewPosModel.h"
 
 #include "dialog/EditLocationWidget.h"
+#include "dialog/DHSettingWidget.h"
 
 #include "dock/CustomDockWidget.h"
 #include "dock/CustomDockTabBar.h"
@@ -64,6 +65,8 @@ private slots:
 
     //setting
     void on_actionOperate_Model_triggered();
+    void on_actionDH_Setting_triggered();
+    void on_actionEdit_Location_triggered();
 
     //view
     void on_actionSave_As_Picture_triggered();
@@ -75,7 +78,6 @@ private slots:
     void on_actionView_Right_triggered();
     void on_actionView_Shade_triggered();
     void on_actionView_Wire_triggered();
-    void on_actionEdit_Location_triggered();
 
 private:
     Ui::MainWindow *ui;

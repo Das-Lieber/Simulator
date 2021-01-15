@@ -85,6 +85,13 @@ void CustomDockWidget::setDockWidgetState(DockWidgetState state)
     }
 }
 
+void CustomDockWidget::removeWidget()
+{
+    if(contents!=nullptr)
+        globalLayout->removeWidget(contents);
+    contents->deleteLater();
+}
+
 void CustomDockWidget::setTabifiedDocks(const QList<QDockWidget *> &dockWidgetList)
 {
     m_tabifieds.clear();

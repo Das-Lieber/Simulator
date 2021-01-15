@@ -15,6 +15,7 @@ SOURCES += \
     delegate/tableViewJointModel.cpp \
     delegate/tableViewPosDelegate.cpp \
     delegate/tableViewPosModel.cpp \
+    dialog/DHSettingWidget.cpp \
     dialog/EditLocationWidget.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     delegate/tableViewJointModel.h \
     delegate/tableViewPosDelegate.h \
     delegate/tableViewPosModel.h \
+    dialog/DHSettingWidget.h \
     dialog/EditLocationWidget.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
@@ -49,6 +51,7 @@ HEADERS += \
 
 FORMS += \
     QRibbon/qribbon.ui \
+    dialog/DHSettingWidget.ui \
     dialog/EditLocationWidget.ui \
     mainwindow.ui
 

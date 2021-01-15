@@ -42,6 +42,7 @@ public:
 
     void setWidget(QWidget *widget);
     void setDockWidgetState(DockWidgetState state);
+    void removeWidget();
 
     const std::vector<CustomDockWidget*>& getTabifiedDocks() const { return m_tabifieds; }
     void setTabifiedDocks(const QList<QDockWidget*>& dockWidgetList);
