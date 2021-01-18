@@ -11,6 +11,7 @@
 #include <QHeaderView>
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
+#include <QInputDialog>
 
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
@@ -29,13 +30,13 @@
 #include "dock/CustomDockWidget.h"
 #include "dock/CustomDockTabBar.h"
 
+#include "OCC/occWidget.h"
+
 #include "QRibbon/QRibbon.h"
 
 #include "robotics/RLAPI_PlanThread.h"
 #include "robotics/RLAPI_ConfigurationOptimizer.h"
 #include "robotics/RLConvertAPI.h"
-
-#include "occWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

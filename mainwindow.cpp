@@ -493,7 +493,8 @@ void MainWindow::on_actionStart_Planner_triggered()
 {
     statusLabel->setText(tr("Solving......"));
 
-    // 1.remove the old path line
+    // 1.remove the old path line, bug of occ,
+    // can't use aMdlWidget->getContext()->Erase(pathLines[i],false);
     AIS_ListOfInteractive aList;
     aMdlWidget->getContext()->DisplayedObjects(aList);
     AIS_ListIteratorOfListOfInteractive anIterator;
@@ -602,7 +603,14 @@ void MainWindow::on_actionImport_Model_triggered()
 void MainWindow::on_actionOperate_Model_triggered()
 {
     if(!aMdlWidget->getManipulator()->IsAttached())
-        aMdlWidget->getManipulator()->Attach(aConvertAPI->GetJointModelShapes().at(5));
+    {
+        QInputDialog aDialog;
+        bool ok;
+        int index = aDialog.getInt(this,tr("oprate"),tr("Joint"),0,0,aConvertAPI->GetJointModelDof(),1,&ok);
+        if(ok)
+            aMdlWidget->getManipulator()->Attach(aConvertAPI->GetJointModelShapes().at(index));
+        else return;
+    }
     else
         aMdlWidget->getManipulator()->Detach();
 

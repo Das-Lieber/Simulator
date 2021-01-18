@@ -11,6 +11,7 @@ QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
     MiniDumper.cpp \
+    OCC/occWidget.cpp \
     QRibbon/QRibbon.cpp \
     delegate/tableViewJointDelegate.cpp \
     delegate/tableViewJointModel.cpp \
@@ -26,7 +27,6 @@ SOURCES += \
     dock/CustomDockWidgetBar.cpp \
     main.cpp \
     mainwindow.cpp \
-    occWidget.cpp \
     robotics/RLAPI_PlanThread.cpp \
     robotics/RLAPI_Reader.cpp \
     robotics/RLAPI_Writer.cpp \
@@ -34,6 +34,7 @@ SOURCES += \
 
 HEADERS += \
     MiniDumper.h \
+    OCC/occWidget.h \
     QRibbon/QRibbon.h \
     delegate/tableViewJointDelegate.h \
     delegate/tableViewJointModel.h \
@@ -48,7 +49,6 @@ HEADERS += \
     dock/CustomDockWidget.h \
     dock/CustomDockWidgetBar.h \
     mainwindow.h \
-    occWidget.h \
     robotics/RLAPI_ConfigurationOptimizer.h \
     robotics/RLAPI_PlanThread.h \
     robotics/RLAPI_Reader.h \
