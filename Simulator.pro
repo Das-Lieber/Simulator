@@ -77,12 +77,17 @@ RESOURCES += \
 
 INCLUDEPATH += D:/OpenCASCADE/inc
 LIBS += D:\OpenCASCADE\lib\*.lib
+
 INCLUDEPATH += D:/RoboticsLibrary/include
 LIBS += -LD:\RoboticsLibrary\lib
 CONFIG(debug, debug|release) {
     LIBS += -lrlsgsd -lrlmdlsd -lrlplansd -llibxml2d -llibxsltd -lPQPd -lrlkinsd -lnloptd
 } else {
     LIBS += -lrlsgs -lrlmdls -lrlplans -llibxml2 -llibxslt -lPQP -lrlkins -lnlopt
+}
+
+CONFIG(debug, debug|release) {
+    LIBS += $$PWD/vld/vld.lib
 }
 
 CONFIG(debug, debug|release) {

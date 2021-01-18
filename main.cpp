@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "MiniDumper.h"
 
+#if _DEBUG
+#include "vld/vld.h"
+#endif
+
 #include <QApplication>
 #include <QTranslator>
 

@@ -213,12 +213,14 @@ bool RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
         {
             rl::math::Vector currentPos = aReaderAPI->JointModel->getPosition();
             SetJointValue(currentPos);
+            delete aInverse;
             return true;
         }
         else
         {
             kinematic->setPosition(q);
             kinematic->forwardPosition();
+            delete aInverse;
             return false;
         }
     }
@@ -262,12 +264,14 @@ bool RLConvertAPI::SetInverseValue(const QList<double> &TCPInfo)
         {
             rl::math::Vector currentPos = aReaderAPI->JointModel->getPosition();
             SetJointValue(currentPos);
+            delete aInverse;
             return true;
         }
         else
         {
             kinematic->setPosition(q);
             kinematic->forwardPosition();
+            delete aInverse;
             return false;
         }
     }

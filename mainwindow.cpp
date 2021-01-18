@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 #endif    
 
     //init occ
-    aMdlWidget = new OCCWidget();
+    aMdlWidget = new OCCWidget(this);
     QGridLayout *centerLayOut = new QGridLayout;
     centerLayOut->addWidget(aMdlWidget);
     ui->centralwidget->setLayout(centerLayOut);
@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete mPlannerThread;
+    delete mProcessData;
     delete ui;
 }
 
@@ -121,12 +122,12 @@ void MainWindow::creatConfigDock()
     configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     configTable->horizontalHeader()->hide();
 
-    tableViewJointDelegate *configDelegate = new tableViewJointDelegate;
+    tableViewJointDelegate *configDelegate = new tableViewJointDelegate(this);
     configDelegate->setMaxValue(aConvertAPI->MotionMaxValues);
     configDelegate->setMinValue(aConvertAPI->MotionMinValues);
     configDelegate->setJointType(aConvertAPI->GetJointType());
 
-    mConfigModel = new tableViewJointModel;
+    mConfigModel = new tableViewJointModel(this);
     mConfigModel->SetMaxValue(aConvertAPI->MotionMaxValues);
     mConfigModel->SetMinValue(aConvertAPI->MotionMinValues);
     mConfigModel->SetJointType(aConvertAPI->GetJointType());
@@ -157,9 +158,9 @@ void MainWindow::creatOperationDock()
     operationTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     operationTable->verticalHeader()->hide();    
 
-    tableViewPosDelegate *operationDelegate = new tableViewPosDelegate;
+    tableViewPosDelegate *operationDelegate = new tableViewPosDelegate(this);
 
-    mOperationModel = new tableViewPosModel;
+    mOperationModel = new tableViewPosModel(this);
     mOperationModel->initData(aConvertAPI->GetOperationalPosition());
 
     operationTable->setItemDelegate(operationDelegate);
@@ -466,7 +467,7 @@ void MainWindow::on_actionView_Start_Position_triggered()
 
 void MainWindow::on_actionView_End_Position_triggered()
 {
-    aConvertAPI->SetJointValue(*mEndList.end());
+    aConvertAPI->SetJointValue(*mEndList.begin());
     displayJointPosition();
     displayOperationalPosition();
 }
@@ -733,7 +734,7 @@ void MainWindow::on_actionEdit_Location_triggered()
 
 void MainWindow::on_actionDH_Setting_triggered()
 {
-    DHSettingWidget *aWidget = new DHSettingWidget;
+    DHSettingWidget *aWidget = new DHSettingWidget(this);
     aWidget->show();
 }
 
