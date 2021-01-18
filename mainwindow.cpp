@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
     QRibbon::install(this);    
 
     mProcessData = new ProcessDataWidget;
+    Handle(AIS_Shape) processModel = new AIS_Shape(mProcessData->getShape());
+    aMdlWidget->getContext()->Display(processModel,Standard_False);
+
     mTaskBarProgress->setValue(30);
 
     ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
@@ -69,8 +72,12 @@ void MainWindow::initRL()
             displayOperationalPosition();
         }
     });
-    connect(aConvertAPI,&RLConvertAPI::JointCollision,this,[=](int index){
+    connect(aConvertAPI,&RLConvertAPI::JointCollision,this,[=](const size_t &index){
         statusLabel->setText(tr("Joint %1 COLLISION!!!").arg(index));
+        aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_RED4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
+    });
+    connect(aConvertAPI,&RLConvertAPI::SelfCollision,this,[=](const size_t &aIndex, const size_t &bIndex){
+        statusLabel->setText(tr("Joint %1 and Joint %2 COLLISION!!!").arg(aIndex).arg(bIndex));
         aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_RED4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
     });
     connect(aConvertAPI,&RLConvertAPI::NoCollision,this,[=](){
@@ -98,6 +105,9 @@ void MainWindow::initRL()
     qRegisterMetaType<rl::math::Vector>("rl::math::Vector");
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
+
+    mStartVec = aConvertAPI->GetJointPosition();
+    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
@@ -456,7 +466,7 @@ void MainWindow::on_actionView_Start_Position_triggered()
 
 void MainWindow::on_actionView_End_Position_triggered()
 {
-    aConvertAPI->SetJointValue(*mEndList.begin());
+    aConvertAPI->SetJointValue(*mEndList.end());
     displayJointPosition();
     displayOperationalPosition();
 }
@@ -483,6 +493,7 @@ void MainWindow::on_actionStart_Planner_triggered()
 {
     statusLabel->setText(tr("Solving......"));
 
+    // 1.remove the old path line
     AIS_ListOfInteractive aList;
     aMdlWidget->getContext()->DisplayedObjects(aList);
     AIS_ListIteratorOfListOfInteractive anIterator;
@@ -502,6 +513,7 @@ void MainWindow::on_actionStart_Planner_triggered()
         }
     }
 
+    // 2.optimize the path node
     if(mEndList.size()>1)
     {
         RLAPI_ConfigurationOptimizer anOptimizer;
@@ -512,6 +524,7 @@ void MainWindow::on_actionStart_Planner_triggered()
     }
     else optimizedEndList = mEndList;
 
+    // 3.start
     totalPathLen=0;
     endsIterator=optimizedEndList.begin();
     mPlannerThread->GetComputeArguments(mStartVec,*endsIterator);
@@ -657,6 +670,28 @@ void MainWindow::on_actionView_Wire_triggered()
     ui->menuDisplay_Model->setIcon(QIcon(":/Simulator/icons/view_wire.png"));
 }
 
+void MainWindow::parseProcessData()
+{
+    QList<TcpData> tcpPnts = mProcessData->getProcessPnts();
+    aConvertAPI->LockBasePosition();
+    QList<double> tcpInfo;
+
+    for(int k=0;k<tcpPnts.size();++k)
+    {
+        tcpInfo.clear();
+
+        tcpInfo.append(tcpPnts[k].tcpPos.X());
+        tcpInfo.append(tcpPnts[k].tcpPos.Y());
+        tcpInfo.append(tcpPnts[k].tcpPos.Z());
+        tcpInfo.append(tcpPnts[k].VX);
+        tcpInfo.append(tcpPnts[k].VY);
+        tcpInfo.append(tcpPnts[k].VZ);qDebug()<<tcpPnts[k].tcpPos.X()<<tcpPnts[k].tcpPos.Y()<<tcpPnts[k].tcpPos.Z()<<tcpPnts[k].VX<<tcpPnts[1].VY<<tcpPnts[k].VZ;
+
+        if(aConvertAPI->SetInverseValue(tcpInfo))
+            mEndList.push_back(aConvertAPI->GetJointPosition());
+    }
+}
+
 void MainWindow::on_actionEdit_Location_triggered()
 {
     if(EditLocationWidget::existOne)
@@ -696,15 +731,5 @@ void MainWindow::on_actionDH_Setting_triggered()
 
 void MainWindow::on_actionProcess_Data_triggered()
 {    
-    mProcessData->show();
-    QList<gp_Pnt> tcpPnts = mProcessData->getProcessPnts();
-    QList<double> tcpVecs = mProcessData->getProcessVecs();
-    QList<double> tcpInfo;
-    tcpInfo.append(tcpPnts[0].X());
-    tcpInfo.append(tcpPnts[0].Y());
-    tcpInfo.append(tcpPnts[0].Z());
-    tcpInfo.append(tcpVecs[0]);
-    tcpInfo.append(tcpVecs[1]);
-    tcpInfo.append(tcpVecs[2]);qDebug()<<tcpPnts[0].X()<<tcpPnts[0].Y()<<tcpPnts[0].Z()<<tcpVecs[0]<<tcpVecs[1]<<tcpVecs[2];
-//    qDebug()<<aConvertAPI->SetInverseValue(tcpVecs);
+    mProcessData->show();    
 }

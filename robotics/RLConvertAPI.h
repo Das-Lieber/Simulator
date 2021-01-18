@@ -8,6 +8,7 @@
 #include <rl/math/Constants.h>
 #include <rl/mdl/Kinematic.h>
 #include <rl/mdl/Dynamic.h>
+#include <rl/mdl/Joint.h>
 #include <rl/mdl/NloptInverseKinematics.h>
 
 #include "RLAPI_Reader.h"
@@ -50,6 +51,12 @@ public:
     //! convenient api to solve inverse if there is already get the
     //! postion and direction of tcp, the direction unit should be rad
     bool SetInverseValue(const QList<double> &TCPInfo);
+
+    //! lock the prismatic joints
+    void LockBasePosition();
+
+    //! unlock the prismatic joints
+    void UnLockBasePosition();
 
     //! get all the links' angle/position, return by a dof-count vector
     rl::math::Vector GetJointPosition();
@@ -120,6 +127,9 @@ private:
 signals:
     //! collision signal with the collision link's index
     void JointCollision(const size_t &index);
+
+    //! robot it self has collision
+    void SelfCollision(const size_t &aIndex, const size_t &bIndex);
 
     //! safe signal, used to clear the effection of collision
     void NoCollision();

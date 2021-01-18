@@ -15,6 +15,6 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     window.show();
-    QTimer::singleShot(10,&window, &MainWindow::initRL);//show first, then load the data
+    QTimer::singleShot(100,&window, &MainWindow::initRL);//show first, then load the data
     return a.exec();
 }

@@ -17,36 +17,54 @@ ProcessDataWidget::~ProcessDataWidget()
     delete ui;
 }
 
-QList<gp_Pnt> ProcessDataWidget::getProcessPnts()
+QList<TcpData> ProcessDataWidget::getProcessPnts()
 {
-    QList<gp_Pnt> tcpPnts;
+    QList<TcpData> tcpPnts;
+    TcpData aData;
+    TcpData bData;
+    double vx=0,vy=0,vz=0;
     for(int i=0;i<mSqlTable->rowCount();++i)
     {
         gp_Pnt aPnt = gp_Pnt(mSqlTable->data(mSqlTable->index(i,1)).toDouble(),
                              mSqlTable->data(mSqlTable->index(i,2)).toDouble(),
                              mSqlTable->data(mSqlTable->index(i,3)).toDouble());
-        tcpPnts.append(aPnt);
+        aData.tcpPos=aPnt;
         gp_Pnt bPnt = gp_Pnt(mSqlTable->data(mSqlTable->index(i,4)).toDouble(),
                              mSqlTable->data(mSqlTable->index(i,5)).toDouble(),
                              mSqlTable->data(mSqlTable->index(i,6)).toDouble());
-        tcpPnts.append(bPnt);
+        bData.tcpPos = bPnt;
+
+        gp_Vec aVec(aPnt,bPnt);
+        vx = aVec.Angle(gp_Vec(1,0,0))-M_PI/2;
+        vy = aVec.Angle(gp_Vec(0,1,0))-M_PI/2-M_PI/4;
+        vz = aVec.Angle(gp_Vec(0,0,1));
+        aData.VX=vx;
+        aData.VY=vy;
+        aData.VZ=vz;
+        bData.VX=vx;
+        bData.VY=vy;
+        bData.VZ=vz;
+
+        tcpPnts.push_back(aData);
+        tcpPnts.push_back(bData);
     }
     return tcpPnts;
 }
 
-QList<double> ProcessDataWidget::getProcessVecs()
+TopoDS_Shape ProcessDataWidget::getShape()
 {
-    QList<double> tcpVecs;
-    for(int i=0;i<mSqlTable->rowCount();++i)
-    {
-        double XZ = mSqlTable->data(mSqlTable->index(i,21)).toDouble();
-        tcpVecs.append(XZ-M_PI);
-        double YZ = mSqlTable->data(mSqlTable->index(i,20)).toDouble();
-        tcpVecs.append(YZ-M_PI*1.25);
-        double ZZ = std::atan(sqrt(tan(YZ)*tan(YZ)+tan(XZ)*tan(XZ)));
-        tcpVecs.append(ZZ);
+    QList<TcpData> aList = getProcessPnts();
+    TColgp_Array2OfPnt array(1,aList.size()/2,1,2);
+    for (int k=0;k<aList.size()/2;++k) {
+        array.SetValue(k+1,1,aList.at(2*k).tcpPos);
+        array.SetValue(k+1,2,aList.at(2*k+1).tcpPos);
     }
-    return tcpVecs;
+    Handle(Geom_BSplineSurface) aSurf =GeomAPI_PointsToBSplineSurface(array).Surface();
+    Handle(Geom_Surface) aFace = Handle(Geom_Surface)::DownCast(aSurf);
+    BRep_Builder aBuilder;
+    TopoDS_Face aShape;
+    aBuilder.MakeFace(aShape,aFace,1e-6);
+    return aShape;
 }
 
 void ProcessDataWidget::on_pushButton_addProcessItem_clicked()

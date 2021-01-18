@@ -13,8 +13,20 @@
 #include <QFileDialog>
 
 #include <gp_Pnt.hxx>
+#include <TopoDS_Shape.hxx>
+#include <Geom_BSplineSurface.hxx>
+#include <GeomAPI_PointsToBSplineSurface.hxx>
+#include <BRep_Builder.hxx>
 
 #include "dialog/SqlTableViewDelegate.h"
+
+struct TcpData
+{
+    gp_Pnt tcpPos;
+    double VX;
+    double VY;
+    double VZ;
+};
 
 namespace Ui {
 class ProcessDataWidget;
@@ -28,8 +40,8 @@ public:
     explicit ProcessDataWidget(QWidget *parent = nullptr);
     ~ProcessDataWidget();
 
-    QList<gp_Pnt> getProcessPnts();
-    QList<double> getProcessVecs();
+    QList<TcpData> getProcessPnts();
+    TopoDS_Shape getShape();
 
 private slots:
     void on_pushButton_addProcessItem_clicked();

@@ -113,6 +113,8 @@ private:
     gp_Pnt endPnt;
     QList<Handle(AIS_Shape)> pathLines;
 
+    void parseProcessData();
+
     //init the robot and dock model
     void creatConfigDock();
     void creatOperationDock();

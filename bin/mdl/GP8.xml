@@ -355,8 +355,8 @@
 			</translation>
 		</fixed>
 		<home>
-			<q unit="mm">0</q>
-			<q unit="mm">0</q>
+			<q unit="mm">200</q>
+			<q unit="mm">100</q>
 			<q unit="deg">0</q>
 			<q unit="deg">0</q>
 			<q unit="deg">0</q>

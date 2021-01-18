@@ -231,30 +231,19 @@ bool RLConvertAPI::SetIndexedInverseValue(const int &index, const double &value)
 //=======================================================================
 bool RLConvertAPI::SetInverseValue(const QList<double> &TCPInfo)
 {
-    Q_ASSERT(TCPInfo.size() != 6);
+    Q_ASSERT(TCPInfo.size() == 6);
 
     if (rl::mdl::Kinematic* kinematic = dynamic_cast<rl::mdl::Kinematic*>(aReaderAPI->JointModel.get()))
     {
         rl::math::Transform transform = kinematic->getOperationalPosition(0);
-        rl::math::Vector3 orientation = transform.linear().eulerAngles(2, 1, 0).reverse();
 
         transform.translation()(0) = TCPInfo[0];
         transform.translation()(1) = TCPInfo[1];
         transform.translation()(2) = TCPInfo[2];
         transform.linear() = (
-                    rl::math::AngleAxis(orientation.z(), rl::math::Vector3::UnitZ()) *
-                    rl::math::AngleAxis(orientation.y(), rl::math::Vector3::UnitY()) *
-                    rl::math::AngleAxis(TCPInfo[3], rl::math::Vector3::UnitX())
-                ).toRotationMatrix();
-        transform.linear() = (
-                    rl::math::AngleAxis(orientation.z(), rl::math::Vector3::UnitZ()) *
-                    rl::math::AngleAxis(TCPInfo[4], rl::math::Vector3::UnitY()) *
-                rl::math::AngleAxis(orientation.x(), rl::math::Vector3::UnitX())
-                ).toRotationMatrix();
-        transform.linear() = (
                     rl::math::AngleAxis(TCPInfo[5], rl::math::Vector3::UnitZ()) *
-                rl::math::AngleAxis(orientation.y(), rl::math::Vector3::UnitY()) *
-                rl::math::AngleAxis(orientation.x(), rl::math::Vector3::UnitX())
+                    rl::math::AngleAxis(TCPInfo[4], rl::math::Vector3::UnitY()) *
+                    rl::math::AngleAxis(TCPInfo[3], rl::math::Vector3::UnitX())
                 ).toRotationMatrix();
 
         rl::math::Vector q = kinematic->getPosition();
@@ -286,6 +275,30 @@ bool RLConvertAPI::SetInverseValue(const QList<double> &TCPInfo)
 }
 
 //=======================================================================
+//function : UnLockBasePosition
+//purpose  : *
+//=======================================================================
+void RLConvertAPI::LockBasePosition()
+{
+    aReaderAPI->JointModel->getJoint(0)->max(0) = aReaderAPI->JointModel->getPosition()(0);
+    aReaderAPI->JointModel->getJoint(0)->min(0) = aReaderAPI->JointModel->getPosition()(0);
+    aReaderAPI->JointModel->getJoint(1)->max(0) = aReaderAPI->JointModel->getPosition()(1);
+    aReaderAPI->JointModel->getJoint(1)->min(0) = aReaderAPI->JointModel->getPosition()(1);
+}
+
+//=======================================================================
+//function : UnLockBasePosition
+//purpose  : *
+//=======================================================================
+void RLConvertAPI::UnLockBasePosition()
+{
+    aReaderAPI->JointModel->getJoint(0)->max(0) = MotionMaxValues[0];
+    aReaderAPI->JointModel->getJoint(0)->min(0) = MotionMinValues[0];
+    aReaderAPI->JointModel->getJoint(1)->max(0) = MotionMaxValues[1];
+    aReaderAPI->JointModel->getJoint(1)->min(0) = MotionMinValues[1];
+}
+
+//=======================================================================
 //function : IsCollision
 //purpose  : *
 //=======================================================================
@@ -293,24 +306,46 @@ void RLConvertAPI::IsCollision()
 {
     if (rl::sg::SimpleScene* simpleScene = dynamic_cast<rl::sg::SimpleScene*>(aReaderAPI->CollisionScene.get()))
     {
-        bool collision = false;
+        bool collision = false;        
         size_t index=0;
         for(std::size_t i=1;i<aReaderAPI->CollisionScene->getModel(0)->getNumBodies();++i)//body0和参考面接触，collision恒为true
         {
             for(std::size_t j=0;j<aReaderAPI->CollisionScene->getModel(1)->getNumBodies();++j)
             {
-                bool tmp = simpleScene->areColliding(aReaderAPI->CollisionScene->getModel(0)->getBody(i),
+                collision = simpleScene->areColliding(aReaderAPI->CollisionScene->getModel(0)->getBody(i),
                                                      aReaderAPI->CollisionScene->getModel(1)->getBody(j));
-                if(tmp)
+                if(collision)
+                {
                     index = i;
-                collision |= tmp;
+                    emit JointCollision(index);
+                    return;
+                }
             }
         }
 
-        if(collision)
-            emit JointCollision(index);
-        else
-            emit NoCollision();
+        //self check
+        bool selfCollision = false;
+        size_t aIndex=0,bIndex=0;
+        for(std::size_t m=0;m<aReaderAPI->CollisionScene->getModel(0)->getNumBodies();++m)
+        {
+            for(std::size_t n=aReaderAPI->CollisionScene->getModel(0)->getNumBodies()-1;n>m;--n)
+            {
+                selfCollision = simpleScene->areColliding(aReaderAPI->CollisionScene->getModel(0)->getBody(m),
+                                                     aReaderAPI->CollisionScene->getModel(0)->getBody(n));
+                if(selfCollision)
+                {
+                    if(n-m==1)
+                        continue;
+
+                    aIndex=m;
+                    bIndex=n;
+                    emit SelfCollision(aIndex,bIndex);
+                    return;
+                }
+            }
+        }
+
+        emit NoCollision();
     }
 }
 
