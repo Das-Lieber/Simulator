@@ -30,6 +30,7 @@
 #include "dock/CustomDockTabBar.h"
 
 #include "OCC/occWidget.h"
+#include "OCC/AIS_Coordinate.h"
 
 #include "QRibbon/QRibbon.h"
 

@@ -107,8 +107,8 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-    mStartVec = aConvertAPI->GetJointPosition();
-    parseProcessData();
+//    mStartVec = aConvertAPI->GetJointPosition();
+//    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
@@ -722,8 +722,15 @@ void MainWindow::on_actionEdit_Location_triggered()
 
 void MainWindow::on_actionDH_Setting_triggered()
 {
-    DHSettingWidget *aWidget = new DHSettingWidget(this);
+    DHSettingWidget *aWidget = new DHSettingWidget();
     aWidget->show();
+    connect(aWidget,&DHSettingWidget::destroyed,aWidget,&DHSettingWidget::deleteLater);
+
+    for(size_t i=0;i<aConvertAPI->GetJointModelDof();++i)
+    {
+        Handle(AIS_Coordinate) aCoord = new AIS_Coordinate();
+        aCoord->Attach(aConvertAPI->GetJointModelShapes()[i+1]);
+    }
 }
 
 void MainWindow::on_actionProcess_Data_triggered()

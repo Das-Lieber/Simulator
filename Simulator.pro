@@ -11,6 +11,7 @@ QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
     MiniDumper.cpp \
+    OCC/AIS_Coordinate.cpp \
     OCC/occWidget.cpp \
     QRibbon/QRibbon.cpp \
     delegate/tableViewJointDelegate.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 
 HEADERS += \
     MiniDumper.h \
+    OCC/AIS_Coordinate.h \
     OCC/occWidget.h \
     QRibbon/QRibbon.h \
     delegate/tableViewJointDelegate.h \
