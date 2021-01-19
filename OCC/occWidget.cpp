@@ -25,7 +25,6 @@ OCCWidget::OCCWidget(QWidget *parent) :QWidget(parent)
         m_viewer->SetLightOn();
         m_view->SetBgGradientColors(Quantity_NOC_BLUE4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
         m_view->MustBeResized();
-        m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_BLACK, 0.08, V3d_ZBUFFER);
         m_context->SetDisplayMode(AIS_Shaded, Standard_True);
     }
 
@@ -57,6 +56,12 @@ OCCWidget::OCCWidget(QWidget *parent) :QWidget(parent)
     m_manipulator->EnableMode (AIS_MM_Translation);
     m_manipulator->EnableMode (AIS_MM_Rotation);
     m_manipulator->EnableMode (AIS_MM_Scaling);
+
+    Handle(AIS_ViewCube) aCube = new AIS_ViewCube();
+    aCube->SetAutoStartAnimation(Standard_True);
+    aCube->SetSize(60);
+    aCube->SetFontHeight(13);
+    m_context->Display(aCube,Standard_False);
 }
 
 void OCCWidget::paintEvent(QPaintEvent *)

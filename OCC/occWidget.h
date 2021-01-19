@@ -17,6 +17,7 @@
 #include <V3d_View.hxx>
 #include <WNT_Window.hxx>
 #include <AIS_Manipulator.hxx>
+#include <AIS_ViewCube.hxx>
 
 class OCCWidget:public QWidget
 {

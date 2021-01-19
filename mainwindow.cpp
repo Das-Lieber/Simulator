@@ -494,26 +494,14 @@ void MainWindow::on_actionStart_Planner_triggered()
 {
     statusLabel->setText(tr("Solving......"));
 
-    // 1.remove the old path line, bug of occ,
-    // can't use aMdlWidget->getContext()->Erase(pathLines[i],false);
-    AIS_ListOfInteractive aList;
-    aMdlWidget->getContext()->DisplayedObjects(aList);
-    AIS_ListIteratorOfListOfInteractive anIterator;
-    if(pathLines.size()>0)
-    {
-        for(anIterator.Init(aList);anIterator.More();anIterator.Next())
+    // 1.remove the old path line
+    if(pathLines.size()>0){
+        for(int i=0;i<pathLines.size();++i)
         {
-            Handle(AIS_Shape) anAIS = Handle(AIS_Shape)::DownCast(anIterator.Value());
-            for(int i=0;i<pathLines.size();++i)
-            {
-                if(anAIS->Shape().IsSame(pathLines.at(i)->Shape()))
-                {
-                    aMdlWidget->getContext()->Erase(anAIS,false);
-                    pathLines.removeAt(i);
-                }
-            }
+            aMdlWidget->getContext()->Erase(pathLines[i],false);
         }
     }
+    pathLines.clear();
 
     // 2.optimize the path node
     if(mEndList.size()>1)

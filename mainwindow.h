@@ -16,7 +16,6 @@
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
-#include <AIS_ListOfInteractive.hxx>
 
 #include "delegate/tableViewJointDelegate.h"
 #include "delegate/tableViewJointModel.h"
