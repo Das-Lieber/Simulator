@@ -5,24 +5,20 @@ IMPLEMENT_STANDARD_RTTIEXT(AIS_Coordinate,AIS_InteractiveObject)
 
 AIS_Coordinate::AIS_Coordinate()
 {
+    SetZLayer(Graphic3d_ZLayerId_Topmost);
+
     MyXColor = Quantity_NOC_RED4;
     MyYColor = Quantity_NOC_GREEN4;
     MyZColor = Quantity_NOC_BLUE4;
 
-    MyRadiu = 4;
+    MyRadiu = 3;
     Mylen = 120;
+    MyNumber = 0;
     hasAttached = false;
-
-    MyXLabel = new AIS_TextLabel();
-    MyXLabel->SetColor(MyXColor);
-    MyYLabel = new AIS_TextLabel();
-    MyYLabel->SetColor(MyYColor);
-    MyZLabel = new AIS_TextLabel();
-    MyZLabel->SetColor(MyZColor);
 
     MyVX = gp_Vec(1,0,0);
     MyVY = gp_Vec(0,1,0);
-    MyVZ = gp_Vec(0,0,1);    
+    MyVZ = gp_Vec(0,0,1);
 }
 
 AIS_Coordinate::~AIS_Coordinate()
@@ -69,9 +65,6 @@ void AIS_Coordinate::Detach()
     if (!aContext.IsNull())
     {
         aContext->Remove (this, Standard_False);
-        aContext->Remove(MyXLabel,Standard_False);
-        aContext->Remove(MyYLabel,Standard_False);
-        aContext->Remove(MyZLabel,Standard_False);
     }
     hasAttached = false;
 
@@ -113,6 +106,7 @@ void AIS_Coordinate::Compute(const Handle(PrsMgr_PresentationManager3d)& thePrsM
     myAxes[0] = Axis (MyPos,MyVX, MyXColor,Mylen,MyRadiu);
     myAxes[1] = Axis (MyPos,MyVY, MyYColor,Mylen,MyRadiu);
     myAxes[2] = Axis (MyPos,MyVZ, MyZColor,Mylen,MyRadiu);
+
     for (Standard_Integer anIt = 0; anIt < 3; ++anIt)
     {
         MyCoordGroup = aPresentation->NewGroup();
@@ -120,22 +114,33 @@ void AIS_Coordinate::Compute(const Handle(PrsMgr_PresentationManager3d)& thePrsM
         Handle(Prs3d_ShadingAspect) anAspectAx = new Prs3d_ShadingAspect (new Graphic3d_AspectFillArea3d(*anAspect->Aspect()));
         anAspectAx->SetColor (myAxes[anIt].Color());
         MyCoordGroup->SetGroupPrimitivesAspect (anAspectAx->Aspect());
+
         myAxes[anIt].Compute (thePrsMgr, aPresentation, anAspectAx);
         MyCoordGroup->AddPrimitiveArray(myAxes[anIt].Array());
-    }
 
-    gp_Pnt MyEndPX = gp_Pnt(MyPos.Translated(gp_Vec(MyVX)*Mylen));
-    gp_Pnt MyEndPY = gp_Pnt(MyPos.Translated(gp_Vec(MyVY)*Mylen));
-    gp_Pnt MyEndPZ = gp_Pnt(MyPos.Translated(gp_Vec(MyVZ)*Mylen));
-    MyXLabel->SetText("X");
-    MyXLabel->SetPosition(MyEndPX);
-    this->GetContext()->Display(MyXLabel,Standard_False);
-    MyYLabel->SetText("Y");
-    MyYLabel->SetPosition(MyEndPY);
-    this->GetContext()->Display(MyYLabel,Standard_False);
-    MyZLabel->SetText("Z");
-    MyZLabel->SetPosition(MyEndPZ);
-    this->GetContext()->Display(MyZLabel,Standard_False);
+        // Display text
+        Handle(Prs3d_TextAspect) anAsp = myDrawer->TextAspect();
+        anAsp->SetColor (Quantity_NOC_YELLOW);
+        gp_Pnt MyEndPnt;
+        TCollection_ExtendedString myText;
+        if(anIt==0)
+        {
+            MyEndPnt = gp_Pnt(MyPos.Translated(gp_Vec(MyVX)*Mylen));
+            myText.AssignCat("X");
+        }
+        else if(anIt==1)
+        {
+            MyEndPnt = gp_Pnt(MyPos.Translated(gp_Vec(MyVY)*Mylen));
+            myText.AssignCat("Y");
+        }
+        else if(anIt==2)
+        {
+            MyEndPnt = gp_Pnt(MyPos.Translated(gp_Vec(MyVZ)*Mylen));
+            myText.AssignCat("Z");
+        }
+        myText.AssignCat(TCollection_ExtendedString(MyNumber));
+        Prs3d_Text::Draw (MyCoordGroup, anAsp, myText, MyEndPnt);
+    }
 
     UpdateTransformation();
 }
@@ -159,7 +164,7 @@ AIS_Coordinate::Axis::Axis(const gp_Pnt &theLoc,
 
 void AIS_Coordinate::Axis::Compute(const opencascade::handle<PrsMgr_PresentationManager> &,
                                    const opencascade::handle<Prs3d_Presentation> &,
-                                   const opencascade::handle<Prs3d_ShadingAspect> &)
+                                   const Handle(Prs3d_ShadingAspect)&)
 {
     const Standard_Real anArrowLength   = 0.25 * myLength;
 

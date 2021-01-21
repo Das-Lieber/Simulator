@@ -28,6 +28,7 @@ SOURCES += \
     dock/CustomDockWidgetBar.cpp \
     main.cpp \
     mainwindow.cpp \
+    robotics/RLAPI_DHSetting.cpp \
     robotics/RLAPI_PlanThread.cpp \
     robotics/RLAPI_Reader.cpp \
     robotics/RLAPI_Writer.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     dock/CustomDockWidgetBar.h \
     mainwindow.h \
     robotics/RLAPI_ConfigurationOptimizer.h \
+    robotics/RLAPI_DHSetting.h \
     robotics/RLAPI_PlanThread.h \
     robotics/RLAPI_Reader.h \
     robotics/RLAPI_Writer.h \

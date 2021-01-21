@@ -5,7 +5,8 @@
 #include <AIS_InteractiveObject.hxx>
 #include <AIS_InteractiveContext.hxx>
 #include <Prs3d_ShadingAspect.hxx>
-#include <AIS_TextLabel.hxx>
+#include <Prs3d_Text.hxx>
+#include <Prs3d_TextAspect.hxx>
 #include <Prs3d_Arrow.hxx>
 #include <Prs3d_Root.hxx>
 #include <AIS_Shape.hxx>
@@ -20,8 +21,16 @@ public:
 
     void Attach(const Handle(AIS_InteractiveObject) &targetObj);
     void Detach();
-    Standard_Boolean IsAttached() {return hasAttached;}
+    Standard_Boolean IsAttached() {
+        return hasAttached;
+    }
     void SetAxisVec(const int& index, const gp_Vec& aVec);
+    void SetPosition(const gp_Pnt& aPnt) {
+        MyPos = aPnt;
+    }
+    void SetNumber(const Standard_Integer aNumber) {
+        MyNumber = aNumber;
+    }
 
 private:    
 
@@ -36,14 +45,11 @@ private:
     gp_Pnt MyPos;
     Standard_ShortReal Mylen;
     Standard_ShortReal MyRadiu;
+    Standard_Integer MyNumber;
 
     Quantity_Color MyXColor;
     Quantity_Color MyYColor;
     Quantity_Color MyZColor;
-
-    Handle(AIS_TextLabel) MyXLabel;
-    Handle(AIS_TextLabel) MyYLabel;
-    Handle(AIS_TextLabel) MyZLabel;
 
     gp_Dir MyVX;
     gp_Dir MyVY;

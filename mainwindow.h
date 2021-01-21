@@ -30,13 +30,13 @@
 #include "dock/CustomDockTabBar.h"
 
 #include "OCC/occWidget.h"
-#include "OCC/AIS_Coordinate.h"
 
 #include "QRibbon/QRibbon.h"
 
 #include "robotics/RLAPI_PlanThread.h"
 #include "robotics/RLAPI_ConfigurationOptimizer.h"
 #include "robotics/RLConvertAPI.h"
+#include "robotics/RLAPI_DHSetting.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -726,10 +726,11 @@ void MainWindow::on_actionDH_Setting_triggered()
     aWidget->show();
     connect(aWidget,&DHSettingWidget::destroyed,aWidget,&DHSettingWidget::deleteLater);
 
-    for(size_t i=0;i<aConvertAPI->GetJointModelDof();++i)
+    RLAPI_DHSetting aDHSetting;
+    aDHSetting.Compute();
+    for(int i=0;i<aDHSetting.GetCoords().size();++i)
     {
-        Handle(AIS_Coordinate) aCoord = new AIS_Coordinate();
-        aCoord->Attach(aConvertAPI->GetJointModelShapes()[i+1]);
+        aMdlWidget->getContext()->Display(aDHSetting.GetCoords()[i],Standard_True);
     }
 }
 
