@@ -226,3 +226,11 @@ void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QS
     out.write(xmlContent.toLocal8Bit());
     out.close();
 }
+
+//=======================================================================
+//function : GenerateSceneXMLFile
+//purpose  : *
+//=======================================================================
+void RLAPI_Writer::WriteArgsToMdlXMLFile(const QString &aMdlXMLFileName, const QList<double> &mdlArgs)
+{
+}

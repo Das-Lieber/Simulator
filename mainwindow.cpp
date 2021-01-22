@@ -107,8 +107,8 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-//    mStartVec = aConvertAPI->GetJointPosition();
-//    parseProcessData();
+    mStartVec = aConvertAPI->GetJointPosition();
+    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);

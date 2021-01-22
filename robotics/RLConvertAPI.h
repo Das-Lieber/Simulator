@@ -72,38 +72,38 @@ public:
     QList<double> GetJointAcceleration();
 
     //! get the dynamic value, used for motion planning
-    rl::mdl::Dynamic *GetMdlDynamic(){
+    rl::mdl::Dynamic *GetMdlDynamic() const {
         rl::mdl::Dynamic *aDynamic = dynamic_cast<rl::mdl::Dynamic*>(aReaderAPI->JointModel.get());
         return aDynamic;
     };
 
     //! get the min size of all model, used for motion planning optimize
-    double GetModelMinSize(){        
+    double GetModelMinSize() const {
         return aReaderAPI->MeasureModelSize;
     }
 
     //! get the scene information,also used for motion planning
-    rl::sg::pqp::Scene *GetSolidScene(){
+    rl::sg::pqp::Scene *GetSolidScene() const {
         return aReaderAPI->CollisionScene.get();
     }
 
     //! get the links' shape,used for displaying
-    QList<Handle(AIS_Shape)> GetJointModelShapes(){
+    QList<Handle(AIS_Shape)> GetJointModelShapes() const {
         return aReaderAPI->JointAISShapes;
     }
 
     //! get the models' shape in the scene,used for displaying
-    Handle(AIS_Shape) GetMeasureModelShape(){
+    Handle(AIS_Shape) GetMeasureModelShape() const {
         return aReaderAPI->MeasureAISShape;
     }
 
     //! get the dof of the CMM
-    std::size_t GetJointModelDof(){
+    std::size_t GetJointModelDof() const {
         return aReaderAPI->JointModel->getDof();
     }
 
     //! get the type of each joint
-    QList<RLAPI_JointType> GetJointType(){
+    QList<RLAPI_JointType> GetJointType() const {
         return aReaderAPI->JointType;
     }
 

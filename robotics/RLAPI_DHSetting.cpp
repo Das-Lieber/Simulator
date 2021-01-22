@@ -1,5 +1,9 @@
 #include "RLAPI_DHSetting.h"
 
+//=======================================================================
+//function : RLAPI_DHSetting
+//purpose  : *
+//=======================================================================
 RLAPI_DHSetting::RLAPI_DHSetting()
     :theta({0,     0,      M_PI/2, 0,      0,      M_PI,    0}),
       d({   214,    116,    0,      0,      340,    0,      222}),
@@ -20,6 +24,10 @@ RLAPI_DHSetting::RLAPI_DHSetting()
     }
 }
 
+//=======================================================================
+//function : Compute
+//purpose  : *
+//=======================================================================
 void RLAPI_DHSetting::Compute()
 {
     for(int i=0;i<7;++i)
@@ -43,5 +51,36 @@ void RLAPI_DHSetting::Compute()
         //                  <<DHTrsfs.last().Value(3,1)<<DHTrsfs.last().Value(3,2)<<DHTrsfs.last().Value(3,3)<<DHTrsfs.last().Value(3,4)<<endl;
 
         DHCoords[i+1]->SetLocalTransformation(DHTrsfs.last());
+    }
+}
+
+//=======================================================================
+//function : ApplyDHArgs
+//purpose  : *
+//=======================================================================
+void RLAPI_DHSetting::ApplyDHArgs(const QString &mdlFileName)
+{
+    ComputeMdlArgs();
+    RLAPI_Writer aWriter;
+    aWriter.WriteArgsToMdlXMLFile(mdlFileName,mdlArgs);
+}
+
+//=======================================================================
+//function : ComputeMdlArgs
+//purpose  : *
+//=======================================================================
+void RLAPI_DHSetting::ComputeMdlArgs()
+{
+    mdlArgs.clear();
+
+    mdlArgs.append(DHTrsfs[0].Value(1,4));
+    mdlArgs.append(DHTrsfs[0].Value(2,4));
+    mdlArgs.append(DHTrsfs[0].Value(3,4));
+
+    for(int i=1;i<DHTrsfs.size();++i)
+    {
+        mdlArgs.append(DHTrsfs[i].Value(1,4)-DHTrsfs[i-1].Value(1,4));
+        mdlArgs.append(DHTrsfs[i].Value(2,4)-DHTrsfs[i-1].Value(2,4));
+        mdlArgs.append(DHTrsfs[i].Value(3,4)-DHTrsfs[i-1].Value(3,4));
     }
 }

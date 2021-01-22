@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
-    <height>541</height>
+    <width>469</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
    <item row="0" column="2" colspan="2">
     <widget class="QPushButton" name="pushButton_importDHData">
      <property name="text">
-      <string>import data</string>
+      <string>import</string>
      </property>
     </widget>
    </item>
@@ -91,6 +91,11 @@
      <row>
       <property name="text">
        <string>J5</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Tool</string>
       </property>
      </row>
      <column>

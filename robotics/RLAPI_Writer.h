@@ -33,6 +33,9 @@ public:
 
     //! rewrite the scene xml file
     void GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QString &aMdlFileName, const std::size_t Dof);
+
+    //! rewrite the mdl xml file
+    void WriteArgsToMdlXMLFile(const QString &aMdlXMLFileName, const QList<double> &mdlArgs);
 };
 
 #endif // RLAPI_WRITER_H
