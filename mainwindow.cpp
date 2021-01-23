@@ -5,6 +5,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    ,isRayTraceEnable(false)
+    ,isAntialiasingEnable(false)
     , mDockWidget(nullptr)
     , threadWait(false)
 {
@@ -83,14 +85,14 @@ void MainWindow::initRL()
     });
     connect(aConvertAPI,&RLConvertAPI::NoCollision,this,[=](){
         statusLabel->setText(tr("NOT COLLISION"));
-        aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_BLUE4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
+        aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_GRAY80,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
     });
 
     for (int i=0;i<aConvertAPI->GetJointModelShapes().size();++i)
     {
         Handle(AIS_Shape) aShape = aConvertAPI->GetJointModelShapes().at(i);
         if(i==0||i==1)
-            aShape->SetColor(Quantity_Color(0.4,0.4,0.4,Quantity_TOC_RGB));
+            aShape->SetColor(Quantity_NOC_GRAY60);
         aMdlWidget->getContext()->Display(aShape,Standard_False);
         aMdlWidget->getContext()->Deactivate(aShape);
     }
@@ -617,6 +619,46 @@ void MainWindow::on_actionSave_As_Picture_triggered()
     QImage image = QImage(map.Data(),aMdlWidget->width(),aMdlWidget->height(),QImage::Format_RGBA8888);
     image = image.mirrored(false, true);//need to mirror
     image.save(picName);
+}
+
+void MainWindow::on_actionRay_Trace_triggered()
+{
+    if(isRayTraceEnable)
+    {
+        aMdlWidget->getView()->ChangeRenderingParams().Method = Graphic3d_RM_RASTERIZATION;
+        isRayTraceEnable = false;
+        if(isAntialiasingEnable)
+        {
+            ui->actionAnti_Aliasing->setChecked(false);
+            aMdlWidget->getView()->ChangeRenderingParams().IsAntialiasingEnabled = Standard_False;
+            isAntialiasingEnable = false;
+        }
+        ui->actionAnti_Aliasing->setEnabled(false);
+    }
+    else
+    {
+        aMdlWidget->getView()->ChangeRenderingParams().Method = Graphic3d_RM_RAYTRACING;
+        isRayTraceEnable = true;
+        ui->actionAnti_Aliasing->setEnabled(true);
+    }
+
+    aMdlWidget->getContext()->UpdateCurrentViewer();
+}
+
+void MainWindow::on_actionAnti_Aliasing_triggered()
+{
+    if(isAntialiasingEnable)
+    {
+        aMdlWidget->getView()->ChangeRenderingParams().IsAntialiasingEnabled = Standard_False;
+        isAntialiasingEnable = false;
+    }
+    else
+    {
+        aMdlWidget->getView()->ChangeRenderingParams().IsAntialiasingEnabled = Standard_True;
+        isAntialiasingEnable = true;
+    }
+
+    aMdlWidget->getContext()->UpdateCurrentViewer();
 }
 
 void MainWindow::on_actionView_Back_triggered()

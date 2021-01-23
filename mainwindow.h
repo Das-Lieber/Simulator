@@ -74,21 +74,25 @@ private slots:
     void on_actionProcess_Data_triggered();
 
     //view
-    void on_actionSave_As_Picture_triggered();
+    void on_actionSave_As_Picture_triggered();    
+    void on_actionView_Wire_triggered();
+    void on_actionRay_Trace_triggered();
+    void on_actionAnti_Aliasing_triggered();
     void on_actionView_Back_triggered();
     void on_actionView_Top_triggered();
     void on_actionView_Front_triggered();
     void on_actionView_Bottom_triggered();
     void on_actionView_Left_triggered();
     void on_actionView_Right_triggered();
-    void on_actionView_Shade_triggered();
-    void on_actionView_Wire_triggered();    
+    void on_actionView_Shade_triggered();    
 
 private:
     Ui::MainWindow *ui;
     QLabel *statusLabel;
     QWinTaskbarButton *mTaskBarButton;
     QWinTaskbarProgress *mTaskBarProgress;
+    bool isRayTraceEnable;
+    bool isAntialiasingEnable;
 
     CustomDockWidget *mDockWidget;//point to the active dock widget in current window
     RLAPI_PlanThread *mPlannerThread;

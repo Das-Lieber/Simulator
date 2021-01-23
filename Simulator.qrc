@@ -24,5 +24,7 @@
         <file>icons/edit_location.png</file>
         <file>icons/DH_setting.png</file>
         <file>icons/process_data.png</file>
+        <file>icons/view_anti-aliasing.png</file>
+        <file>icons/view_rayTrace.png</file>
     </qresource>
 </RCC>

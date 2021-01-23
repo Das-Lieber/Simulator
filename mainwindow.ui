@@ -33,7 +33,7 @@ CustomDockWidgetBar QLabel
      <x>0</x>
      <y>0</y>
      <width>1111</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -85,6 +85,8 @@ CustomDockWidgetBar QLabel
     </widget>
     <addaction name="actionSave_As_Picture"/>
     <addaction name="menuDisplay_Model"/>
+    <addaction name="actionRay_Trace"/>
+    <addaction name="actionAnti_Aliasing"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menuView"/>
@@ -332,6 +334,36 @@ CustomDockWidgetBar QLabel
    </property>
    <property name="text">
     <string>Process Data</string>
+   </property>
+  </action>
+  <action name="actionRay_Trace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/view_rayTrace.png</normaloff>:/Simulator/icons/view_rayTrace.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ray Trace</string>
+   </property>
+  </action>
+  <action name="actionAnti_Aliasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/view_anti-aliasing.png</normaloff>:/Simulator/icons/view_anti-aliasing.png</iconset>
+   </property>
+   <property name="text">
+    <string>Anti-Aliasing</string>
    </property>
   </action>
  </widget>

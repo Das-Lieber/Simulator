@@ -23,7 +23,9 @@ OCCWidget::OCCWidget(QWidget *parent) :QWidget(parent)
         m_context = new AIS_InteractiveContext(m_viewer);
         m_viewer->SetDefaultLights();
         m_viewer->SetLightOn();
-        m_view->SetBgGradientColors(Quantity_NOC_BLUE4,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
+        m_view->ChangeRenderingParams().Method = Graphic3d_RM_RASTERIZATION;
+        m_view->ChangeRenderingParams().IsAntialiasingEnabled = Standard_False;
+        m_view->SetBgGradientColors(Quantity_NOC_GRAY80,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
         m_view->MustBeResized();
         m_context->SetDisplayMode(AIS_Shaded, Standard_True);
     }
