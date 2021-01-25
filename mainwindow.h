@@ -94,7 +94,6 @@ private:
     bool isRayTraceEnable;
     bool isAntialiasingEnable;
 
-    CustomDockWidget *mDockWidget;//point to the active dock widget in current window
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;
     RLConvertAPI *aConvertAPI;
@@ -102,10 +101,10 @@ private:
     CustomDockWidget *mOperationDock;
     tableViewJointModel *mConfigModel;
     tableViewPosModel *mOperationModel;
-    CustomDockWidget *mEditDockDlg;
     ProcessDataWidget *mProcessData;
+    CustomDockWidget *mEditDockDlg;
+    CustomDockWidget *mDHDockDlg;
 
-    std::map<Qt::DockWidgetArea, CustomDockTabBar*> mDockWidgetToolBar;
     rl::math::Vector mStartVec;
     rl::plan::VectorList mEndList;
     rl::plan::VectorList optimizedEndList;
@@ -132,16 +131,30 @@ private:
 
     //dock widget needs these functions
     void creatDockWidgetToolBar();
+
+    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget);
+    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget, Qt::Orientation orientation);
+    void showDockWidget(CustomDockWidget* dockWidget);
+    void adjustDockWidget(CustomDockWidget* dockWidget);
     void hideDockWidget(CustomDockWidget* dockWidget);
+
     void dockWidgetPinned(CustomDockWidget* dockWidget);
     void dockWidgetUnpinned(CustomDockWidget* dockWidget);
     void dockWidgetDocked(CustomDockWidget* dockWidget);
     void dockWidgetUndocked(CustomDockWidget* dockWidget);
+
     Qt::ToolBarArea dockAreaToToolBarArea(Qt::DockWidgetArea area);
     CustomDockTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
-    void showDockWidget(CustomDockWidget* dockWidget);
+    QRect getDockWidgetsAreaRect();
+    std::list<CustomDockWidget*> getDockWidgetListAtArea(Qt::DockWidgetArea area);
 
-    //init the editLocation dock widget
+
+    CustomDockWidget* m_dockWidget;
+    std::list<CustomDockWidget*> m_dockWidgets;
+    std::map<Qt::DockWidgetArea, CustomDockTabBar*> m_dockWidgetToolBar;
+
+    //init the function dock widget
     void creatEditLocationDock();
+    void creatDHSettingDock();
 };
 #endif // MAINWINDOW_H

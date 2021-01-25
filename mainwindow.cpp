@@ -5,10 +5,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    ,isRayTraceEnable(false)
-    ,isAntialiasingEnable(false)
-    , mDockWidget(nullptr)
+    , isRayTraceEnable(false)
+    , isAntialiasingEnable(false)
     , threadWait(false)
+    , m_dockWidget(nullptr)
 {
     ui->setupUi(this);
 
@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     creatDockWidgetToolBar();
     creatEditLocationDock();
+    creatDHSettingDock();
 
     QRibbon::install(this);    
 
@@ -259,195 +260,7 @@ void MainWindow::connectThread()
     });
 }
 
-void MainWindow::creatDockWidgetToolBar()
-{
-    Qt::DockWidgetArea area = Qt::LeftDockWidgetArea;
-    CustomDockTabBar* leftDockWidgetBar = new CustomDockTabBar(area);
-    mDockWidgetToolBar[area] = leftDockWidgetBar;
-    connect(leftDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
-    addToolBar(dockAreaToToolBarArea(area), leftDockWidgetBar);
-    area = Qt::RightDockWidgetArea;
-    CustomDockTabBar* rightDockWidgetBar = new CustomDockTabBar(area);
-    mDockWidgetToolBar[area] = rightDockWidgetBar;
-    connect(rightDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
-    addToolBar(dockAreaToToolBarArea(area), rightDockWidgetBar);
-    area = Qt::TopDockWidgetArea;
-    CustomDockTabBar* topDockWidgetBar = new CustomDockTabBar(area);
-    mDockWidgetToolBar[area] = topDockWidgetBar;
-    connect(topDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
-    addToolBar(dockAreaToToolBarArea(area), topDockWidgetBar);
-    area = Qt::BottomDockWidgetArea;
-    CustomDockTabBar* bottomDockWidgetBar = new CustomDockTabBar(area);
-    mDockWidgetToolBar[area] = bottomDockWidgetBar;
-    connect(bottomDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
-    addToolBar(dockAreaToToolBarArea(area), bottomDockWidgetBar);
-}
 
-void MainWindow::hideDockWidget(CustomDockWidget *dockWidget)
-{
-    if((dockWidget == nullptr) || (dockWidget->isHidden())) {
-        return;
-    }
-
-    mDockWidget = nullptr;
-
-    dockWidget->hide();
-}
-
-void MainWindow::dockWidgetPinned(CustomDockWidget *dockWidget)
-{
-    if(dockWidget == nullptr) {
-        return;
-    }
-
-    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
-    if(dockWidgetBar == nullptr) {
-        return;
-    }
-
-    mDockWidget = nullptr;
-
-    std::vector<CustomDockWidget*> dockWidgetList = dockWidget->getTabifiedDocks();
-    dockWidgetList.push_back(dockWidget);
-
-    CustomDockWidget* prevDockWidget = nullptr;
-
-    std::for_each(std::begin(dockWidgetList), std::end(dockWidgetList), [&](CustomDockWidget* dockWidget)
-    {
-        if(dockWidgetBar->removeDockWidget(dockWidget))
-        {
-            if(prevDockWidget == nullptr) {
-                QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
-            }
-            else {
-                tabifyDockWidget(prevDockWidget, dockWidget);
-            }
-
-            prevDockWidget = dockWidget;
-
-            dockWidget->setDockWidgetState(DockWidgetState::Docked);
-
-            dockWidget->show();
-        }
-    } );
-
-    dockWidget->raise();
-}
-
-void MainWindow::dockWidgetUnpinned(CustomDockWidget *dockWidget)
-{
-    if(dockWidget == nullptr) {
-        return;
-    }
-
-    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
-    if(dockWidgetBar == nullptr) {
-        return;
-    }
-
-    QList<QDockWidget*> dockWidgetList = tabifiedDockWidgets(dockWidget);
-    dockWidgetList.push_back(dockWidget);
-
-    std::for_each(std::begin(dockWidgetList), std::end(dockWidgetList), [&](QDockWidget* qDockWidget)
-    {
-        CustomDockWidget* dockWidget = static_cast<CustomDockWidget*>(qDockWidget);
-
-        dockWidget->setDockWidgetState(DockWidgetState::Hidden);
-
-        if(!dockWidget->isHidden())
-        {
-            dockWidgetBar->addDockWidget(dockWidget);
-
-            dockWidget->setTabifiedDocks(dockWidgetList);
-
-            QMainWindow::removeDockWidget(dockWidget);
-        }
-    } );
-}
-
-void MainWindow::dockWidgetDocked(CustomDockWidget *dockWidget)
-{
-    if(dockWidget == nullptr) {
-        return;
-    }
-}
-
-void MainWindow::dockWidgetUndocked(CustomDockWidget *dockWidget)
-{
-    hideDockWidget(mDockWidget);
-
-    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
-    if(dockWidgetBar == nullptr) {
-        return;
-    }
-
-    dockWidget->clearTabifiedDocks();
-
-    if(dockWidgetBar->removeDockWidget(dockWidget))
-    {
-        if(!dockWidget->isFloating()) {
-            QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
-        }
-
-        dockWidget->show();
-    }
-}
-
-Qt::ToolBarArea MainWindow::dockAreaToToolBarArea(Qt::DockWidgetArea area)
-{
-    switch(area)
-    {
-    case Qt::LeftDockWidgetArea: return Qt::LeftToolBarArea;
-    case Qt::RightDockWidgetArea: return Qt::RightToolBarArea;
-    case Qt::TopDockWidgetArea: return Qt::TopToolBarArea;
-    case Qt::BottomDockWidgetArea: return Qt::BottomToolBarArea;
-    default:
-        return Qt::ToolBarArea(0);
-    }
-}
-
-CustomDockTabBar *MainWindow::getDockWidgetBar(Qt::DockWidgetArea area)
-{
-    Q_ASSERT(mDockWidgetToolBar.find(area) != std::end(mDockWidgetToolBar));
-
-    auto it = mDockWidgetToolBar.find(area);
-    if(it != std::end(mDockWidgetToolBar)) {
-        return it->second;
-    }
-
-    return nullptr;
-}
-
-void MainWindow::showDockWidget(CustomDockWidget *dockWidget)
-{
-    if(dockWidget == nullptr) {
-        return;
-    }
-
-    if(dockWidget->isHidden())
-    {
-        hideDockWidget(mDockWidget);
-
-        if(dockWidget->isFloating())
-        {
-            QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
-            dockWidget->setFloating(false);
-
-            QMainWindow::removeDockWidget(dockWidget);
-        }
-
-        dockWidget->show();
-        dockWidget->raise();
-
-        dockWidget->setFocus();
-
-        mDockWidget = dockWidget;
-    }
-    else
-    {
-        hideDockWidget(dockWidget);
-    }
-}
 
 void MainWindow::creatEditLocationDock()
 {
@@ -458,6 +271,17 @@ void MainWindow::creatEditLocationDock()
     connect(mEditDockDlg, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
     addDockWidget(Qt::RightDockWidgetArea,mEditDockDlg);
     hideDockWidget(mEditDockDlg);
+}
+
+void MainWindow::creatDHSettingDock()
+{
+    mDHDockDlg = new CustomDockWidget;
+    connect(mDHDockDlg, &CustomDockWidget::signal_pinned, this, &MainWindow::dockWidgetPinned);
+    connect(mDHDockDlg, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
+    connect(mDHDockDlg, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
+    connect(mDHDockDlg, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
+    addDockWidget(Qt::RightDockWidgetArea,mDHDockDlg);
+    hideDockWidget(mDHDockDlg);
 }
 
 void MainWindow::on_actionView_Start_Position_triggered()
@@ -764,9 +588,16 @@ void MainWindow::on_actionEdit_Location_triggered()
 
 void MainWindow::on_actionDH_Setting_triggered()
 {
+    if(DHSettingWidget::existOne)
+    {
+        QMessageBox::critical(this,tr("error"),tr("there is an edit widget!"));
+        return;
+    }
+
     DHSettingWidget *aWidget = new DHSettingWidget();
-    aWidget->show();
-    connect(aWidget,&DHSettingWidget::destroyed,aWidget,&DHSettingWidget::deleteLater);
+    mDHDockDlg->setWidget(aWidget);
+    if(mDHDockDlg->isHidden())
+        showDockWidget(mDHDockDlg);
 
     RLAPI_DHSetting aDHSetting;
     aDHSetting.Compute();
@@ -779,4 +610,302 @@ void MainWindow::on_actionDH_Setting_triggered()
 void MainWindow::on_actionProcess_Data_triggered()
 {    
     mProcessData->show();    
+}
+
+void MainWindow::creatDockWidgetToolBar()
+{
+    Qt::DockWidgetArea area = Qt::LeftDockWidgetArea;
+    CustomDockTabBar* leftDockWidgetBar = new CustomDockTabBar(area);
+    m_dockWidgetToolBar[area] = leftDockWidgetBar;
+    connect(leftDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
+    addToolBar(dockAreaToToolBarArea(area), leftDockWidgetBar);
+
+    area = Qt::RightDockWidgetArea;
+    CustomDockTabBar* rightDockWidgetBar = new CustomDockTabBar(area);
+    m_dockWidgetToolBar[area] = rightDockWidgetBar;
+    connect(rightDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
+    addToolBar(dockAreaToToolBarArea(area), rightDockWidgetBar);
+
+    area = Qt::TopDockWidgetArea;
+    CustomDockTabBar* topDockWidgetBar = new CustomDockTabBar(area);
+    m_dockWidgetToolBar[area] = topDockWidgetBar;
+    connect(topDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
+    addToolBar(dockAreaToToolBarArea(area), topDockWidgetBar);
+
+    area = Qt::BottomDockWidgetArea;
+    CustomDockTabBar* bottomDockWidgetBar = new CustomDockTabBar(area);
+    m_dockWidgetToolBar[area] = bottomDockWidgetBar;
+    connect(bottomDockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
+    addToolBar(dockAreaToToolBarArea(area), bottomDockWidgetBar);
+}
+
+void MainWindow::addDockWidget(Qt::DockWidgetArea area, CustomDockWidget *dockWidget)
+{
+    addDockWidget(area, dockWidget, Qt::Vertical);
+}
+
+void MainWindow::addDockWidget(Qt::DockWidgetArea area, CustomDockWidget *dockWidget, Qt::Orientation orientation)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+
+    connect(dockWidget, &CustomDockWidget::signal_pinned, this, &MainWindow::dockWidgetPinned);
+    connect(dockWidget, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
+    connect(dockWidget, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
+    connect(dockWidget, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
+
+    m_dockWidgets.push_back(dockWidget);
+
+    QMainWindow::addDockWidget(area, dockWidget, orientation);
+}
+
+void MainWindow::showDockWidget(CustomDockWidget *dockWidget)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+
+    if(dockWidget->isHidden())
+    {
+        hideDockWidget(m_dockWidget);
+
+        if(dockWidget->isFloating())
+        {
+            QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
+            dockWidget->setFloating(false);
+
+            QMainWindow::removeDockWidget(dockWidget);
+        }
+
+        adjustDockWidget(dockWidget);
+
+        dockWidget->show();
+        dockWidget->raise();
+
+        dockWidget->setFocus();
+
+        m_dockWidget = dockWidget;
+    }
+    else
+    {
+        hideDockWidget(dockWidget);
+    }
+}
+
+void MainWindow::adjustDockWidget(CustomDockWidget *dockWidget)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+
+    QRect rect = getDockWidgetsAreaRect();
+    switch(dockWidget->getArea())
+    {
+    case Qt::LeftDockWidgetArea: {
+        dockWidget->setGeometry(rect.left(), rect.top(), dockWidget->width(), rect.height());
+    }
+        break;
+
+    case Qt::TopDockWidgetArea: {
+        dockWidget->setGeometry(rect.left(), rect.top(), rect.width(), dockWidget->height());
+    }
+        break;
+
+    case Qt::RightDockWidgetArea: {
+        dockWidget->setGeometry(rect.left() + rect.width() - dockWidget->width(), rect.top(), dockWidget->width(), rect.height());
+    }
+        break;
+
+    case Qt::BottomDockWidgetArea: {
+        dockWidget->setGeometry(rect.left(), rect.top() + rect.height() - dockWidget->height(), rect.width(), dockWidget->height());
+    }
+        break;
+    }
+}
+
+void MainWindow::hideDockWidget(CustomDockWidget *dockWidget)
+{
+    if((dockWidget == nullptr) || (dockWidget->isHidden())) {
+        return;
+    }
+
+    m_dockWidget = nullptr;
+
+    dockWidget->hide();
+}
+
+void MainWindow::dockWidgetPinned(CustomDockWidget *dockWidget)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    if(dockWidgetBar == nullptr) {
+        return;
+    }
+
+    m_dockWidget = nullptr;
+
+    std::vector<CustomDockWidget*> dockWidgetList = dockWidget->getTabifiedDocks();
+    dockWidgetList.push_back(dockWidget);
+
+    CustomDockWidget* prevDockWidget = nullptr;
+
+    std::for_each(std::begin(dockWidgetList), std::end(dockWidgetList), [&](CustomDockWidget* dockWidget)
+    {
+        if(dockWidgetBar->removeDockWidget(dockWidget))
+        {
+            if(prevDockWidget == nullptr) {
+                QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
+            }
+            else {
+                tabifyDockWidget(prevDockWidget, dockWidget);
+            }
+
+            prevDockWidget = dockWidget;
+
+            dockWidget->setDockWidgetState(DockWidgetState::Docked);
+
+            dockWidget->show();
+        }
+    } );
+
+    dockWidget->raise();
+}
+
+void MainWindow::dockWidgetUnpinned(CustomDockWidget *dockWidget)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    if(dockWidgetBar == nullptr) {
+        return;
+    }
+
+    QList<QDockWidget*> dockWidgetList = tabifiedDockWidgets(dockWidget);
+    dockWidgetList.push_back(dockWidget);
+
+    std::for_each(std::begin(dockWidgetList), std::end(dockWidgetList), [&](QDockWidget* qDockWidget)
+    {
+        CustomDockWidget* dockWidget = static_cast<CustomDockWidget*>(qDockWidget);
+
+        dockWidget->setDockWidgetState(DockWidgetState::Hidden);
+
+        if(!dockWidget->isHidden())
+        {
+            dockWidgetBar->addDockWidget(dockWidget);
+
+            dockWidget->setTabifiedDocks(dockWidgetList);
+
+            QMainWindow::removeDockWidget(dockWidget);
+        }
+    } );
+}
+
+void MainWindow::dockWidgetDocked(CustomDockWidget *dockWidget)
+{
+    if(dockWidget == nullptr) {
+        return;
+    }
+}
+
+void MainWindow::dockWidgetUndocked(CustomDockWidget *dockWidget)
+{
+    hideDockWidget(m_dockWidget);
+
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    if(dockWidgetBar == nullptr) {
+        return;
+    }
+
+    dockWidget->clearTabifiedDocks();
+
+    if(dockWidgetBar->removeDockWidget(dockWidget))
+    {
+        if(!dockWidget->isFloating()) {
+            QMainWindow::addDockWidget(dockWidget->getArea(), dockWidget);
+        }
+
+        dockWidget->show();
+    }
+}
+
+Qt::ToolBarArea MainWindow::dockAreaToToolBarArea(Qt::DockWidgetArea area)
+{
+    switch(area)
+    {
+    case Qt::LeftDockWidgetArea: return Qt::LeftToolBarArea;
+    case Qt::RightDockWidgetArea: return Qt::RightToolBarArea;
+    case Qt::TopDockWidgetArea: return Qt::TopToolBarArea;
+    case Qt::BottomDockWidgetArea: return Qt::BottomToolBarArea;
+    default:
+        return Qt::ToolBarArea(0);
+    }
+}
+
+CustomDockTabBar *MainWindow::getDockWidgetBar(Qt::DockWidgetArea area)
+{
+    Q_ASSERT(m_dockWidgetToolBar.find(area) != std::end(m_dockWidgetToolBar));
+
+    auto it = m_dockWidgetToolBar.find(area);
+    if(it != std::end(m_dockWidgetToolBar)) {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
+QRect MainWindow::getDockWidgetsAreaRect()
+{
+    int left = centralWidget()->x();
+    std::list<CustomDockWidget*> leftAreaDockWidgets = getDockWidgetListAtArea(Qt::LeftDockWidgetArea);
+    std::for_each(std::begin(leftAreaDockWidgets), std::end(leftAreaDockWidgets), [&left](const CustomDockWidget* dockWidget)
+    {
+        if((dockWidget->x() >= 0) && (dockWidget->width() > 0)) {
+            left = std::min(left, dockWidget->x());
+        }
+    });
+
+    int top = centralWidget()->y();
+    std::list<CustomDockWidget*> topAreaDockWidgets = getDockWidgetListAtArea(Qt::TopDockWidgetArea);
+    std::for_each(std::begin(topAreaDockWidgets), std::end(topAreaDockWidgets), [&top](const CustomDockWidget* dockWidget)
+    {
+        if((dockWidget->y() >= 0) && (dockWidget->height() > 0)) {
+            top = std::min(top, dockWidget->y());
+        }
+    });
+
+    int right = centralWidget()->x()+centralWidget()->width();
+    std::list<CustomDockWidget*> rightAreaDockWidgets = getDockWidgetListAtArea(Qt::RightDockWidgetArea);
+    std::for_each(std::begin(rightAreaDockWidgets), std::end(rightAreaDockWidgets), [&right](const CustomDockWidget* dockWidget)
+    {
+        if((dockWidget->x() >= 0) && (dockWidget->width() > 0)) {
+            right = std::max(right, dockWidget->x() + dockWidget->width());
+        }
+    });
+
+    int bottom = centralWidget()->y()+centralWidget()->height();
+    std::list<CustomDockWidget*> bottomAreaDockWidgets = getDockWidgetListAtArea(Qt::BottomDockWidgetArea);
+    std::for_each(std::begin(bottomAreaDockWidgets), std::end(bottomAreaDockWidgets), [&bottom](const CustomDockWidget* dockWidget)
+    {
+        if((dockWidget->y() >= 0) && (dockWidget->height() > 0)) {
+            bottom = std::max(bottom, dockWidget->y() + dockWidget->height());
+        }
+    });
+
+    return QRect(left, top, right-left, bottom-top);
+}
+
+std::list<CustomDockWidget *> MainWindow::getDockWidgetListAtArea(Qt::DockWidgetArea area)
+{
+    std::list<CustomDockWidget*> dockWidgetList;
+    std::copy_if(std::begin(m_dockWidgets), std::end(m_dockWidgets), std::back_inserter(dockWidgetList), [area](const CustomDockWidget* dockWidget) {
+        return (dockWidget->getArea() == area) && (dockWidget->isDocked());
+    });
+
+    return dockWidgetList;
 }

@@ -7,7 +7,7 @@ CustomDockTabBar::CustomDockTabBar(Qt::DockWidgetArea area) : m_area(area)
     setMovable(false);
     setContextMenuPolicy(Qt::PreventContextMenu);
     setOrientation(areaToOrientation(m_area));
-    layout()->setSpacing(10);
+    layout()->setSpacing(15);
     hide();
 }
 

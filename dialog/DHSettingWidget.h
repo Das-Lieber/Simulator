@@ -15,6 +15,8 @@ public:
     explicit DHSettingWidget(QWidget *parent = nullptr);
     ~DHSettingWidget();
 
+    static bool existOne;
+
 private:
     Ui::DHSettingWidget *ui;
 };

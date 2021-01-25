@@ -68,7 +68,268 @@
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">QProgressIndicator {
+      <string notr="true">/*///////////////////////////////////////////////////*/
+
+
+QWidget#widgetContainer,QWidget#widgetContainer &gt; *{
+
+	background:rgb(33,115,70);
+	background:rgb(183,71,42);
+	background:rgb(43,87,154);
+	color:#fff;
+	font-family:'simhei';
+	font-size:11pt;
+}
+
+QTabBar{
+	background:rgb(43,87,154);
+}
+
+
+QTabBar::tab {
+      background:rgb(43,87,154);
+      min-width: 12ex;
+      padding: 2px;
+	  height:24px;
+	  padding:2px 12px;
+	  color:#fff;
+  }
+
+QTabBar::tab:selected {
+      background: rgb(243,243,243);
+	  color: rgb(10, 10, 10);
+color: rgb(10, 10, 10);
+color: rgb(43,87,154);
+
+  }
+
+QTabBar::tab:hover:!selected {
+     background:rgba(0,0,0,40);
+  }
+
+
+
+QTabBar::tab:selected {
+      border-color: #9B9B9B;
+      border-bottom-color: #C2C7CB; /* same as pane color */
+  }
+
+QTabBar::tab:!selected {
+      margin-top: 0px; /* make non-selected tabs look smaller */
+  }
+
+
+/*Qmenu Style Sheets*/
+QMenu {
+    background-color: rgb(243,243,243); /* sets background of the menu 设置整个菜单区域的背景色，我用的是白色：white*/
+    border: 1px solid rgb(226,241,250);/*整个菜单区域的边框粗细、样式、颜色*/
+
+}
+ 
+QMenu::item {
+    /* sets background of menu item. set this to something non-transparent
+        if you want menu color and menu item color to be different */
+    background-color: transparent;
+    padding:3px 25px;/*设置菜单项文字上下和左右的内边距，效果就是菜单中的条目左右上下有了间隔*/
+    margin:0px 2px;/*设置菜单项的外边距*/
+    /*border-bottom:1px solid #DBDBDB;为菜单项之间添加横线间隔*/
+	color:rgb(10,10,10);
+	font-weight:bold;
+}
+ 
+QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    background-color: rgb(177,177,177);/*这一句是设置菜单项鼠标经过选中的样式*/
+color:rgb(10,10,10);
+}
+
+
+QWidget#widgetContainer{
+	margin:0;
+	padding:0;
+}
+
+
+/*
+QTabWidget:pane,QWidget#widgetMenuBar{
+	border-bottom:1px solid rgb(224,224,224);
+}
+*/
+
+
+QWidget#widgetBottomBar{
+border-bottom:1px solid blue;
+	background:blue;
+	
+}
+
+
+
+QTabWidget .QWidget{ 
+
+background: rgb(243,243,243);
+
+}
+
+QToolTip{
+	color:black;
+}
+
+ QTabWidget#tabWidgetMenuBar::pane { /* The tab widget frame */
+      border-top: 0px solid #eee;
+border-width:0;
+	 background: rgb(243,243,243);
+	padding:1px 1px;
+  }
+
+  QTabWidget#tabWidgetMenuBar::tab-bar {
+      left: 2px; /* move to the right by 5px */
+	/*height:32px;*/
+border-width:0;
+
+  }
+
+/*QTabWidget#tabWidgetMenuBar QTabBar {
+      background: rgb(255,0,0);
+  }*/
+
+  /* Style the tab using the tab sub-control. Note that
+      it reads QTabBar _not_ QTabWidget */
+  QTabWidget#tabWidgetMenuBar QTabBar::tab {
+      background: transparent;
+      min-width: 12ex;
+      padding: 2px;
+	  height:30px;
+	  padding:2px 12px;
+	  color:#fff;
+border-width:0;
+  }
+
+  QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
+      background: rgb(243,243,243);
+	  color: rgb(10, 10, 10);
+color: rgb(10, 10, 10);
+color: rgb(183,71,42);
+	color:rgb(43,87,154);
+  }
+
+QTabWidget#tabWidgetMenuBar QTabBar::tab:hover:!selected {
+     background:rgba(0,0,0,40);
+  }
+
+
+
+ QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
+      border-color: #9B9B9B;
+      border-bottom-color: #C2C7CB; /* same as pane color */
+  }
+
+  QTabWidget#tabWidgetMenuBar QTabBar::tab:!selected {
+      margin-top: 0px; /* make non-selected tabs look smaller */
+  }
+
+
+QWidget#widgetContent{
+	background:white;
+}
+
+QToolButton{
+	background:transparent;
+	border:0px solid gray;
+	color: rgb(10,10,10);
+	margin:0;
+}
+
+QToolButton{
+	padding-bottom:10px;
+}
+
+QToolButton:hover,QToolButton:checked{
+	border:1px solid rgba(100,100,100,100);
+	border-radius:2px;
+	background:rgb(198,198,198);
+}
+
+QToolButton::menu-button {
+    
+      /* 16px width + 4px for border = 20px allocated above */
+      width: 16px;
+	subcontrol-origin:margin;
+subcontrol-position: bottom center;
+	bottom:0px;
+	left:0px;
+	height:10px;
+	width:100%
+ }
+
+
+
+QMenu {
+
+    border: 1px solid rgb(226,241,250);
+}
+ 
+QMenu::item {
+    background-color: transparent;
+    padding:3px 25px;
+    margin:0px 2px;
+	color:rgb(240,240,240);
+	font-weight:bold;
+}
+QMenu::item:selected { 
+    background-color: #999999;
+}
+
+
+QPushButton,QPushButton#pushButtonStyle,QPushButton#pushButtonMinimizeTab,QPushButton#pushButtonClose,QPushButton#pushButtonFullScreen,QPushButton#pushButtonMinimum{
+	background:transparent;
+	font-weight:bold;
+	margin:0px;
+	border:0px solid #fff;
+	outline:none;
+}
+
+QPushButton:hover,QPushButton#pushButtonFullScreen:hover,QPushButton#pushButtonMinimum:hover{
+	background:rgba(0,0,0,40);
+}
+
+QPushButton:pressed,QPushButton#pushButtonFullScreen:pressed,QPushButton#pushButtonMinimum:pressed{
+	background:rgba(0,0,0,80);
+	padding-top:3px;
+}
+
+QPushButton#pushButtonClose:hover{
+	background:rgba(232,17,35,255);
+}
+
+QPushButton#pushButtonClose:pressed{
+	background:rgba(232,17,35,200);
+}
+
+QPushButton#pushButtonMinimizeTab{
+	color: rgb(112, 112, 112);
+}
+
+QPushButton#pushButtonMinimizeTab:hover{
+	background:rgb(177,177,177);
+}
+
+
+ QPushButton::menu-indicator {
+      image: none;
+      subcontrol-origin: padding;
+      subcontrol-position: bottom right;
+  }
+QTableView {
+    background-color: #f0f0f0;
+    alternate-background-color: #e6e6e6;
+    border: 1px solid #c3c3c3;
+    selection-color: white;
+    selection-background-color: rgb(43,87,154);
+    show-decoration-selected: 1;
+    border-radius: 3px;
+}
+
+QProgressIndicator {
   qproperty-color: rgb(2, 65, 132);
 }
 
@@ -756,273 +1017,6 @@ QListView {
   show-decoration-selected: 0;
   border: 1px solid rgb(43,87,154);
   background: rgb(255,255,255);
-}
-
-
-
-
-
-
-
-/*///////////////////////////////////////////////////*/
-
-
-QWidget#widgetContainer,QWidget#widgetContainer &gt; *{
-
-	background:rgb(33,115,70);
-	background:rgb(183,71,42);
-	background:rgb(43,87,154);
-	color:#fff;
-	font-family:'simhei';
-	font-size:11pt;
-}
-
-QTabBar{
-	background:rgb(43,87,154);
-}
-
-
-QTabBar::tab {
-      background:rgb(43,87,154);
-      min-width: 12ex;
-      padding: 2px;
-	  height:24px;
-	  padding:2px 12px;
-	  color:#fff;
-  }
-
-QTabBar::tab:selected {
-      background: rgb(243,243,243);
-	  color: rgb(10, 10, 10);
-color: rgb(10, 10, 10);
-color: rgb(43,87,154);
-
-  }
-
-QTabBar::tab:hover:!selected {
-     background:rgba(0,0,0,40);
-  }
-
-
-
-QTabBar::tab:selected {
-      border-color: #9B9B9B;
-      border-bottom-color: #C2C7CB; /* same as pane color */
-  }
-
-QTabBar::tab:!selected {
-      margin-top: 0px; /* make non-selected tabs look smaller */
-  }
-
-
-/*Qmenu Style Sheets*/
-QMenu {
-    background-color: rgb(243,243,243); /* sets background of the menu 设置整个菜单区域的背景色，我用的是白色：white*/
-    border: 1px solid rgb(226,241,250);/*整个菜单区域的边框粗细、样式、颜色*/
-
-}
- 
-QMenu::item {
-    /* sets background of menu item. set this to something non-transparent
-        if you want menu color and menu item color to be different */
-    background-color: transparent;
-    padding:3px 25px;/*设置菜单项文字上下和左右的内边距，效果就是菜单中的条目左右上下有了间隔*/
-    margin:0px 2px;/*设置菜单项的外边距*/
-    /*border-bottom:1px solid #DBDBDB;为菜单项之间添加横线间隔*/
-	color:rgb(10,10,10);
-	font-weight:bold;
-}
- 
-QMenu::item:selected { /* when user selects item using mouse or keyboard */
-    background-color: rgb(177,177,177);/*这一句是设置菜单项鼠标经过选中的样式*/
-color:rgb(10,10,10);
-}
-
-
-QWidget#widgetContainer{
-	margin:0;
-	padding:0;
-}
-
-
-/*
-QTabWidget:pane,QWidget#widgetMenuBar{
-	border-bottom:1px solid rgb(224,224,224);
-}
-*/
-
-
-QWidget#widgetBottomBar{
-border-bottom:1px solid blue;
-	background:blue;
-	
-}
-
-
-
-QTabWidget .QWidget{ 
-
-background: rgb(243,243,243);
-
-}
-
-QToolTip{
-	color:black;
-}
-
- QTabWidget#tabWidgetMenuBar::pane { /* The tab widget frame */
-      border-top: 0px solid #eee;
-border-width:0;
-	 background: rgb(243,243,243);
-	padding:1px 1px;
-  }
-
-  QTabWidget#tabWidgetMenuBar::tab-bar {
-      left: 2px; /* move to the right by 5px */
-	/*height:32px;*/
-border-width:0;
-
-  }
-
-/*QTabWidget#tabWidgetMenuBar QTabBar {
-      background: rgb(255,0,0);
-  }*/
-
-  /* Style the tab using the tab sub-control. Note that
-      it reads QTabBar _not_ QTabWidget */
-  QTabWidget#tabWidgetMenuBar QTabBar::tab {
-      background: transparent;
-      min-width: 12ex;
-      padding: 2px;
-	  height:30px;
-	  padding:2px 12px;
-	  color:#fff;
-border-width:0;
-  }
-
-  QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
-      background: rgb(243,243,243);
-	  color: rgb(10, 10, 10);
-color: rgb(10, 10, 10);
-color: rgb(183,71,42);
-	color:rgb(43,87,154);
-  }
-
-QTabWidget#tabWidgetMenuBar QTabBar::tab:hover:!selected {
-     background:rgba(0,0,0,40);
-  }
-
-
-
- QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
-      border-color: #9B9B9B;
-      border-bottom-color: #C2C7CB; /* same as pane color */
-  }
-
-  QTabWidget#tabWidgetMenuBar QTabBar::tab:!selected {
-      margin-top: 0px; /* make non-selected tabs look smaller */
-  }
-
-
-QWidget#widgetContent{
-	background:white;
-}
-
-QToolButton{
-	background:transparent;
-	border:0px solid gray;
-	color: rgb(10,10,10);
-	margin:0;
-}
-
-QToolButton{
-	padding-bottom:10px;
-}
-
-QToolButton:hover,QToolButton:checked{
-	border:1px solid rgba(100,100,100,100);
-	border-radius:2px;
-	background:rgb(198,198,198);
-}
-
-QToolButton::menu-button {
-    
-      /* 16px width + 4px for border = 20px allocated above */
-      width: 16px;
-	subcontrol-origin:margin;
-subcontrol-position: bottom center;
-	bottom:0px;
-	left:0px;
-	height:10px;
-	width:100%
- }
-
-
-
-QMenu {
-
-    border: 1px solid rgb(226,241,250);
-}
- 
-QMenu::item {
-    background-color: transparent;
-    padding:3px 25px;
-    margin:0px 2px;
-	color:rgb(240,240,240);
-	font-weight:bold;
-}
-QMenu::item:selected { 
-    background-color: #999999;
-}
-
-
-QPushButton,QPushButton#pushButtonStyle,QPushButton#pushButtonMinimizeTab,QPushButton#pushButtonClose,QPushButton#pushButtonFullScreen,QPushButton#pushButtonMinimum{
-	background:transparent;
-	font-weight:bold;
-	margin:0px;
-	border:0px solid #fff;
-	outline:none;
-}
-
-QPushButton:hover,QPushButton#pushButtonFullScreen:hover,QPushButton#pushButtonMinimum:hover{
-	background:rgba(0,0,0,40);
-}
-
-QPushButton:pressed,QPushButton#pushButtonFullScreen:pressed,QPushButton#pushButtonMinimum:pressed{
-	background:rgba(0,0,0,80);
-	padding-top:3px;
-}
-
-QPushButton#pushButtonClose:hover{
-	background:rgba(232,17,35,255);
-}
-
-QPushButton#pushButtonClose:pressed{
-	background:rgba(232,17,35,200);
-}
-
-QPushButton#pushButtonMinimizeTab{
-	color: rgb(112, 112, 112);
-}
-
-QPushButton#pushButtonMinimizeTab:hover{
-	background:rgb(177,177,177);
-}
-
-
- QPushButton::menu-indicator {
-      image: none;
-      subcontrol-origin: padding;
-      subcontrol-position: bottom right;
-  }
-QTableView {
-    background-color: #f0f0f0;
-    alternate-background-color: #e6e6e6;
-    border: 1px solid #c3c3c3;
-    selection-color: white;
-    selection-background-color: rgb(43,87,154);
-    show-decoration-selected: 1;
-    border-radius: 3px;
 }</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,10,1">
