@@ -1,4 +1,5 @@
-#include "CustomDockWidgetBar.h"
+#include "CustomDockWidgetTitle.h"
+#include "CustomDockWidget.h"
 
 static const QString s_autoHideDisabledStyle =
         R"(QPushButton
@@ -60,96 +61,102 @@ static const QString s_menuButtonStyle =
         image: url(:/dock/icons/menu_dockwidget_pressed.png);
         })";
 
-CustomDockWidgetBar::CustomDockWidgetBar(QWidget *parent)
-    : QWidget(parent),
-      leftMousePressed(false),
-      titleLabel(nullptr),
-      autoHideEnabled(false)
+CustomDockWidgetTitle::CustomDockWidgetTitle()
+	: QFrame(nullptr)
+	, m_LMPressed(false)
+	, m_textLabel(nullptr)
+    , m_autoHideEnabled(false)
 {
-    setAttribute(Qt::WA_StyledBackground);
-    QHBoxLayout* layout = new QHBoxLayout();
-    setLayout(layout);
+	setObjectName("DockWidgetTitle");
 
-    layout->setContentsMargins(3, 2, 3, 2);
-    layout->setSpacing(1);
+	QHBoxLayout* layout = new QHBoxLayout();
+	setLayout(layout);
 
-    titleLabel = new QLabel();
+	layout->setContentsMargins(3, 2, 3, 2);
+	layout->setSpacing(1);
 
-    layout->addWidget(titleLabel);
+	m_textLabel = new QLabel();
 
-    layout->addStretch(1);
+	layout->addWidget(m_textLabel);
 
-    menuButton = new QPushButton();
-    menuButton->setToolTip(tr("Menu"));
-    menuButton->setStyleSheet(s_menuButtonStyle);
-    layout->addWidget(menuButton);
+	layout->addStretch(1);
 
-    autoHideButton = new QPushButton();
-    autoHideButton->setToolTip(tr("Auto Hide"));
-    autoHideButton->setStyleSheet(s_autoHideDisabledStyle);
-    autoHideEnabled = true;
-    layout->addWidget(autoHideButton);
+	m_menuButton = new QPushButton();
+	m_menuButton->setStyleSheet(s_menuButtonStyle);
+	m_menuButton->setToolTip(tr("Menu"));
+	layout->addWidget(m_menuButton);
 
-    closeButton = new QPushButton();
-    closeButton->setToolTip(tr("Close"));
-    closeButton->setStyleSheet(s_closeButtonStyle);
-    layout->addWidget(closeButton);
+	m_autoHideButton = new QPushButton();
+	m_autoHideButton->setStyleSheet(s_autoHideDisabledStyle);
+	m_autoHideButton->setToolTip(tr("Auto Hide"));
+	m_autoHideEnabled = true;
+	layout->addWidget(m_autoHideButton);
 
-    connect(menuButton, &QPushButton::clicked, this, &CustomDockWidgetBar::menuButton_pressed);
-    connect(autoHideButton, &QPushButton::clicked, this, &CustomDockWidgetBar::autoHideButton_pressed);
-    connect(closeButton, &QPushButton::clicked, this, &CustomDockWidgetBar::closeButton_pressed);
+	m_closeButton = new QPushButton();
+	m_closeButton->setStyleSheet(s_closeButtonStyle);
+	m_closeButton->setToolTip(tr("Close"));
+	layout->addWidget(m_closeButton);
+
+	connect(m_menuButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::menuButton_pressed);
+	connect(m_autoHideButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::autoHideButton_pressed);
+	connect(m_closeButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::closeButton_pressed);
 }
 
-void CustomDockWidgetBar::setFloating(bool state)
+CustomDockWidgetTitle::~CustomDockWidgetTitle()
 {
-    autoHideButton->setVisible(state);
 }
 
-void CustomDockWidgetBar::setAutoHideEnadled(bool state)
+void CustomDockWidgetTitle::setFloating(bool state)
 {
-    autoHideEnabled = state;
-    if(state) {
-        autoHideButton->setStyleSheet(s_autoHideEnabledStyle);
+    m_autoHideButton->setVisible(state);
+}
+
+void CustomDockWidgetTitle::setAutoHideEnadled(bool enabled)
+{
+	m_autoHideEnabled = enabled;
+
+	if(enabled) {
+		m_autoHideButton->setStyleSheet(s_autoHideEnabledStyle);
+	}
+	else {	
+		m_autoHideButton->setStyleSheet(s_autoHideDisabledStyle);
+	}
+}
+
+QPoint CustomDockWidgetTitle::menuPos() const
+{
+	QPoint p = m_menuButton->pos();
+	p.ry() += m_menuButton->height();
+
+	return QPoint(mapToGlobal(p));
+}
+
+void CustomDockWidgetTitle::mousePressEvent(QMouseEvent* event)
+{
+    if((event->button() == Qt::LeftButton) && m_autoHideEnabled) {
+        m_LMPressed = true;
     }
-    else {
-        autoHideButton->setStyleSheet(s_autoHideDisabledStyle);
-    }
+
+    QFrame::mousePressEvent(event);
 }
 
-QPoint CustomDockWidgetBar::menuPos() const
-{
-    QPoint p = menuButton->pos();
-    p.ry() += menuButton->height();
-
-    return QPoint(mapToGlobal(p));
-}
-
-void CustomDockWidgetBar::mousePressEvent(QMouseEvent *event)
-{
-    if((event->button() == Qt::LeftButton) && autoHideEnabled) {
-        leftMousePressed = true;
-    }
-
-    QWidget::mousePressEvent(event);
-}
-
-void CustomDockWidgetBar::mouseReleaseEvent(QMouseEvent *event)
+void CustomDockWidgetTitle::mouseReleaseEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::LeftButton) {
-        leftMousePressed = false;
+        m_LMPressed = false;
     }
 
-    QWidget::mouseReleaseEvent(event);
+    QFrame::mouseReleaseEvent(event);
 }
 
-void CustomDockWidgetBar::mouseMoveEvent(QMouseEvent *event)
+void CustomDockWidgetTitle::mouseMoveEvent(QMouseEvent* event)
 {
-    if(leftMousePressed)
+    if(m_LMPressed)
     {
-        QDockWidget* dockWidget = static_cast<QDockWidget*>(parentWidget());
+        CustomDockWidget* dockWidget = static_cast<CustomDockWidget*>(parentWidget());
         if(dockWidget != nullptr)
         {
-            leftMousePressed = false;
+            m_LMPressed = false;
 
             dockWidget->setFloating(true);
 
@@ -164,5 +171,5 @@ void CustomDockWidgetBar::mouseMoveEvent(QMouseEvent *event)
         }
     }
 
-    QWidget::mouseMoveEvent(event);
+    QFrame::mouseMoveEvent(event);
 }

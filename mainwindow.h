@@ -12,6 +12,7 @@
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
 #include <QInputDialog>
+#include <QLabel>
 
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
@@ -27,7 +28,7 @@
 #include "dialog/ProcessDataWidget.h"
 
 #include "dock/CustomDockWidget.h"
-#include "dock/CustomDockTabBar.h"
+#include "dock/CustomDockWidgetTabBar.h"
 
 #include "OCC/occWidget.h"
 
@@ -129,32 +130,42 @@ private:
     void drawPathLine();
     void connectThread();
 
-    //dock widget needs these functions
-    void creatDockWidgetToolBar();
-
-    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget);
-    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget, Qt::Orientation orientation);
-    void showDockWidget(CustomDockWidget* dockWidget);
-    void adjustDockWidget(CustomDockWidget* dockWidget);
-    void hideDockWidget(CustomDockWidget* dockWidget);
-
-    void dockWidgetPinned(CustomDockWidget* dockWidget);
-    void dockWidgetUnpinned(CustomDockWidget* dockWidget);
-    void dockWidgetDocked(CustomDockWidget* dockWidget);
-    void dockWidgetUndocked(CustomDockWidget* dockWidget);
-
-    Qt::ToolBarArea dockAreaToToolBarArea(Qt::DockWidgetArea area);
-    CustomDockTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
-    QRect getDockWidgetsAreaRect();
-    std::list<CustomDockWidget*> getDockWidgetListAtArea(Qt::DockWidgetArea area);
-
-
-    CustomDockWidget* m_dockWidget;
-    std::list<CustomDockWidget*> m_dockWidgets;
-    std::map<Qt::DockWidgetArea, CustomDockTabBar*> m_dockWidgetToolBar;
-
     //init the function dock widget
     void creatEditLocationDock();
     void creatDHSettingDock();
+
+    //dock widget needs these functions
+private:
+
+    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget);
+    void addDockWidget(Qt::DockWidgetArea area, CustomDockWidget* dockWidget, Qt::Orientation orientation);
+    void removeDockWidget(CustomDockWidget* dockWidget);
+
+    void showDockWidget(CustomDockWidget* dockWidget);
+    void hideDockWidget(CustomDockWidget* dockWidget);
+
+    QRect getDockWidgetsAreaRect();
+    void adjustDockWidget(CustomDockWidget* dockWidget);
+
+    CustomDockWidgetTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
+    std::list<CustomDockWidget*> getDockWidgetListAtArea(Qt::DockWidgetArea area);
+    void createDockWidgetBar(Qt::DockWidgetArea area);
+
+
+    // Turn on the AutoHide option
+    void dockWidgetPinned(CustomDockWidget* dockWidget);
+
+    // Turn off the AutoHide option
+    void dockWidgetUnpinned(CustomDockWidget* dockWidget);
+
+    // DockWidget has been docked
+    void dockWidgetDocked(CustomDockWidget* dockWidget);
+
+    // DockWidget has been undocked
+    void dockWidgetUndocked(CustomDockWidget* dockWidget);
+
+    CustomDockWidget* m_dockWidget; // Current active(slide out) dockwidget or null
+    std::list<CustomDockWidget*> m_dockWidgets; // List of all created dockwidgets
+    std::map<Qt::DockWidgetArea, CustomDockWidgetTabBar*> m_dockWidgetBar;  // List of 4 dock tabbars
 };
 #endif // MAINWINDOW_H

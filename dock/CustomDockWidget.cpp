@@ -1,162 +1,185 @@
-#include "CustomDockWidget.h"
+#include "mainwindow.h"
 
-CustomDockWidget::CustomDockWidget(QWidget *parent):
-    QDockWidget(parent),
-    dockWidgetState(DockWidgetState::Unknown),
-    m_area(Qt::NoDockWidgetArea),
-    contents(nullptr)
+CustomDockWidget::CustomDockWidget()
+	: QDockWidget(nullptr)
+	, m_area(Qt::NoDockWidgetArea)
+	, m_state(DockWidgetState::Unknown)
+    , contents(nullptr)
 {
-    titleWidget = new CustomDockWidgetBar;
-    this->setTitleBarWidget(titleWidget);
-    setAttribute(Qt::WA_StyledBackground);//use qss to set this object
+	setAutoFillBackground(true);
 
-    globalLayout = new QVBoxLayout;
-    globalLayout->setContentsMargins(0, 2, 0, 0);
+    m_titleWidget = new CustomDockWidgetTitle();
 
-    QWidget* widget = new QWidget();
-    widget->setLayout(globalLayout);
-    QDockWidget::setWidget(widget);
+	setTitleBarWidget(m_titleWidget);
 
-    connect(titleWidget, &CustomDockWidgetBar::menuButton_pressed, this,[=]() {
-        QMenu menu;
-        menu.addAction("Float", this, SLOT(slot_menuAction()));
-        menu.addAction("Dock", this, SLOT(slot_menuAction()));
-        menu.addAction("Auto Hide", this, SLOT(slot_menuAction()));
-        menu.addAction("Hide", this, SLOT(slot_menuAction()));
 
-        menu.exec(titleWidget->menuPos());
-    });
+	m_layout = new QVBoxLayout;
+	m_layout->setContentsMargins(0, 2, 0, 0);
 
-    connect(titleWidget, &CustomDockWidgetBar::autoHideButton_pressed, this, [=](){
-        if(isMinimized())
-        {
-            setDockWidgetState(DockWidgetState::Docked);
-            emit signal_pinned(this);
-        }
-        else
-        {
-            setDockWidgetState(DockWidgetState::Hidden);
-            emit signal_unpinned(this);
-        }
-    });
+	QWidget* widget = new QWidget();
+	widget->setLayout(m_layout);
+	QDockWidget::setWidget(widget);
 
-    connect(titleWidget, &CustomDockWidgetBar::closeButton_pressed, this, [=](){
-        if(contents!=nullptr)
-            contents->deleteLater();
-
-        if(isMinimized()) {
-            emit signal_pinned(this);
-        }
-
-        setDockWidgetState(DockWidgetState::Closed);
-
-        hide();
-    });
+    connect(m_titleWidget, &CustomDockWidgetTitle::menuButton_pressed, this, &CustomDockWidget::openTitleMenu);
+    connect(m_titleWidget, &CustomDockWidgetTitle::autoHideButton_pressed, this, &CustomDockWidget::autoHideStateToggle);
+    connect(m_titleWidget, &CustomDockWidgetTitle::closeButton_pressed, this, &CustomDockWidget::closeDockWidget);
 
     connect(this, &QDockWidget::dockLocationChanged, this, &CustomDockWidget::updateDockLocation);
     connect(this, &QDockWidget::topLevelChanged, this, &CustomDockWidget::updateTopLevelState);
 }
 
-void CustomDockWidget::setWidget(QWidget *widget)
+CustomDockWidget::~CustomDockWidget()
 {
-    globalLayout->addWidget(widget);
-    setWindowTitle(widget->windowTitle());
-    contents = widget;
+}
+	
+void CustomDockWidget::setWindowTitle(const QString& text)
+{
+	QString title = text.isEmpty() ? "Noname" : text;
+
+	m_titleWidget->setText(title);
+	QDockWidget::setWindowTitle(title);
 }
 
-void CustomDockWidget::setDockWidgetState(DockWidgetState state)
+void CustomDockWidget::closeDockWidget()
 {
-    dockWidgetState = state;
-    switch(state)
-    {
-        case DockWidgetState::Docked:
-            titleWidget->setFloating(true);
-            break;
-        case DockWidgetState::Floating:
-            titleWidget->setFloating(false);
-            break;
-        case DockWidgetState::Hidden:
-            titleWidget->setAutoHideEnadled(true);
-            break;
-        case DockWidgetState::Closed:
-            break;
-        default:
-            break;
-    }
+    if(contents!=nullptr)
+        contents->deleteLater();
+	if(isMinimized()) {
+		emit signal_pinned(this);
+	}
+
+	setState(DockWidgetState::Closed);
+
+	hide();
+}
+
+void CustomDockWidget::openTitleMenu()
+{
+	QMenu menu;
+	menu.addAction("Float", this, SLOT(slot_menuAction()));
+	menu.addAction("Dock", this, SLOT(slot_menuAction()));
+	menu.addAction("Auto Hide", this, SLOT(slot_menuAction()));
+	menu.addAction("Hide", this, SLOT(slot_menuAction()));
+
+	menu.exec(m_titleWidget->menuPos());
+}
+
+void CustomDockWidget::autoHideStateToggle()
+{
+	if(isMinimized()) 
+	{
+		setState(DockWidgetState::Docked);
+		emit signal_pinned(this);
+	}
+	else 
+	{
+		setState(DockWidgetState::Hidden);
+		emit signal_unpinned(this);
+	}
+}
+
+void CustomDockWidget::updateDockLocation(Qt::DockWidgetArea area)
+{
+	m_area = area;
+
+	if(m_area != Qt::NoDockWidgetArea) {
+		updateTopLevelState(false);
+	}
+}
+
+void CustomDockWidget::updateTopLevelState(bool topLevel)
+{
+	m_titleWidget->setAutoHideEnadled(false);
+
+	if(topLevel)
+	{
+		setState(DockWidgetState::Floating);
+
+        std::for_each(m_tabifieds.begin(), m_tabifieds.end(), [&](CustomDockWidget* dockWidget) {
+			dockWidget->removeFromTabifiedDocks(this);
+ 		} );
+
+		clearTabifiedDocks();
+
+		emit signal_undocked(this);
+	}
+	else
+	{
+		setState(DockWidgetState::Docked);
+
+        QList<QDockWidget*> tabifiedDockWidgetList = static_cast<MainWindow*>(parentWidget())->tabifiedDockWidgets(this);
+		tabifiedDockWidgetList.push_back(this);
+
+		std::for_each(std::begin(tabifiedDockWidgetList), std::end(tabifiedDockWidgetList), [&](QDockWidget* qDockWidget) {
+            qobject_cast<CustomDockWidget*>(qDockWidget)->setTabifiedDocks(tabifiedDockWidgetList);
+		} );
+
+		emit signal_docked(this);
+	}
+}
+
+void CustomDockWidget::setState(DockWidgetState state)
+{
+	m_state = state;
+
+	switch(state)
+	{
+		case DockWidgetState::Docked:
+			m_titleWidget->setFloating(true);
+			break;
+		case DockWidgetState::Floating:
+			m_titleWidget->setFloating(false);
+			break;
+		case DockWidgetState::Hidden:
+			m_titleWidget->setAutoHideEnadled(true);
+			break;
+		case DockWidgetState::Closed:
+			break;
+		default:
+			break;
+	}
+}
+
+bool CustomDockWidget::event(QEvent* event)
+{
+	if(event->type() == QEvent::Enter)
+	{
+	}
+	else if(event->type() == QEvent::Leave)
+	{
+	}
+	else if(event->type() == QEvent::FocusOut)
+	{
+	}
+
+	// Make sure the rest of events are handled
+	return QDockWidget::event(event);
+}
+
+void CustomDockWidget::setWidget(QWidget* widget)
+{
+	m_layout->addWidget(widget);
+    setWindowTitle(widget->windowTitle());
+    contents = widget;
 }
 
 void CustomDockWidget::removeWidget()
 {
     if(contents!=nullptr)
-        globalLayout->removeWidget(contents);
+        m_layout->removeWidget(contents);
     contents->deleteLater();
 }
 
-void CustomDockWidget::setTabifiedDocks(const QList<QDockWidget *> &dockWidgetList)
+void CustomDockWidget::setTabifiedDocks(const QList<QDockWidget*>& dockWidgetList)
 {
-    m_tabifieds.clear();
+	m_tabifieds.clear();
 
-    std::transform(std::begin(dockWidgetList), std::end(dockWidgetList), std::back_inserter(m_tabifieds), [&](QDockWidget* qDockWidget) {
+	std::transform(std::begin(dockWidgetList), std::end(dockWidgetList), std::back_inserter(m_tabifieds), [&](QDockWidget* qDockWidget) {
         return static_cast<CustomDockWidget*>(qDockWidget);
-    } );
+	} );
 }
 
-bool CustomDockWidget::event(QEvent *event)
+void CustomDockWidget::removeFromTabifiedDocks(CustomDockWidget* dockWidget)
 {
-    if(event->type() == QEvent::Enter)
-    {
-    }
-    else if(event->type() == QEvent::Leave)
-    {
-    }
-    else if(event->type() == QEvent::FocusOut)
-    {
-    }
-
-    // Make sure the rest of events are handled
-    return QDockWidget::event(event);
-}
-
-void CustomDockWidget::updateDockLocation(Qt::DockWidgetArea area)
-{
-    m_area = area;
-    if(area != Qt::NoDockWidgetArea) {
-        updateTopLevelState(false);
-    }
-}
-
-void CustomDockWidget::updateTopLevelState(bool topLevel)
-{
-    titleWidget->setAutoHideEnadled(false);
-
-    if(topLevel)
-    {
-        setDockWidgetState(DockWidgetState::Floating);
-
-        std::for_each(m_tabifieds.begin(), m_tabifieds.end(), [&](CustomDockWidget* dockWidget) {
-            dockWidget->removeFromTabifiedDocks(this);
-        } );
-
-        clearTabifiedDocks();
-
-        emit signal_undocked(this);
-    }
-    else
-    {
-        setDockWidgetState(DockWidgetState::Docked);
-
-        QList<QDockWidget*> tabifiedDockWidgetList = static_cast<QMainWindow*>(parentWidget())->tabifiedDockWidgets(this);
-        tabifiedDockWidgetList.push_back(this);
-
-        std::for_each(std::begin(tabifiedDockWidgetList), std::end(tabifiedDockWidgetList), [&](QDockWidget* qDockWidget) {
-            qobject_cast<CustomDockWidget*>(qDockWidget)->setTabifiedDocks(tabifiedDockWidgetList);
-        } );
-
-        emit signal_docked(this);
-    }
-}
-
-void CustomDockWidget::removeFromTabifiedDocks(CustomDockWidget *dockWidget)
-{
-    m_tabifieds.erase(std::remove(std::begin(m_tabifieds), std::end(m_tabifieds), dockWidget), std::end(m_tabifieds));
+	m_tabifieds.erase(std::remove(std::begin(m_tabifieds), std::end(m_tabifieds), dockWidget), std::end(m_tabifieds));
 }

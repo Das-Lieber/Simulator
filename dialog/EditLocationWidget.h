@@ -8,8 +8,6 @@
 #include <gp_Trsf.hxx>
 #include <gp_Ax1.hxx>
 
-#include "dock/CustomDockWidget.h"
-
 namespace Ui {
 class EditLocationWidget;
 }
