@@ -1,5 +1,4 @@
 ﻿#include "RLAPI_Writer.h"
-#include <QDebug>
 
 //=======================================================================
 //function : RLAPI_Writer
@@ -233,18 +232,39 @@ void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QS
 //=======================================================================
 void RLAPI_Writer::WriteArgsToMdlXMLFile(const QString &aMdlXMLFileName, const QList<double> &mdlArgs)
 {
-    QFile output("D:/a.xml");
-    output.open(QIODevice::WriteOnly);
-    QXmlStreamWriter stream(&output);
+    // the lines that contains the mdl arguments
+    QList<int> targetLines{
+        172,173,174,
+        202,203,204,
+        232,233,234,
+        262,263,264,
+        292,293,294,
+        322,323,324,
+        352,353,354
+    };
 
-    stream.setAutoFormatting(true);
-    stream.writeStartDocument();
-    stream.writeStartElement("rlmdl");
-    stream.writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    stream.writeAttribute("xsi:noNamespaceSchemaLocation", "rlmdl.xsd");
-    stream.writeTextElement("model", "Qt Project");
-    stream.writeEndElement(); // rlmdl
-    stream.writeEndDocument();
+    QFile aFile(aMdlXMLFileName);
+    aFile.open(QIODevice::ReadOnly);
+    QTextStream aStream(&aFile);
+    QString xmlContent;
 
-    output.close();
+    int argIndex=0;
+    int lineIndex=0;
+    while(!aStream.atEnd())
+    {
+        QString aLine = aStream.readLine();
+        lineIndex++;
+        if(targetLines.contains(lineIndex))
+        {
+            aLine.replace(QRegExp("(-?\\d\\d*\\.\\d+)|(-?\\d+)"),QString::number(mdlArgs[argIndex],'g',3));
+            argIndex++;
+        }
+        xmlContent.append(aLine);
+        xmlContent.append("\n");
+    }
+    aFile.close();
+
+    aFile.open(QIODevice::WriteOnly);
+    aFile.write(xmlContent.toLocal8Bit());
+    aFile.close();
 }
