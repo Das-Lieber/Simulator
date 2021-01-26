@@ -1,5 +1,4 @@
 ﻿#include "occWidget.h"
-#include <QDebug>
 
 OCCWidget::OCCWidget(QWidget *parent) :QWidget(parent)
 {

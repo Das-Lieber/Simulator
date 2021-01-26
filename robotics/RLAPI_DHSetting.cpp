@@ -30,6 +30,12 @@ RLAPI_DHSetting::RLAPI_DHSetting()
 //=======================================================================
 void RLAPI_DHSetting::Compute()
 {
+    DHTrsfs.clear();
+    for(int j=1;j<8;++j)
+    {
+        DHCoords[j]->SetPosition(gp_Pnt(0,0,0));
+    }
+
     for(int i=0;i<7;++i)
     {
         gp_Trsf tmp;

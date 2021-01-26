@@ -233,4 +233,18 @@ void RLAPI_Writer::GenerateSceneXMLFile(const QString &aSgVrmlFileName, const QS
 //=======================================================================
 void RLAPI_Writer::WriteArgsToMdlXMLFile(const QString &aMdlXMLFileName, const QList<double> &mdlArgs)
 {
+    QFile output("D:/a.xml");
+    output.open(QIODevice::WriteOnly);
+    QXmlStreamWriter stream(&output);
+
+    stream.setAutoFormatting(true);
+    stream.writeStartDocument();
+    stream.writeStartElement("rlmdl");
+    stream.writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+    stream.writeAttribute("xsi:noNamespaceSchemaLocation", "rlmdl.xsd");
+    stream.writeTextElement("model", "Qt Project");
+    stream.writeEndElement(); // rlmdl
+    stream.writeEndDocument();
+
+    output.close();
 }

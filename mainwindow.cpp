@@ -2,6 +2,10 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 
+static QString JointMdlFile = "./mdl/GP8.xml";
+static QString JoingtSgFile = "./scene/GP_DMISModel.xml";
+static QString JointModelFile = "./brep/GP8";
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -63,9 +67,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::initRL()
 {
-    QString JointMdlFile = "./mdl/GP8.xml";
-    QString JoingtSgFile = "./scene/GP_DMISModel.xml";
-    QString JointModelFile = "./brep/GP8";
     aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);
     aConvertAPI->InitLoadData();
 
@@ -593,21 +594,65 @@ void MainWindow::on_actionDH_Setting_triggered()
 {
     if(DHSettingWidget::existOne)
     {
-        QMessageBox::critical(this,tr("error"),tr("there is an edit widget!"));
+        QMessageBox::critical(this,tr("error"),tr("there is an setting widget!"));
         return;
     }
 
+    RLAPI_DHSetting *aDHSetting = new RLAPI_DHSetting;
+    aDHSetting->Compute();
+    for(int i=0;i<aDHSetting->GetCoords().size();++i)
+    {
+        aMdlWidget->getContext()->Display(aDHSetting->GetCoords()[i],Standard_True);
+    }
+
     DHSettingWidget *aWidget = new DHSettingWidget();
+    aWidget->SetTheta(aDHSetting->GetTheta());
+    aWidget->SetD(aDHSetting->GetD());
+    aWidget->SetAlpha(aDHSetting->GetAlpha());
+    aWidget->SetA(aDHSetting->GetA());
+
+    QList<double> type;
+    for(int i=0;i<aConvertAPI->GetJointType().size();++i)
+    {
+        if(aConvertAPI->GetJointType()[i] == RLAPI_JointType::Revolute)
+            type.append(0);
+        else if(aConvertAPI->GetJointType()[i] == RLAPI_JointType::Prismatic)
+            type.append(1);
+    }
+    aWidget->SetType(type);
+    aWidget->SetMin(aConvertAPI->MotionMinValues);
+    aWidget->SetMax(aConvertAPI->MotionMaxValues);
+
     mDHDockDlg->setWidget(aWidget);    
     if(mDHDockDlg->isHidden())
         showDockWidget(mDHDockDlg);
 
-    RLAPI_DHSetting aDHSetting;
-    aDHSetting.Compute();
-    for(int i=0;i<aDHSetting.GetCoords().size();++i)
-    {
-        aMdlWidget->getContext()->Display(aDHSetting.GetCoords()[i],Standard_True);
-    }
+    connect(aWidget,&DHSettingWidget::requestClose,this,[=](){
+        mDHDockDlg->removeWidget();
+        hideDockWidget(mDHDockDlg);
+        for(int i=0;i<aDHSetting->GetCoords().size();++i)
+        {
+            aMdlWidget->getContext()->Erase(aDHSetting->GetCoords()[i],Standard_True);
+        }
+    });
+
+    connect(aWidget,&DHSettingWidget::requestCompute,this,[=](){
+        QList<double> theta = aWidget->GetTheta();
+        aDHSetting->SetTheta(theta);
+        QList<double> d = aWidget->GetD();
+        aDHSetting->SetD(d);
+        QList<double> alpha = aWidget->GetAlpha();
+        aDHSetting->SetAlpha(alpha);
+        QList<double> a = aWidget->GetA();
+        aDHSetting->SetA(a);
+
+        aDHSetting->Compute();
+        aMdlWidget->getView()->Update();
+    });
+
+    connect(aWidget,&DHSettingWidget::requestWriteMdl,this,[=](){
+        aDHSetting->ApplyDHArgs(JointMdlFile);
+    });
 }
 
 void MainWindow::on_actionProcess_Data_triggered()

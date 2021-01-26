@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QXmlStreamWriter>
 
 #include <Poly_Triangulation.hxx>
 #include <BRep_Tool.hxx>

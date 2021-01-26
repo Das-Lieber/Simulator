@@ -62,6 +62,26 @@ public:
         a = vals;
     }
 
+    //! return the theta value
+    QList<double> GetTheta() const {
+        return theta;
+    }
+
+    //! return the d value
+    QList<double> GetD() const {
+        return d;
+    }
+
+    //! return the alpha value
+    QList<double> GetAlpha() const {
+        return alpha;
+    }
+
+    //! return the a value
+    QList<double> GetA() const {
+        return a;
+    }
+
 private:
     QList<double> theta;
     QList<double> d;
