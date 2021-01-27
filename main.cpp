@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MiniDumper dumper;
 
-//    QTranslator aTranslator;
-//    aTranslator.load(":/Simulator/Simulator_CN.qm");
-//    a.installTranslator(&aTranslator);
+    QTranslator aTranslator;
+    aTranslator.load(":/Simulator/Simulator_CN.qm");
+    a.installTranslator(&aTranslator);
 
     MainWindow window;
     window.show();

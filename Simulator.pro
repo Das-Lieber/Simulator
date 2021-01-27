@@ -66,8 +66,7 @@ FORMS += \
     dialog/ProcessDataWidget.ui \
     mainwindow.ui
 
-#TRANSLATIONS += Simulator_CN.ts \
-#                Simulator_EN.ts
+#TRANSLATIONS += Simulator_CN.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

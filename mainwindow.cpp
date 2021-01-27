@@ -17,9 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 #if _DEBUG
-    setWindowTitle("Simulator_d");
+    setWindowTitle(tr("Simulator_d"));
 #else
-    setWindowTitle("Simulator");
+    setWindowTitle(tr("Simulator"));
 #endif    
 
     //init occ
@@ -114,8 +114,8 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-//    mStartVec = aConvertAPI->GetJointPosition();
-//    parseProcessData();
+    mStartVec = aConvertAPI->GetJointPosition();
+    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
@@ -334,15 +334,16 @@ void MainWindow::on_actionStart_Planner_triggered()
     pathLines.clear();
 
     // 2.optimize the path node
-    if(mEndList.size()>1)
-    {
-        RLAPI_ConfigurationOptimizer anOptimizer;
-        anOptimizer.SetStartConfigurations(mStartVec);
-        anOptimizer.SetEndConfigurations(mEndList);
-        anOptimizer.theDynamic = aConvertAPI->GetMdlDynamic();
-        optimizedEndList = anOptimizer.Process();
-    }
-    else optimizedEndList = mEndList;
+//    if(mEndList.size()>1)
+//    {
+//        RLAPI_ConfigurationOptimizer anOptimizer;
+//        anOptimizer.SetStartConfigurations(mStartVec);
+//        anOptimizer.SetEndConfigurations(mEndList);
+//        anOptimizer.theDynamic = aConvertAPI->GetMdlDynamic();
+//        optimizedEndList = anOptimizer.Process();
+//    }
+//    else optimizedEndList = mEndList;
+    optimizedEndList = mEndList;
 
     // 3.start
     totalPathLen=0;
@@ -379,7 +380,10 @@ void MainWindow::on_actionExit_Planner_triggered()
     int result = QMessageBox::warning(this,tr("warning"),tr("Sure to exit the plan thread?\n"
                                                "This may cause uncertain consequences."),QMessageBox::Yes,QMessageBox::No);
     if(result==QMessageBox::Yes)
+    {
         mPlannerThread->terminate();
+        RLAPI_PlanThread::PlannerSolved = false;
+    }
     else
         return;
 }
@@ -555,7 +559,11 @@ void MainWindow::parseProcessData()
         tcpInfo.append(tcpPnts[k].VZ);qDebug()<<tcpPnts[k].tcpPos.X()<<tcpPnts[k].tcpPos.Y()<<tcpPnts[k].tcpPos.Z()<<tcpPnts[k].VX<<tcpPnts[1].VY<<tcpPnts[k].VZ;
 
         if(aConvertAPI->SetInverseValue(tcpInfo))
+        {
+            displayJointPosition();
+            displayOperationalPosition();
             mEndList.push_back(aConvertAPI->GetJointPosition());
+        }
     }
 }
 
@@ -598,6 +606,15 @@ void MainWindow::on_actionDH_Setting_triggered()
         return;
     }
 
+    rl::math::Vector ZeroPos;
+    ZeroPos.resize(8);
+    for (int i=0;i<8;++i) {
+        ZeroPos[i] = 0;
+    }
+    aConvertAPI->SetJointValue(ZeroPos);
+    mConfigModel->initData(aConvertAPI->GetJointPosition());
+    mConfigModel->updateModel();
+
     RLAPI_DHSetting *aDHSetting = new RLAPI_DHSetting;
     aDHSetting->Compute();
     for(int i=0;i<aDHSetting->GetCoords().size();++i)
@@ -634,6 +651,7 @@ void MainWindow::on_actionDH_Setting_triggered()
         {
             aMdlWidget->getContext()->Erase(aDHSetting->GetCoords()[i],Standard_True);
         }
+        delete aDHSetting;
     });
 
     connect(aWidget,&DHSettingWidget::requestCompute,this,[=](){
