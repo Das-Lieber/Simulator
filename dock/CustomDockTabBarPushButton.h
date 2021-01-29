@@ -23,12 +23,12 @@ inline Qt::Orientation areaToOrientation(Qt::DockWidgetArea area)
     }
 }
 
-class CustomDockWidgetTabButton : public QPushButton
+class CustomDockTabBarPushButton : public QPushButton
 {
 	Q_OBJECT
 public:
-    CustomDockWidgetTabButton(const QString& text, Qt::DockWidgetArea area);
-    ~CustomDockWidgetTabButton();
+    CustomDockTabBarPushButton(const QString& text, Qt::DockWidgetArea area);
+    ~CustomDockTabBarPushButton();
 
 	void setAction(QAction* action) { m_action = action; }
 	QAction* getAction() const { return m_action; }

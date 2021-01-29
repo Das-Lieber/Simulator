@@ -1,6 +1,6 @@
-#include "CustomDockWidgetTabButton.h"
+#include "CustomDockTabBarPushButton.h"
 
-CustomDockWidgetTabButton::CustomDockWidgetTabButton(const QString& text, Qt::DockWidgetArea area)
+CustomDockTabBarPushButton::CustomDockTabBarPushButton(const QString& text, Qt::DockWidgetArea area)
     : QPushButton(text, nullptr)
 	, m_action(nullptr)
     , m_area(area)
@@ -22,11 +22,11 @@ CustomDockWidgetTabButton::CustomDockWidgetTabButton(const QString& text, Qt::Do
 	}
 }
 
-CustomDockWidgetTabButton::~CustomDockWidgetTabButton()
+CustomDockTabBarPushButton::~CustomDockTabBarPushButton()
 {	
 }
 
-void CustomDockWidgetTabButton::setText_(const QString& text)
+void CustomDockTabBarPushButton::setText_(const QString& text)
 {
 	int aw = (m_orientation == Qt::Horizontal) ? width() - 4 : height() - 4;
 
@@ -52,7 +52,7 @@ void CustomDockWidgetTabButton::setText_(const QString& text)
 	}
 }
 
-QStyleOptionButton CustomDockWidgetTabButton::getStyleOption() const
+QStyleOptionButton CustomDockTabBarPushButton::getStyleOption() const
 {
     QStyleOptionButton opt;
     opt.initFrom(this);
@@ -99,7 +99,7 @@ QStyleOptionButton CustomDockWidgetTabButton::getStyleOption() const
     return opt;
 }
 
-void CustomDockWidgetTabButton::paintEvent(QPaintEvent* event)
+void CustomDockTabBarPushButton::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event);
 
@@ -118,13 +118,13 @@ void CustomDockWidgetTabButton::paintEvent(QPaintEvent* event)
 	painter.drawControl(QStyle::CE_PushButton, getStyleOption());
 }
 
-void CustomDockWidgetTabButton::resizeEvent(QResizeEvent* event)
+void CustomDockTabBarPushButton::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event)
 	setText_(text());
 }
 
-QSize CustomDockWidgetTabButton::sizeHint() const
+QSize CustomDockTabBarPushButton::sizeHint() const
 {
     QSize size = QPushButton::sizeHint();
     if(m_orientation == Qt::Vertical) {

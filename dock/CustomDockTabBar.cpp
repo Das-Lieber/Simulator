@@ -1,6 +1,6 @@
-#include "CustomDockWidgetTabBar.h"
+#include "CustomDockTabBar.h"
 
-CustomDockWidgetTabBar::CustomDockWidgetTabBar(Qt::DockWidgetArea area)
+CustomDockTabBar::CustomDockTabBar(Qt::DockWidgetArea area)
 	: m_area(area)
 {
 	setObjectName("DockWidgetBar");
@@ -24,33 +24,33 @@ CustomDockWidgetTabBar::CustomDockWidgetTabBar(Qt::DockWidgetArea area)
 	hide();
 }
 
-CustomDockWidgetTabBar::~CustomDockWidgetTabBar()
+CustomDockTabBar::~CustomDockTabBar()
 {
 }
 
-void CustomDockWidgetTabBar::insertSpacing()
+void CustomDockTabBar::insertSpacing()
 {
 	if(m_spacer != nullptr) {
         m_spacer->setFixedWidth(26);
 	}
 }
 
-void CustomDockWidgetTabBar::removeSpacing()
+void CustomDockTabBar::removeSpacing()
 {
 	if(m_spacer != nullptr) {
 		m_spacer->setFixedWidth(0);
 	}
 }
 
-void CustomDockWidgetTabBar::addDockWidget(CustomDockWidget* dockWidget)
+void CustomDockTabBar::addDockWidget(CustomDockWidget* dockWidget)
 {
 	if(dockWidget == nullptr) {
 		return;
 	}
 
-	CustomDockWidgetTabButton* dockWidgetTabButton = new CustomDockWidgetTabButton(dockWidget->windowTitle(), dockWidget->getArea());
+	CustomDockTabBarPushButton* dockWidgetTabButton = new CustomDockTabBarPushButton(dockWidget->windowTitle(), dockWidget->getArea());
 
-	connect(dockWidgetTabButton, &QPushButton::clicked, this, &CustomDockWidgetTabBar::dockWidgetButton_clicked);
+	connect(dockWidgetTabButton, &QPushButton::clicked, this, &CustomDockTabBar::dockWidgetButton_clicked);
 
 	m_tabs[dockWidgetTabButton] = dockWidget;
 
@@ -62,13 +62,13 @@ void CustomDockWidgetTabBar::addDockWidget(CustomDockWidget* dockWidget)
 	}
 }
 
-bool CustomDockWidgetTabBar::removeDockWidget(CustomDockWidget* dockWidget)
+bool CustomDockTabBar::removeDockWidget(CustomDockWidget* dockWidget)
 {
 	if(dockWidget == nullptr) {
 		return false;
 	}
 
-	auto it = std::find_if(std::begin(m_tabs), std::end(m_tabs), [dockWidget](const std::pair<CustomDockWidgetTabButton*, CustomDockWidget*> v) {
+	auto it = std::find_if(std::begin(m_tabs), std::end(m_tabs), [dockWidget](const std::pair<CustomDockTabBarPushButton*, CustomDockWidget*> v) {
 		return v.second == dockWidget;
 	} );
 
@@ -76,7 +76,7 @@ bool CustomDockWidgetTabBar::removeDockWidget(CustomDockWidget* dockWidget)
 		return false;
 	}
 
-	CustomDockWidgetTabButton* dockWidgetTabButton = it->first;
+	CustomDockTabBarPushButton* dockWidgetTabButton = it->first;
 		
 	m_tabs.erase(it);
 
@@ -89,9 +89,9 @@ bool CustomDockWidgetTabBar::removeDockWidget(CustomDockWidget* dockWidget)
 	return true;
 }
 
-void CustomDockWidgetTabBar::dockWidgetButton_clicked()
+void CustomDockTabBar::dockWidgetButton_clicked()
 {
-	CustomDockWidgetTabButton* dockWidgetTabButton = dynamic_cast<CustomDockWidgetTabButton*>(sender());
+	CustomDockTabBarPushButton* dockWidgetTabButton = dynamic_cast<CustomDockTabBarPushButton*>(sender());
 	if(dockWidgetTabButton == nullptr) {
 		return;
 	}

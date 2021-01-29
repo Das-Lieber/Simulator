@@ -4,7 +4,7 @@
 #include <QMenu>
 #include <QMainWindow>
 
-#include "CustomDockWidgetTitle.h"
+#include "CustomDockWidgetBar.h"
 
 enum class DockWidgetState
 {
@@ -66,7 +66,7 @@ private slots:
 
 private:
 	Qt::DockWidgetArea m_area;
-    CustomDockWidgetTitle* m_titleWidget;
+    CustomDockWidgetBar* m_titleWidget;
 	DockWidgetState m_state;
 	QVBoxLayout* m_layout;
     std::vector<CustomDockWidget*> m_tabifieds;

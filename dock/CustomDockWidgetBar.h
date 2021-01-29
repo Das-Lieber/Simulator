@@ -9,12 +9,12 @@
 #include <QDockWidget>
 #include <QSizePolicy>
 
-class CustomDockWidgetTitle : public QFrame
+class CustomDockWidgetBar : public QFrame
 {
 	Q_OBJECT
 public:
-    CustomDockWidgetTitle();
-    ~CustomDockWidgetTitle();
+    CustomDockWidgetBar();
+    ~CustomDockWidgetBar();
 
 	QString getText() const { return m_textLabel->text(); }
 	void setText(const QString& text) { m_textLabel->setText(text); }

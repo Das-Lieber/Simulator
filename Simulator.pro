@@ -22,10 +22,10 @@ SOURCES += \
     dialog/EditLocationWidget.cpp \
     dialog/ProcessDataWidget.cpp \
     dialog/SqlTableViewDelegate.cpp \
+    dock/CustomDockTabBar.cpp \
+    dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
-    dock/CustomDockWidgetTabBar.cpp \
-    dock/CustomDockWidgetTabButton.cpp \
-    dock/CustomDockWidgetTitle.cpp \
+    dock/CustomDockWidgetBar.cpp \
     main.cpp \
     mainwindow.cpp \
     robotics/RLAPI_DHSetting.cpp \
@@ -47,10 +47,10 @@ HEADERS += \
     dialog/EditLocationWidget.h \
     dialog/ProcessDataWidget.h \
     dialog/SqlTableViewDelegate.h \
+    dock/CustomDockTabBar.h \
+    dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \
-    dock/CustomDockWidgetTabBar.h \
-    dock/CustomDockWidgetTabButton.h \
-    dock/CustomDockWidgetTitle.h \
+    dock/CustomDockWidgetBar.h \
     mainwindow.h \
     robotics/RLAPI_ConfigurationOptimizer.h \
     robotics/RLAPI_DHSetting.h \

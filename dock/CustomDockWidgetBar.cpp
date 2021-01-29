@@ -1,4 +1,4 @@
-#include "CustomDockWidgetTitle.h"
+#include "CustomDockWidgetBar.h"
 #include "CustomDockWidget.h"
 
 static const QString s_autoHideDisabledStyle =
@@ -61,7 +61,7 @@ static const QString s_menuButtonStyle =
         image: url(:/dock/icons/menu_dockwidget_pressed.png);
         })";
 
-CustomDockWidgetTitle::CustomDockWidgetTitle()
+CustomDockWidgetBar::CustomDockWidgetBar()
 	: QFrame(nullptr)
 	, m_LMPressed(false)
 	, m_textLabel(nullptr)
@@ -97,21 +97,21 @@ CustomDockWidgetTitle::CustomDockWidgetTitle()
 	m_closeButton->setToolTip(tr("Close"));
 	layout->addWidget(m_closeButton);
 
-	connect(m_menuButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::menuButton_pressed);
-	connect(m_autoHideButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::autoHideButton_pressed);
-	connect(m_closeButton, &QPushButton::clicked, this, &CustomDockWidgetTitle::closeButton_pressed);
+    connect(m_menuButton, &QPushButton::clicked, this, &CustomDockWidgetBar::menuButton_pressed);
+    connect(m_autoHideButton, &QPushButton::clicked, this, &CustomDockWidgetBar::autoHideButton_pressed);
+    connect(m_closeButton, &QPushButton::clicked, this, &CustomDockWidgetBar::closeButton_pressed);
 }
 
-CustomDockWidgetTitle::~CustomDockWidgetTitle()
+CustomDockWidgetBar::~CustomDockWidgetBar()
 {
 }
 
-void CustomDockWidgetTitle::setFloating(bool state)
+void CustomDockWidgetBar::setFloating(bool state)
 {
     m_autoHideButton->setVisible(state);
 }
 
-void CustomDockWidgetTitle::setAutoHideEnadled(bool enabled)
+void CustomDockWidgetBar::setAutoHideEnadled(bool enabled)
 {
 	m_autoHideEnabled = enabled;
 
@@ -123,7 +123,7 @@ void CustomDockWidgetTitle::setAutoHideEnadled(bool enabled)
 	}
 }
 
-QPoint CustomDockWidgetTitle::menuPos() const
+QPoint CustomDockWidgetBar::menuPos() const
 {
 	QPoint p = m_menuButton->pos();
 	p.ry() += m_menuButton->height();
@@ -131,7 +131,7 @@ QPoint CustomDockWidgetTitle::menuPos() const
 	return QPoint(mapToGlobal(p));
 }
 
-void CustomDockWidgetTitle::mousePressEvent(QMouseEvent* event)
+void CustomDockWidgetBar::mousePressEvent(QMouseEvent* event)
 {
     if((event->button() == Qt::LeftButton) && m_autoHideEnabled) {
         m_LMPressed = true;
@@ -140,7 +140,7 @@ void CustomDockWidgetTitle::mousePressEvent(QMouseEvent* event)
     QFrame::mousePressEvent(event);
 }
 
-void CustomDockWidgetTitle::mouseReleaseEvent(QMouseEvent* event)
+void CustomDockWidgetBar::mouseReleaseEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::LeftButton) {
         m_LMPressed = false;
@@ -149,7 +149,7 @@ void CustomDockWidgetTitle::mouseReleaseEvent(QMouseEvent* event)
     QFrame::mouseReleaseEvent(event);
 }
 
-void CustomDockWidgetTitle::mouseMoveEvent(QMouseEvent* event)
+void CustomDockWidgetBar::mouseMoveEvent(QMouseEvent* event)
 {
     if(m_LMPressed)
     {

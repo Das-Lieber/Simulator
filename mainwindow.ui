@@ -14,12 +14,12 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">CustomDockWidgetTitle
+   <string notr="true">CustomDockWidgetBar
 {
 	background: rgb(43,87,154);
 	color: rgb(255,255,255);
 }
-CustomDockWidgetTitle QLabel
+CustomDockWidgetBar QLabel
 {
 	font: bold;
 	background: rgb(43,87,154);
@@ -33,7 +33,7 @@ CustomDockWidgetTitle QLabel
      <x>0</x>
      <y>0</y>
      <width>1111</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">

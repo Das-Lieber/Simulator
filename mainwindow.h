@@ -28,7 +28,7 @@
 #include "dialog/ProcessDataWidget.h"
 
 #include "dock/CustomDockWidget.h"
-#include "dock/CustomDockWidgetTabBar.h"
+#include "dock/CustomDockTabBar.h"
 
 #include "OCC/occWidget.h"
 
@@ -98,6 +98,7 @@ private:
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;
     RLConvertAPI *aConvertAPI;
+    RLAPI_DHSetting *aDHSetting;
     CustomDockWidget *mConfigDock;
     CustomDockWidget *mOperationDock;
     tableViewJointModel *mConfigModel;
@@ -117,8 +118,10 @@ private:
     gp_Pnt currentPahtPnt;
     gp_Pnt endPnt;
     QList<Handle(AIS_Shape)> pathLines;
+    QList<Handle(AIS_Coordinate)> mDHCoords;
 
     void parseProcessData();
+    void updateDHCoordinates();
 
     //init the robot and dock model
     void creatConfigDock();
@@ -147,7 +150,7 @@ private:
     QRect getDockWidgetsAreaRect();
     void adjustDockWidget(CustomDockWidget* dockWidget);
 
-    CustomDockWidgetTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
+    CustomDockTabBar* getDockWidgetBar(Qt::DockWidgetArea area);
     std::list<CustomDockWidget*> getDockWidgetListAtArea(Qt::DockWidgetArea area);
     void createDockWidgetBar(Qt::DockWidgetArea area);
 
@@ -166,6 +169,6 @@ private:
 
     CustomDockWidget* m_dockWidget; // Current active(slide out) dockwidget or null
     std::list<CustomDockWidget*> m_dockWidgets; // List of all created dockwidgets
-    std::map<Qt::DockWidgetArea, CustomDockWidgetTabBar*> m_dockWidgetBar;  // List of 4 dock tabbars
+    std::map<Qt::DockWidgetArea, CustomDockTabBar*> m_dockWidgetBar;  // List of 4 dock tabbars
 };
 #endif // MAINWINDOW_H

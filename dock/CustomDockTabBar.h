@@ -4,14 +4,14 @@
 #include <QAction>
 
 #include "CustomDockWidget.h"
-#include "CustomDockWidgetTabButton.h"
+#include "CustomDockTabBarPushButton.h"
 
-class CustomDockWidgetTabBar : public QToolBar
+class CustomDockTabBar : public QToolBar
 {
 	Q_OBJECT
 public:
-    explicit CustomDockWidgetTabBar(Qt::DockWidgetArea area);
-    ~CustomDockWidgetTabBar();
+    explicit CustomDockTabBar(Qt::DockWidgetArea area);
+    ~CustomDockTabBar();
 
 public:
 	void addDockWidget(CustomDockWidget* dockWidget);
@@ -29,5 +29,5 @@ signals:
 private:
 	Qt::DockWidgetArea m_area;
 	QWidget* m_spacer;
-	std::map<CustomDockWidgetTabButton*, CustomDockWidget*> m_tabs;
+    std::map<CustomDockTabBarPushButton*, CustomDockWidget*> m_tabs;
 };

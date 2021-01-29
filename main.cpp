@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     a.installTranslator(&aTranslator);
 
     MainWindow window;
-    window.show();
+    window.showMaximized();
     QTimer::singleShot(100,&window, &MainWindow::initRL);//show first, then load the data
     return a.exec();
 }

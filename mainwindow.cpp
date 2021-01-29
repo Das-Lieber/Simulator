@@ -62,6 +62,7 @@ MainWindow::~MainWindow()
 {
     delete mPlannerThread;
     delete mProcessData;
+    delete aDHSetting;
     delete ui;
 }
 
@@ -69,6 +70,7 @@ void MainWindow::initRL()
 {
     aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);
     aConvertAPI->InitLoadData();
+    aDHSetting = new RLAPI_DHSetting;
 
     mTaskBarProgress->setValue(80);
 
@@ -78,6 +80,10 @@ void MainWindow::initRL()
         {
             displayJointPosition();
             displayOperationalPosition();
+        }
+        if(DHSettingWidget::existOne)
+        {
+            updateDHCoordinates();
         }
     });
     connect(aConvertAPI,&RLConvertAPI::JointCollision,this,[=](const size_t &index){
@@ -114,8 +120,7 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-    mStartVec = aConvertAPI->GetJointPosition();
-    parseProcessData();
+//    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
@@ -290,6 +295,12 @@ void MainWindow::creatDHSettingDock()
 
 void MainWindow::on_actionView_Start_Position_triggered()
 {
+    if(mStartVec.size()==0)
+    {
+        statusLabel->setText(tr("start position not set!"));
+        return;
+    }
+
     aConvertAPI->SetJointValue(mStartVec);
     displayJointPosition();
     displayOperationalPosition();
@@ -297,7 +308,13 @@ void MainWindow::on_actionView_Start_Position_triggered()
 
 void MainWindow::on_actionView_End_Position_triggered()
 {
-    aConvertAPI->SetJointValue(*mEndList.begin());
+    if(mEndList.size()==0)
+    {
+        statusLabel->setText(tr("end position not set!"));
+        return;
+    }
+
+    aConvertAPI->SetJointValue(*mEndList.rbegin());
     displayJointPosition();
     displayOperationalPosition();
 }
@@ -556,15 +573,34 @@ void MainWindow::parseProcessData()
         tcpInfo.append(tcpPnts[k].tcpPos.Z());
         tcpInfo.append(tcpPnts[k].VX);
         tcpInfo.append(tcpPnts[k].VY);
-        tcpInfo.append(tcpPnts[k].VZ);qDebug()<<tcpPnts[k].tcpPos.X()<<tcpPnts[k].tcpPos.Y()<<tcpPnts[k].tcpPos.Z()<<tcpPnts[k].VX<<tcpPnts[1].VY<<tcpPnts[k].VZ;
+        tcpInfo.append(tcpPnts[k].VZ);
+//        qDebug()<<tcpPnts[k].tcpPos.X()<<tcpPnts[k].tcpPos.Y()<<tcpPnts[k].tcpPos.Z()<<tcpPnts[k].VX<<tcpPnts[1].VY<<tcpPnts[k].VZ;
 
         if(aConvertAPI->SetInverseValue(tcpInfo))
         {
             displayJointPosition();
             displayOperationalPosition();
-            mEndList.push_back(aConvertAPI->GetJointPosition());
+            if(k==0)
+                mStartVec = aConvertAPI->GetJointPosition();
+            else
+                mEndList.push_back(aConvertAPI->GetJointPosition());
         }
     }
+}
+
+void MainWindow::updateDHCoordinates()
+{
+    aDHSetting->SetBasePosition(gp_Pnt(aConvertAPI->GetJointPosition()[0],
+                                aConvertAPI->GetJointPosition()[1],0));
+    QList<double> delta;
+    for(int i=0;i<6;++i)
+    {
+        delta.append(aConvertAPI->GetJointPosition()[i+2]);
+    }
+    delta.append(0);
+    aDHSetting->SetJointDelta(delta);
+
+    aDHSetting->ComputeFK();
 }
 
 void MainWindow::on_actionEdit_Location_triggered()
@@ -606,20 +642,12 @@ void MainWindow::on_actionDH_Setting_triggered()
         return;
     }
 
-    rl::math::Vector ZeroPos;
-    ZeroPos.resize(8);
-    for (int i=0;i<8;++i) {
-        ZeroPos[i] = 0;
-    }
-    aConvertAPI->SetJointValue(ZeroPos);
-    mConfigModel->initData(aConvertAPI->GetJointPosition());
-    mConfigModel->updateModel();
+    updateDHCoordinates();
 
-    RLAPI_DHSetting *aDHSetting = new RLAPI_DHSetting;
-    aDHSetting->Compute();
-    for(int i=0;i<aDHSetting->GetCoords().size();++i)
+    mDHCoords = aDHSetting->GetCoords();
+    for(int i=0;i<mDHCoords.size();++i)
     {
-        aMdlWidget->getContext()->Display(aDHSetting->GetCoords()[i],Standard_True);
+        aMdlWidget->getContext()->Display(mDHCoords[i],Standard_True);
     }
 
     DHSettingWidget *aWidget = new DHSettingWidget();
@@ -651,7 +679,6 @@ void MainWindow::on_actionDH_Setting_triggered()
         {
             aMdlWidget->getContext()->Erase(aDHSetting->GetCoords()[i],Standard_True);
         }
-        delete aDHSetting;
     });
 
     connect(aWidget,&DHSettingWidget::requestCompute,this,[=](){
@@ -698,9 +725,9 @@ void MainWindow::createDockWidgetBar(Qt::DockWidgetArea area)
         return;
     }
 
-    CustomDockWidgetTabBar* dockWidgetBar = new CustomDockWidgetTabBar(area);
+    CustomDockTabBar* dockWidgetBar = new CustomDockTabBar(area);
     m_dockWidgetBar[area] = dockWidgetBar;
-    connect(dockWidgetBar, &CustomDockWidgetTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
+    connect(dockWidgetBar, &CustomDockTabBar::signal_dockWidgetButton_clicked, this, &MainWindow::showDockWidget);
 
     addToolBar(dockAreaToToolBarArea(area), dockWidgetBar);
 }
@@ -711,7 +738,7 @@ void MainWindow::dockWidgetUnpinned(CustomDockWidget* dockWidget)
         return;
     }
 
-    CustomDockWidgetTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
     if(dockWidgetBar == nullptr) {
         return;
     }
@@ -751,7 +778,7 @@ void MainWindow::dockWidgetPinned(CustomDockWidget* dockWidget)
         return;
     }
 
-    CustomDockWidgetTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
     if(dockWidgetBar == nullptr) {
         return;
     }
@@ -854,7 +881,7 @@ void MainWindow::adjustDockWidget(CustomDockWidget* dockWidget)
     }
 }
 
-CustomDockWidgetTabBar* MainWindow::getDockWidgetBar(Qt::DockWidgetArea area)
+CustomDockTabBar* MainWindow::getDockWidgetBar(Qt::DockWidgetArea area)
 {
     Q_ASSERT(m_dockWidgetBar.find(area) != std::end(m_dockWidgetBar));
 
@@ -933,7 +960,7 @@ void MainWindow::dockWidgetUndocked(CustomDockWidget* dockWidget)
 {
     hideDockWidget(m_dockWidget);
 
-    CustomDockWidgetTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
+    CustomDockTabBar* dockWidgetBar = getDockWidgetBar(dockWidget->getArea());
     if(dockWidgetBar == nullptr) {
         return;
     }

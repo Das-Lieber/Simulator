@@ -8,7 +8,8 @@ RLAPI_DHSetting::RLAPI_DHSetting()
     :theta({0,     0,      M_PI/2, 0,      0,      M_PI,    0}),
       d({   214,    116,    0,      0,      340,    0,      222}),
       alpha({0,     M_PI/2, 0,      -M_PI/2, M_PI/2, M_PI/2,    0}),
-      a({    0,     -40,    345,    40,     0,      0,      61})
+      a({    0,     -40,    345,    40,     0,      0,      61}),
+      delta({0,0,0,0,0,0,0})
 {
     srcPnt = gp_Pnt(0,0,0);
 
@@ -17,11 +18,27 @@ RLAPI_DHSetting::RLAPI_DHSetting()
         Handle(AIS_Coordinate) aCoord = new AIS_Coordinate;
         DHCoords.append(aCoord);
     }
-    DHCoords[0]->SetPosition(srcPnt);
-    for(int j=1;j<8;++j)
+
+    for(int j=0;j<8;++j)
     {
         DHCoords[j]->SetNumber(j);
     }
+}
+
+//=======================================================================
+//function : ~RLAPI_DHSetting
+//purpose  : *
+//=======================================================================
+RLAPI_DHSetting::~RLAPI_DHSetting()
+{
+    theta.clear();
+    d.clear();
+    alpha.clear();
+    a.clear();
+    delta.clear();
+    DHTrsfs.clear();
+    mdlArgs.clear();
+    DHCoords.clear();
 }
 
 //=======================================================================
@@ -31,11 +48,8 @@ RLAPI_DHSetting::RLAPI_DHSetting()
 void RLAPI_DHSetting::Compute()
 {
     DHTrsfs.clear();
-    for(int j=1;j<8;++j)
-    {
-        DHCoords[j]->SetPosition(gp_Pnt(0,0,0));
-    }
 
+    gp_Trsf CumulativeTrsf;
     for(int i=0;i<7;++i)
     {
         gp_Trsf tmp;
@@ -43,20 +57,57 @@ void RLAPI_DHSetting::Compute()
                       sin(theta[i]), cos(theta[i])*cos(alpha[i]), -cos(theta[i])*sin(alpha[i]), a[i]*sin(theta[i]),
                       0, sin(alpha[i]), cos(alpha[i]), d[i]);
 
-        //            qDebug()<<tmp.Value(1,1)<<tmp.Value(1,2)<<tmp.Value(1,3)<<tmp.Value(1,4)<<endl
-        //                   <<tmp.Value(2,1)<<tmp.Value(2,2)<<tmp.Value(2,3)<<tmp.Value(2,4)<<endl
-        //                  <<tmp.Value(3,1)<<tmp.Value(3,2)<<tmp.Value(3,3)<<tmp.Value(3,4)<<endl;
+        CumulativeTrsf.Multiply(tmp);
 
-        if(i==0)
-            DHTrsfs.append(tmp);
-        else
-            DHTrsfs.append(DHTrsfs.last().Multiplied(tmp));
+        DHTrsfs.append(CumulativeTrsf);
+    }
+}
 
-        //            qDebug()<<DHTrsfs.last().Value(1,1)<<DHTrsfs.last().Value(1,2)<<DHTrsfs.last().Value(1,3)<<DHTrsfs.last().Value(1,4)<<endl
-        //                   <<DHTrsfs.last().Value(2,1)<<DHTrsfs.last().Value(2,2)<<DHTrsfs.last().Value(2,3)<<DHTrsfs.last().Value(2,4)<<endl
-        //                  <<DHTrsfs.last().Value(3,1)<<DHTrsfs.last().Value(3,2)<<DHTrsfs.last().Value(3,3)<<DHTrsfs.last().Value(3,4)<<endl;
+//=======================================================================
+//function : ComputeFK
+//purpose  : *
+//=======================================================================
+void RLAPI_DHSetting::ComputeFK()
+{
+    Compute();
 
-        DHCoords[i+1]->SetLocalTransformation(DHTrsfs.last());
+    if(!DHCoords[0]->LocalTransformation().TranslationPart().IsEqual(srcPnt.XYZ(),1e-6))
+    {
+        gp_Trsf pan;
+        pan.SetValues(1,0,0,srcPnt.X(),
+                      0,1,0,srcPnt.Y(),
+                      0,0,1,srcPnt.Z());
+        DHCoords[0]->SetLocalTransformation(pan);
+    }
+
+    for(int j=1;j<8;++j)
+    {
+        DHCoords[j]->SetPosition(gp_Pnt(0,0,0));
+    }
+
+    QList<gp_Ax1> mainAxis;
+    for(int i=0;i<7;++i)
+    {
+        mainAxis.append(gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,0,1)));
+    }
+
+    gp_Trsf CumulativeTrsf;
+    for(int i=0;i<7;++i)
+    {
+        mainAxis[i].Transform(DHTrsfs[i]);
+        gp_Trsf rotation;
+        rotation.SetRotation(mainAxis[i],delta[i]);
+
+        CumulativeTrsf.Multiply(rotation);
+        gp_Trsf workTrsf;
+        workTrsf.Multiply(CumulativeTrsf);
+        workTrsf.Multiply(DHTrsfs[i]);
+
+        workTrsf.SetValues(workTrsf.Value(1,1),workTrsf.Value(1,2),workTrsf.Value(1,3),workTrsf.Value(1,4)+srcPnt.X(),
+                           workTrsf.Value(2,1),workTrsf.Value(2,2),workTrsf.Value(2,3),workTrsf.Value(2,4)+srcPnt.Y(),
+                           workTrsf.Value(3,1),workTrsf.Value(3,2),workTrsf.Value(3,3),workTrsf.Value(3,4)+srcPnt.Z());
+
+        DHCoords[i+1]->SetLocalTransformation(workTrsf);
     }
 }
 

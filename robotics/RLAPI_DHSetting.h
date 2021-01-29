@@ -14,6 +14,9 @@ public:
     //! constructor
     RLAPI_DHSetting();
 
+    //! destructor
+    ~RLAPI_DHSetting();
+
     //! compute the coordinates of DH with the arguments of
     //! it. The calculation formula is
     //!
@@ -33,6 +36,10 @@ public:
     //!
     void Compute();
 
+    //! compute the FK, for displaying the coordinates if joint
+    //! has rotation value
+    void ComputeFK();
+
     //! apply the DH arguments and write these arguments to
     //! the mdl xml file
     void ApplyDHArgs(const QString& mdlFileName);
@@ -40,6 +47,16 @@ public:
     //! get the cooordinates' shapes for displaying
     QList<Handle(AIS_Coordinate)> GetCoords() const {
         return DHCoords;
+    }
+
+    //! set the coordinates' origin position
+    void SetBasePosition(const gp_Pnt &aPnt) {
+        srcPnt = aPnt;
+    }
+
+    //! set the value of rotation of each joint
+    void SetJointDelta(const QList<double> &vals) {
+        delta = vals;
     }
 
     //! set the θ DH arg, this function should use before compute
@@ -87,6 +104,7 @@ private:
     QList<double> d;
     QList<double> alpha;
     QList<double> a;
+    QList<double> delta;
     QList<gp_Trsf> DHTrsfs;
     QList<double>  mdlArgs;
     QList<Handle(AIS_Coordinate)> DHCoords;

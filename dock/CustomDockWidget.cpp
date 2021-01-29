@@ -8,7 +8,7 @@ CustomDockWidget::CustomDockWidget()
 {
 	setAutoFillBackground(true);
 
-    m_titleWidget = new CustomDockWidgetTitle();
+    m_titleWidget = new CustomDockWidgetBar();
 
 	setTitleBarWidget(m_titleWidget);
 
@@ -20,9 +20,9 @@ CustomDockWidget::CustomDockWidget()
 	widget->setLayout(m_layout);
 	QDockWidget::setWidget(widget);
 
-    connect(m_titleWidget, &CustomDockWidgetTitle::menuButton_pressed, this, &CustomDockWidget::openTitleMenu);
-    connect(m_titleWidget, &CustomDockWidgetTitle::autoHideButton_pressed, this, &CustomDockWidget::autoHideStateToggle);
-    connect(m_titleWidget, &CustomDockWidgetTitle::closeButton_pressed, this, &CustomDockWidget::closeDockWidget);
+    connect(m_titleWidget, &CustomDockWidgetBar::menuButton_pressed, this, &CustomDockWidget::openTitleMenu);
+    connect(m_titleWidget, &CustomDockWidgetBar::autoHideButton_pressed, this, &CustomDockWidget::autoHideStateToggle);
+    connect(m_titleWidget, &CustomDockWidgetBar::closeButton_pressed, this, &CustomDockWidget::closeDockWidget);
 
     connect(this, &QDockWidget::dockLocationChanged, this, &CustomDockWidget::updateDockLocation);
     connect(this, &QDockWidget::topLevelChanged, this, &CustomDockWidget::updateTopLevelState);

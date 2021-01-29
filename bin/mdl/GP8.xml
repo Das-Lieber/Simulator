@@ -211,7 +211,7 @@
 			</frame>
 			<axis>
 				<x>0</x>
-				<y>1</y>
+				<y>-1</y>
 				<z>0</z>
 			</axis>
 			<max>65</max>
@@ -241,7 +241,7 @@
 			</frame>
 			<axis>
 				<x>0</x>
-				<y>1</y>
+				<y>-1</y>
 				<z>0</z>
 			</axis>
 			<max>255</max>
@@ -270,7 +270,7 @@
 				<b idref="body6"/>
 			</frame>
 			<axis>
-				<x>1</x>
+				<x>-1</x>
 				<y>0</y>
 				<z>0</z>
 			</axis>
@@ -301,7 +301,7 @@
 			</frame>
 			<axis>
 				<x>0</x>
-				<y>1</y>
+				<y>-1</y>
 				<z>0</z>
 			</axis>
 			<max>135</max>
@@ -330,7 +330,7 @@
 				<b idref="body8"/>
 			</frame>
 			<axis>
-				<x>1</x>
+				<x>-1</x>
 				<y>0</y>
 				<z>0</z>
 			</axis>
