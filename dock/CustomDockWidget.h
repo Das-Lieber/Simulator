@@ -39,6 +39,7 @@ public:
 	void closeDockWidget();
 
 	void setWidget(QWidget* widget);
+    void addWidget(QWidget* widget);
     void removeWidget();
 
 	void setTabifiedDocks(const QList<QDockWidget*>& dockWidgetList);

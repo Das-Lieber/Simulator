@@ -120,7 +120,7 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-//    parseProcessData();
+    parseProcessData();
 
     mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
@@ -133,6 +133,50 @@ void MainWindow::creatConfigDock()
     configTable->setWindowTitle(tr("Configuration"));
     configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     configTable->horizontalHeader()->hide();
+
+    QWidget *bottomWidget = new QWidget;
+    QHBoxLayout *bottomLayout = new QHBoxLayout;
+    QSlider *aSlider = new QSlider(Qt::Horizontal);
+    QLabel *jointLabel = new QLabel;
+    QLabel *maxLabel = new QLabel;
+    QLabel *minLabel = new QLabel;
+    aSlider->setTickPosition(QSlider::TicksAbove);
+    aSlider->setTickInterval(10);
+    bottomLayout->addWidget(jointLabel);
+    bottomLayout->addWidget(minLabel);
+    bottomLayout->addWidget(aSlider);
+    bottomLayout->addWidget(maxLabel);
+    bottomWidget->setLayout(bottomLayout);
+    connect(configTable,&QTableView::doubleClicked,this,[=](const QModelIndex &index){
+        sliderIndex = index.row();
+        jointLabel->setText(tr("Joint%1:").arg(index.row()));
+
+        if(aConvertAPI->GetJointType()[index.row()]==RLAPI_JointType::Revolute)
+        {
+            aSlider->setMaximum(aConvertAPI->MotionMaxValues(index.row())*rl::math::constants::rad2deg);
+            aSlider->setMinimum(aConvertAPI->MotionMinValues(index.row())*rl::math::constants::rad2deg);
+            maxLabel->setText(QString::number(aConvertAPI->MotionMaxValues(index.row())*rl::math::constants::rad2deg));
+            minLabel->setText(QString::number(aConvertAPI->MotionMinValues(index.row())*rl::math::constants::rad2deg));
+            aSlider->setSingleStep(1.0);
+            aSlider->setValue(aConvertAPI->GetJointPosition()(index.row())*rl::math::constants::rad2deg);
+        }
+        else
+        {
+            aSlider->setMaximum(aConvertAPI->MotionMaxValues(index.row()));
+            aSlider->setMinimum(aConvertAPI->MotionMinValues(index.row()));
+            maxLabel->setText(QString::number(aConvertAPI->MotionMaxValues(index.row())));
+            minLabel->setText(QString::number(aConvertAPI->MotionMinValues(index.row())));
+            aSlider->setSingleStep(3.0);
+            aSlider->setValue(aConvertAPI->GetJointPosition()(index.row()));
+        }
+        connect(aSlider,&QSlider::sliderMoved,this,[=](int value){
+            mConfigModel->initData(aConvertAPI->GetJointPosition());
+            mConfigModel->updateModel();
+            aConvertAPI->SetIndexedJointValue(sliderIndex,value);
+            displayOperationalPosition();
+        });
+
+    });
 
     tableViewJointDelegate *configDelegate = new tableViewJointDelegate(this);
     configDelegate->setMaxValue(aConvertAPI->MotionMaxValues);
@@ -152,6 +196,8 @@ void MainWindow::creatConfigDock()
     connect(mConfigModel,&tableViewJointModel::changePositionAndValue,this,[=](const int& index,const double& value){
         aConvertAPI->SetIndexedJointValue(index,value);
         displayOperationalPosition();
+        if(index==sliderIndex)
+            aSlider->setValue(value);
     });
 
     mConfigDock = new CustomDockWidget;
@@ -159,8 +205,9 @@ void MainWindow::creatConfigDock()
     connect(mConfigDock, &CustomDockWidget::signal_unpinned, this, &MainWindow::dockWidgetUnpinned);
     connect(mConfigDock, &CustomDockWidget::signal_docked, this, &MainWindow::dockWidgetDocked);
     connect(mConfigDock, &CustomDockWidget::signal_undocked, this, &MainWindow::dockWidgetUndocked);
-    mConfigDock->setWidget(configTable);
-    addDockWidget(Qt::LeftDockWidgetArea,mConfigDock);
+    mConfigDock->setWidget(configTable);    
+    mConfigDock->addWidget(bottomWidget);
+    addDockWidget(Qt::LeftDockWidgetArea,mConfigDock);    
 }
 
 void MainWindow::creatOperationDock()
@@ -250,6 +297,7 @@ void MainWindow::connectThread()
         else
         {
             mPlannerThread->quit();
+            aMdlWidget->getView()->Update();
         }
         currentPahtPnt = gp_Pnt(0,0,0);
     });
@@ -321,20 +369,20 @@ void MainWindow::on_actionView_End_Position_triggered()
 
 void MainWindow::on_actionSet_Start_Position_triggered()
 {
-    mStartVec = aConvertAPI->GetJointPosition();
-    statusLabel->setText(tr("start position set"));
+//    mStartVec = aConvertAPI->GetJointPosition();
+//    statusLabel->setText(tr("start position set"));
 
-    QList<double> currentPos = aConvertAPI->GetOperationalPosition();
-    currentPahtPnt = gp_Pnt(currentPos.value(0),
-                            currentPos.value(1),
-                            currentPos.value(2)-1);//don't set them as same ,or can't draw the first part of the path line
+//    QList<double> currentPos = aConvertAPI->GetOperationalPosition();
+//    currentPahtPnt = gp_Pnt(currentPos.value(0),
+//                            currentPos.value(1),
+//                            currentPos.value(2)-1);//don't set them as same ,or can't draw the first part of the path line
 }
 
 void MainWindow::on_actionSet_End_Position_triggered()
 {
-    rl::math::Vector EndPos = aConvertAPI->GetJointPosition();
-    mEndList.push_back(EndPos);
-    statusLabel->setText(tr("end position set"));
+//    rl::math::Vector EndPos = aConvertAPI->GetJointPosition();
+//    mEndList.push_back(EndPos);
+//    statusLabel->setText(tr("end position set"));
 }
 
 void MainWindow::on_actionStart_Planner_triggered()
@@ -351,6 +399,17 @@ void MainWindow::on_actionStart_Planner_triggered()
     pathLines.clear();
 
     // 2.optimize the path node
+    if(mStartVec.size()==0)
+    {
+        statusLabel->setText(tr("start position not set!"));
+        return;
+    }
+    if(mEndList.size()==0)
+    {
+        statusLabel->setText(tr("end position not set!"));
+        return;
+    }
+
 //    if(mEndList.size()>1)
 //    {
 //        RLAPI_ConfigurationOptimizer anOptimizer;
@@ -564,17 +623,19 @@ void MainWindow::parseProcessData()
     aConvertAPI->LockBasePosition();
     QList<double> tcpInfo;
 
-    for(int k=0;k<tcpPnts.size();++k)
+    for(int k=0;k<tcpPnts.size()/2;++k)
     {
         tcpInfo.clear();
 
-        tcpInfo.append(tcpPnts[k].tcpPos.X());
-        tcpInfo.append(tcpPnts[k].tcpPos.Y());
-        tcpInfo.append(tcpPnts[k].tcpPos.Z());
-        tcpInfo.append(tcpPnts[k].VX);
-        tcpInfo.append(tcpPnts[k].VY);
-        tcpInfo.append(tcpPnts[k].VZ);
-//        qDebug()<<tcpPnts[k].tcpPos.X()<<tcpPnts[k].tcpPos.Y()<<tcpPnts[k].tcpPos.Z()<<tcpPnts[k].VX<<tcpPnts[1].VY<<tcpPnts[k].VZ;
+        // only the up point is useful
+        tcpInfo.append(tcpPnts[2*k].tcpPos.X());
+        tcpInfo.append(tcpPnts[2*k].tcpPos.Y());
+        tcpInfo.append(tcpPnts[2*k].tcpPos.Z());
+        tcpInfo.append(tcpPnts[2*k].VX);
+        tcpInfo.append(tcpPnts[2*k].VY);
+        tcpInfo.append(tcpPnts[2*k].VZ);
+        qDebug()<<tcpPnts[2*k].tcpPos.X()<<tcpPnts[2*k].tcpPos.Y()<<tcpPnts[2*k].tcpPos.Z()
+                <<tcpPnts[2*k].VX<<tcpPnts[2*k].VY<<tcpPnts[2*k].VZ;
 
         if(aConvertAPI->SetInverseValue(tcpInfo))
         {

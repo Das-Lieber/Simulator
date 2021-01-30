@@ -94,6 +94,7 @@ private:
     QWinTaskbarProgress *mTaskBarProgress;
     bool isRayTraceEnable;
     bool isAntialiasingEnable;
+    int sliderIndex;
 
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;

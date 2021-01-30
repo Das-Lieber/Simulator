@@ -12,14 +12,14 @@ tableViewJointDelegate::~tableViewJointDelegate()
 QWidget* tableViewJointDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option)
-	QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
+    QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
 
     if (RLAPI_JointType::Revolute == Types.at(index.row()))
 	{
         editor->setDecimals(4);//角度达到1"
         editor->setMinimum(Mins(index.row()) * rl::math::constants::rad2deg);
         editor->setMaximum(Maxs(index.row()) * rl::math::constants::rad2deg);
-		editor->setSingleStep(1.0);
+        editor->setSingleStep(1.0);
 	}
 	else
 	{

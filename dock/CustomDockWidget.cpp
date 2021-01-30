@@ -163,6 +163,11 @@ void CustomDockWidget::setWidget(QWidget* widget)
     contents = widget;
 }
 
+void CustomDockWidget::addWidget(QWidget *widget)
+{
+    m_layout->addWidget(widget);
+}
+
 void CustomDockWidget::removeWidget()
 {
     if(contents!=nullptr)
