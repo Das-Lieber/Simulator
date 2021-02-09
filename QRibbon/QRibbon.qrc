@@ -1,34 +1,5 @@
 <RCC>
     <qresource prefix="/QRibbon">
-        <file>icons/add_bottom.png</file>
-        <file>icons/add_left.png</file>
-        <file>icons/add_right.png</file>
-        <file>icons/add_top.png</file>
-        <file>icons/arrowBottom.png</file>
-        <file>icons/branch_close.png</file>
-        <file>icons/branch_open.png</file>
-        <file>icons/branch-closed.png</file>
-        <file>icons/branch-end.png</file>
-        <file>icons/branch-more.png</file>
-        <file>icons/branch-open.png</file>
-        <file>icons/calendar_nextmonth.png</file>
-        <file>icons/calendar_prevmonth.png</file>
-        <file>icons/checkbox_checked.png</file>
-        <file>icons/checkbox_checked_disable.png</file>
-        <file>icons/checkbox_parcial.png</file>
-        <file>icons/checkbox_parcial_disable.png</file>
-        <file>icons/checkbox_unchecked.png</file>
-        <file>icons/checkbox_unchecked_disable.png</file>
-        <file>icons/downarrow.png</file>
-        <file>icons/eye.png</file>
-        <file>icons/eyeClosed.png</file>
-        <file>icons/eyeClosed0.png</file>
-        <file>icons/radiobutton_checked.png</file>
-        <file>icons/radiobutton_checked_disable.png</file>
-        <file>icons/radiobutton_unchecked.png</file>
-        <file>icons/radiobutton_unchecked_disable.png</file>
         <file>icons/unknow.png</file>
-        <file>icons/uparrow.png</file>
-        <file>icons/vline.png</file>
     </qresource>
 </RCC>

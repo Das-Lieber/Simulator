@@ -25,5 +25,6 @@
         <file>icons/process_data.png</file>
         <file>icons/view_anti-aliasing.png</file>
         <file>icons/view_rayTrace.png</file>
+        <file>icons/splash.png</file>
     </qresource>
 </RCC>

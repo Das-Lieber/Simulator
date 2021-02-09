@@ -58,17 +58,6 @@ QRibbon::QRibbon()
 
 	// 隐藏下边线
 	connect(&(_->animationHideBar), &QPropertyAnimation::finished, this, &QRibbon::onHideTabFinished);
-
-	// 设置风格主题颜色
-	_styleMenu = new QMenu(this);
-	_styleMenu->setStyleSheet("QMenu::item{ color:black }");
-	auto styleActionGroup = new QActionGroup(_styleMenu);
-    styleActionGroup->addAction(_styleMenu->addAction(tr("blue"), [&]() {setColor("rgb(43, 87, 154)"); }));
-    styleActionGroup->addAction(_styleMenu->addAction(tr("green"), [&]() {setColor("rgb(33,115,70)"); }));
-    styleActionGroup->addAction(_styleMenu->addAction(tr("red"), [&]() {setColor("rgb(183, 71, 42)"); }));
-	for (auto a : styleActionGroup->actions())
-		a->setCheckable(true);
-	ui->pushButtonStyle->setMenu(_styleMenu);
 }
 
 QRibbon::~QRibbon()
@@ -93,8 +82,6 @@ void QRibbon::initialize(QMainWindow* window)
 	QMenuBar* menuBar = _->_mainWindow->menuBar();
 
 	if (!menuBar) return;
-
-	//_normalGeom = _mainWindow->geometry();
 
 	connect(ui->pushButtonMinimum, &QPushButton::clicked, _->_mainWindow, &QWidget::showMinimized);
 	connect(ui->pushButtonClose, &QPushButton::clicked, _->_mainWindow, &QWidget::close);
@@ -127,8 +114,6 @@ void QRibbon::initialize(QMainWindow* window)
 			QWidget* w;
 			if (a->isSeparator())
 			{
-				//qDebug() << a->text();
-
 				auto line = new QWidget();
 				line->setFixedWidth(1);
 				line->setStyleSheet("background:rgb(177,177,177)");
@@ -136,9 +121,6 @@ void QRibbon::initialize(QMainWindow* window)
 			}
 			else
 			{
-				//QWidget::addAction(a);
-				//this->addAction(a);
-
 				_->_mainWindow->addAction(a);
 
 				QToolButton* btn = new QToolButton;
@@ -170,8 +152,6 @@ void QRibbon::initialize(QMainWindow* window)
 				}
 				btn->setDefaultAction(a);
 
-				//connect(a, &QAction::triggered, btn, &QToolButton::triggered);
-
 				w = btn;
 			}
 			layout->addWidget(w);
@@ -181,11 +161,7 @@ void QRibbon::initialize(QMainWindow* window)
 		layout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding));
 		ui->tabWidgetMenuBar->addTab(widget, i->text());
 
-		//ui->tabWidgetMenuBar->setTabEnabled(ui->tabWidgetMenuBar->count() - 1, (*i));
-
 		menuBar->removeAction(i);	/// 从菜单栏移除原有菜单项，否则当鼠标单击菜单位置时。仍会弹出菜单项
-									//addAction(i);
-									// menu->setEnabled(false);
 	}
 
 	window->setWindowFlag(Qt::FramelessWindowHint, true);
@@ -198,22 +174,14 @@ void QRibbon::initialize(QMainWindow* window)
 	window->menuBar()->setParent(0);
 	window->setMenuBar(this);
 
-	_styleMenu->actions()[0]->trigger();
+    setColor("rgb(33,115,70)");
 
 	_->_originGeometry = window->normalGeometry();
-
-	//window->show();
-	//window->hide();
 }
 
 void QRibbon::uninstall()
 {
 	qDebug() << "TBD...";
-}
-
-void QRibbon::setStyleButtonVisible(bool visible)
-{
-	_styleMenu->setVisible(visible);
 }
 
 void QRibbon::install(QMainWindow* window)
@@ -250,17 +218,9 @@ void QRibbon::setColor(const QString& colorName)
         stylesheet += qApp->styleSheet();
     }
 
-	//auto&& stylesheet = QString::fromUtf8(ui->widgetContainer->styleSheet().toLocal8Bit());
     stylesheet = stylesheet.replace(currentColor, colorName);
-	//ui->widgetContainer->setStyleSheet("");
 
-	//ui->widgetContainer->setStyleSheet(qss);
     qApp->setStyleSheet(stylesheet);
-	// qApp->setStyleSheet(qss);
-
-	//this->repaint();
-
-	//this->setStyleSheet(qs);
 
     currentColor = colorName;
 }
@@ -330,7 +290,6 @@ void QRibbon::mouseMoveEvent(QMouseEvent *evt)
 			_->_mainWindow->move(_->_origin + offset);
 		}
 	}
-	//QMenuBar::mouseMoveEvent(event);
 }
 
 void QRibbon::mouseReleaseEvent(QMouseEvent *evt)
@@ -348,7 +307,6 @@ void QRibbon::mouseReleaseEvent(QMouseEvent *evt)
 		{
 			_->_mainWindow->setGeometry(_->_originGeometry);
 			toggleMaximized();
-			//_normalGeom = _beforeGeometry;
 		}
 		else if (_->_mainWindow->y() < 0) {
 			_->_mainWindow->move(_->_mainWindow->x(), 0);
@@ -375,8 +333,6 @@ void QRibbon::mouseDoubleClickEvent(QMouseEvent *event)
 	{
 		toggleMaximized();
 	}
-
-	//QMenuBar::mouseDoubleClickEvent(event);
 }
 
 bool QRibbon::eventFilter(QObject* tgt, QEvent* e)

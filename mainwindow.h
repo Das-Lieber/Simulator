@@ -43,6 +43,19 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum ApplicationInitSteps
+{
+    Start,
+    OpenCasCadeModel,
+    LoadUI,
+    CreateDynamicModel,
+    CreateScene,
+    ParseDHArguments,
+    ParseScene,
+    Load3DFile,
+    ParsePTDContents
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -51,6 +64,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void initOCC();
+    void initInterface();
     void initRL();
 
 private slots:
@@ -137,6 +152,9 @@ private:
     //init the function dock widget
     void creatEditLocationDock();
     void creatDHSettingDock();
+
+signals:
+    void initStepChanged(const ApplicationInitSteps &progress);
 
     //dock widget needs these functions
 private:

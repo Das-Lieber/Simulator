@@ -35,10 +35,19 @@ void RLConvertAPI::InitLoadData()
     if(aReaderAPI==nullptr)
         aReaderAPI = new RLAPI_Reader;
 
+    emit RLSatutsChanged(RLStatus::ReadingMdlXML);
     aReaderAPI->ReadModelXMLFIle(mJointMdlFileName);
+
+    emit RLSatutsChanged(RLStatus::ReadingSceneXML);
     aReaderAPI->ReadSceneXMLFile(mJointSgFileName);
+
+    emit RLSatutsChanged(RLStatus::ParsingAssembleArgs);
     aReaderAPI->ReadAssembleArgs(mJointSgFileName);
+
+    emit RLSatutsChanged(RLStatus::ParsingMotionArgs);
     aReaderAPI->ReadAixsDirection(mJointMdlFileName);
+
+    emit RLSatutsChanged(RLStatus::ReadingJointFiles);
     aReaderAPI->ReadJointModels(mJointModelFilePath);
 
     SetJointValue(aReaderAPI->JointModel->getHomePosition());

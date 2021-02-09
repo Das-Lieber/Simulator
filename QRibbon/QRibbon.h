@@ -36,8 +36,6 @@ public:
 	 */
 	void uninstall();
 
-	void setStyleButtonVisible(bool visible);
-
 public slots:
 	
 	/**
@@ -83,6 +81,4 @@ private:
 
 	friend struct QRibbonPrivate;
 	QRibbonPrivate* _;
-
-	QMenu* _styleMenu;
 };

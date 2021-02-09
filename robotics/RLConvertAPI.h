@@ -18,6 +18,16 @@ class RLConvertAPI : public QObject
 {
     Q_OBJECT
 public:
+    //! the status of this api function
+    enum RLStatus
+    {
+        ReadingMdlXML,
+        ReadingSceneXML,
+        ParsingAssembleArgs,
+        ParsingMotionArgs,
+        ReadingJointFiles
+    };
+
     //! constructor
     RLConvertAPI(QString &JointMdlFile,
                  QString &JoingtSgFile,
@@ -136,6 +146,9 @@ signals:
 
     //! link move signal, used to refresh the position in the main thread
     void JointPositionChanged();
+
+    //! signal when RLAPI perform one function of enum RLStatus
+    void RLSatutsChanged(const RLStatus &status);
 };
 
 #endif // RLCONVERTAPI_H

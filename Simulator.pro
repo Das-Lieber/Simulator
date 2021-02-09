@@ -10,6 +10,7 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 QMAKE_CXXFLAGS += /utf-8
 
 SOURCES += \
+    CustomSplashScreen.cpp \
     MiniDumper.cpp \
     OCC/AIS_Coordinate.cpp \
     OCC/occWidget.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
     robotics/RLConvertAPI.cpp
 
 HEADERS += \
+    CustomSplashScreen.h \
     MiniDumper.h \
     OCC/AIS_Coordinate.h \
     OCC/occWidget.h \
@@ -60,6 +62,7 @@ HEADERS += \
     robotics/RLConvertAPI.h
 
 FORMS += \
+    CustomSplashScreen.ui \
     QRibbon/qribbon.ui \
     dialog/DHSettingWidget.ui \
     dialog/EditLocationWidget.ui \

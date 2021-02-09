@@ -2,9 +2,9 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 
-static QString JointMdlFile = "./mdl/GP8.xml";
-static QString JoingtSgFile = "./scene/GP_DMISModel.xml";
-static QString JointModelFile = "./brep/GP8";
+QString JointMdlFile = "./mdl/GP8.xml";
+QString JoingtSgFile = "./scene/GP_DMISModel.xml";
+QString JointModelFile = "./brep/GP8";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,40 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Simulator"));
 #endif    
 
-    //init occ
     aMdlWidget = new OCCWidget(this);
-    QGridLayout *centerLayOut = new QGridLayout;
-    centerLayOut->addWidget(aMdlWidget);
-    ui->centralwidget->setLayout(centerLayOut);
-
     statusLabel = new QLabel(this);
-    statusLabel->setMinimumWidth(200);
-    ui->statusbar->addPermanentWidget(statusLabel);
-
     //add the progress on the task bar
     mTaskBarButton = new QWinTaskbarButton(this);
-    mTaskBarButton->setWindow(this->windowHandle());
-
-    mTaskBarProgress = mTaskBarButton->progress();
-    mTaskBarProgress->setVisible(true);
-    mTaskBarProgress->setValue(10);
-
-    createDockWidgetBar(Qt::LeftDockWidgetArea);
-    createDockWidgetBar(Qt::RightDockWidgetArea);
-    createDockWidgetBar(Qt::TopDockWidgetArea);
-    createDockWidgetBar(Qt::BottomDockWidgetArea);
-    creatEditLocationDock();
-    creatDHSettingDock();
-
-    QRibbon::install(this);    
-
-    mProcessData = new ProcessDataWidget;
-    Handle(AIS_Shape) processModel = new AIS_Shape(mProcessData->getShape());
-    aMdlWidget->getContext()->Display(processModel,Standard_False);
-
-    mTaskBarProgress->setValue(30);
-
-    ui->statusbar->showMessage(tr("Loading Data, Please Wait........."));
+    mProcessData = new ProcessDataWidget;    
 }
 
 MainWindow::~MainWindow()
@@ -66,13 +37,42 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::initOCC()
+{
+    emit initStepChanged(ApplicationInitSteps::OpenCasCadeModel);
+
+    QGridLayout *centerLayOut = new QGridLayout;
+    centerLayOut->addWidget(aMdlWidget);
+    ui->centralwidget->setLayout(centerLayOut);
+
+    Handle(AIS_Shape) processModel = new AIS_Shape(mProcessData->getShape());
+    aMdlWidget->getContext()->Display(processModel,Standard_False);
+}
+
+void MainWindow::initInterface()
+{
+    emit initStepChanged(ApplicationInitSteps::LoadUI);
+
+    statusLabel->setMinimumWidth(200);
+    ui->statusbar->addPermanentWidget(statusLabel);
+
+    mTaskBarButton->setWindow(this->windowHandle());
+    mTaskBarProgress = mTaskBarButton->progress();
+    mTaskBarProgress->setVisible(false);
+
+    createDockWidgetBar(Qt::LeftDockWidgetArea);
+    createDockWidgetBar(Qt::RightDockWidgetArea);
+    createDockWidgetBar(Qt::TopDockWidgetArea);
+    createDockWidgetBar(Qt::BottomDockWidgetArea);
+    creatEditLocationDock();
+    creatDHSettingDock();
+
+    QRibbon::install(this);
+}
+
 void MainWindow::initRL()
 {
-    aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);
-    aConvertAPI->InitLoadData();
-    aDHSetting = new RLAPI_DHSetting;
-
-    mTaskBarProgress->setValue(80);
+    aConvertAPI = new RLConvertAPI(JointMdlFile,JoingtSgFile,JointModelFile,this);    
 
     connect(aConvertAPI,&RLConvertAPI::JointPositionChanged,this,[=](){
         aMdlWidget->getView()->Update();
@@ -98,6 +98,24 @@ void MainWindow::initRL()
         statusLabel->setText(tr("NOT COLLISION"));
         aMdlWidget->getView()->SetBgGradientColors(Quantity_NOC_GRAY80,Quantity_NOC_WHITESMOKE,Aspect_GFM_VER);
     });
+    connect(aConvertAPI,&RLConvertAPI::RLSatutsChanged,this,[=](const RLConvertAPI::RLStatus &status){
+        switch(status)
+        {
+        case RLConvertAPI::RLStatus::ReadingMdlXML:
+            emit initStepChanged(ApplicationInitSteps::CreateDynamicModel);break;
+        case RLConvertAPI::RLStatus::ReadingSceneXML:
+            emit initStepChanged(ApplicationInitSteps::CreateScene);break;
+        case RLConvertAPI::RLStatus::ParsingAssembleArgs:
+            emit initStepChanged(ApplicationInitSteps::ParseScene);break;
+        case RLConvertAPI::RLStatus::ParsingMotionArgs:
+            emit initStepChanged(ApplicationInitSteps::ParseDHArguments);break;
+        case RLConvertAPI::RLStatus::ReadingJointFiles:
+            emit initStepChanged(ApplicationInitSteps::Load3DFile);break;
+        }
+    });
+
+    aConvertAPI->InitLoadData();
+    aDHSetting = new RLAPI_DHSetting;
 
     for (int i=0;i<aConvertAPI->GetJointModelShapes().size();++i)
     {
@@ -107,8 +125,6 @@ void MainWindow::initRL()
         aMdlWidget->getContext()->Display(aShape,Standard_False);
         aMdlWidget->getContext()->Deactivate(aShape);
     }
-
-    mTaskBarProgress->setValue(90);
 
     aMdlWidget->getView()->FitAll();
 
@@ -120,10 +136,9 @@ void MainWindow::initRL()
     qRegisterMetaType<ComputeError>("ComputeError");
     connectThread();
 
-    parseProcessData();
+    emit initStepChanged(ApplicationInitSteps::ParsePTDContents);
+    parseProcessData();    
 
-    mTaskBarProgress->setValue(100);
-    mTaskBarProgress->setVisible(false);
     ui->statusbar->showMessage(tr("Init Success!"));
 }
 
@@ -495,7 +510,7 @@ void MainWindow::on_actionImport_Model_triggered()
     aMdlWidget->getContext()->Display(aConvertAPI->GetMeasureModelShape(),Standard_False);
     aMdlWidget->getView()->FitAll();
 
-    mTaskBarProgress->setValue(10);
+    mTaskBarProgress->setValue(100);
     mTaskBarProgress->setVisible(false);
 }
 
