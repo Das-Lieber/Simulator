@@ -69,13 +69,14 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#widgetContainer,QWidget#widgetContainer &gt; *{
-
-	background:rgb(33,115,70);
-	background:rgb(183,71,42);
-	background:rgb(43,87,154);
-	color:#fff;
+	background:#EAF7FF;
+	color:#386487;
 	font-family:'simhei';
 	font-size:11pt;
+}
+
+QWidget#widgetMenuBar{
+background:rgb(243,243,243);
 }
 
 QWidget#widgetContainer{
@@ -85,8 +86,7 @@ QWidget#widgetContainer{
 
 QWidget#widgetBottomBar{
 border-bottom:1px solid blue;
-	background:blue;
-	
+	background:#EAF7FF;
 }
 
 QTabWidget#tabWidgetMenuBar::pane { /* The tab widget frame */
@@ -97,7 +97,7 @@ QTabWidget#tabWidgetMenuBar::pane { /* The tab widget frame */
 }
 
 QTabWidget#tabWidgetMenuBar::tab-bar {
-    left: 2px; /* move to the right by 5px */
+    left: 5px; /* move to the right by 5px */
 	border-width:0;
 }
 
@@ -107,16 +107,13 @@ QTabWidget#tabWidgetMenuBar QTabBar::tab {
     padding: 2px;
 	height:30px;
 	padding:2px 12px;
-	color:#fff;
+	color:rgb(43,87,154);
 	border-width:0;
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
     background: rgb(243,243,243);
-	color: rgb(10, 10, 10);
-	color: rgb(10, 10, 10);
-	color: rgb(183,71,42);
-	color:rgb(43,87,154);
+	color:#386487;
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab:hover:!selected {
@@ -151,7 +148,7 @@ QToolButton{
 QToolButton:hover,QToolButton:checked{
 	border:1px solid rgba(100,100,100,100);
 	border-radius:2px;
-	background:rgb(198,198,198);
+	background:rgb(180,180,180);
 }
 
 QToolButton::menu-button {
@@ -174,7 +171,8 @@ QPushButton#pushButtonMinimizeTab,QPushButton#pushButtonClose,QPushButton#pushBu
 	border-radius: 4px;
 	width: 75px;
 	height: 25px;
-	color: white;
+	color:#386487;
+	padding:0px;
 }
 
 QPushButton#pushButtonFullScreen:hover,QPushButton#pushButtonMinimum:hover{
@@ -195,7 +193,7 @@ QPushButton#pushButtonClose:pressed{
 }
 
 QPushButton#pushButtonMinimizeTab{
-	color: rgb(112, 112, 112);
+	color:#386487;
 }
 
 QPushButton#pushButtonMinimizeTab:hover{
@@ -371,9 +369,6 @@ QPushButton#pushButtonMinimizeTab:hover{
             <width>16777215</width>
             <height>6666</height>
            </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
           </property>
           <property name="currentIndex">
            <number>0</number>
@@ -618,12 +613,6 @@ width:2px;</string>
             <width>16777215</width>
             <height>16777215</height>
            </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">.QWidget{
-background: rgb(243,243,243);
-border-left:1px solid gray;
-}</string>
           </property>
           <widget class="QPushButton" name="pushButtonMinimizeTab">
            <property name="geometry">

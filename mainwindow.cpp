@@ -137,7 +137,7 @@ void MainWindow::initRL()
     connectThread();
 
     emit initStepChanged(ApplicationInitSteps::ParsePTDContents);
-    parseProcessData();    
+//    parseProcessData();
 
     ui->statusbar->showMessage(tr("Init Success!"));
 }
