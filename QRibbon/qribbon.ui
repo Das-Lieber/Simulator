@@ -69,14 +69,15 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#widgetContainer,QWidget#widgetContainer &gt; *{
-	background:#EAF7FF;
+	background:rgb(165, 195, 225);
 	color:#386487;
 	font-family:'simhei';
-	font-size:11pt;
+	font-size:12pt;
+font-weight: bold;
 }
 
 QWidget#widgetMenuBar{
-background:rgb(243,243,243);
+background:#EAF7FF;
 }
 
 QWidget#widgetContainer{
@@ -87,6 +88,10 @@ QWidget#widgetContainer{
 QWidget#widgetBottomBar{
 border-bottom:1px solid blue;
 	background:#EAF7FF;
+}
+
+QTabWidget QWidget {
+background:#EAF7FF;
 }
 
 QTabWidget#tabWidgetMenuBar::pane { /* The tab widget frame */
@@ -102,22 +107,23 @@ QTabWidget#tabWidgetMenuBar::tab-bar {
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab {
-    background: transparent;
-    min-width: 12ex;
-    padding: 2px;
+    background:rgb(165, 195, 225);
+    min-width: 18ex;
 	height:30px;
-	padding:2px 12px;
-	color:rgb(43,87,154);
+	padding:2px 6px;
+	color:white;
 	border-width:0;
+font-weight: bold;
+font-size:10pt;
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
-    background: rgb(243,243,243);
+    background: #EAF7FF;
 	color:#386487;
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab:hover:!selected {
-    background:rgba(0,0,0,40);
+    background:rgb(165, 195, 225);
 }
 
 QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
@@ -132,34 +138,6 @@ QTabWidget#tabWidgetMenuBar QTabBar::tab:!selected {
 
 QWidget#widgetContent{
 	background:white;
-}
-
-QToolButton{
-	background:transparent;
-	border:0px solid gray;
-	color: rgb(10,10,10);
-	margin:0;
-}
-
-QToolButton{
-	padding-bottom:10px;
-}
-
-QToolButton:hover,QToolButton:checked{
-	border:1px solid rgba(100,100,100,100);
-	border-radius:2px;
-	background:rgb(180,180,180);
-}
-
-QToolButton::menu-button {
-    /* 16px width + 4px for border = 20px allocated above */
-    width: 16px;
-	subcontrol-origin:margin;
-	subcontrol-position: bottom center;
-	bottom:0px;
-	left:0px;
-	height:10px;
-	width:100%
 }
 
 QPushButton#pushButtonMinimizeTab,QPushButton#pushButtonClose,QPushButton#pushButtonFullScreen,QPushButton#pushButtonMinimum{
@@ -198,6 +176,31 @@ QPushButton#pushButtonMinimizeTab{
 
 QPushButton#pushButtonMinimizeTab:hover{
 	background:rgb(177,177,177);
+}
+
+
+QWidget QToolButton{
+background:transparent;
+	border:0px solid gray;
+	margin:0;
+	padding-bottom:10px;
+}
+
+QWidget QToolButton:hover,QToolButton:checked{
+	border:1px solid rgba(100,100,100,100);
+	border-radius:2px;
+	background:rgb(180,180,180);
+}
+
+QWidget QToolButton::menu-button {
+    /* 16px width + 4px for border = 20px allocated above */
+    width: 16px;
+	subcontrol-origin:margin;
+	subcontrol-position: bottom center;
+	bottom:0px;
+	left:0px;
+	height:10px;
+	width:100%
 }
 </string>
      </property>
@@ -370,6 +373,9 @@ QPushButton#pushButtonMinimizeTab:hover{
             <height>6666</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -380,6 +386,9 @@ QPushButton#pushButtonMinimizeTab:hover{
            <bool>true</bool>
           </property>
           <widget class="QWidget" name="tab">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <attribute name="title">
             <string>文件</string>
            </attribute>
@@ -490,9 +499,6 @@ width:2px;</string>
             </item>
             <item>
              <widget class="QToolButton" name="toolButton_6">
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
               <property name="text">
                <string>退出</string>
               </property>

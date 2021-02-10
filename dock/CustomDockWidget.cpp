@@ -6,12 +6,13 @@ CustomDockWidget::CustomDockWidget()
 	, m_state(DockWidgetState::Unknown)
     , contents(nullptr)
 {
-	setAutoFillBackground(true);
+    setAutoFillBackground(true);
+
+    setStyleSheet("background:#EAF7FF");
 
     m_titleWidget = new CustomDockWidgetBar();
 
 	setTitleBarWidget(m_titleWidget);
-
 
 	m_layout = new QVBoxLayout;
 	m_layout->setContentsMargins(0, 2, 0, 0);

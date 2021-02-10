@@ -14,7 +14,20 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QPalette{background:#EAF7FF;}*{outline:0px;color:#386487;}
+
+QProgressBar{
+min-height:10px;
+background:#DEF0FE;
+border-radius:5px;
+text-align:center;
+border:1px solid #DEF0FE;
+}
+
+QProgressBar:chunk{
+border-radius:5px;
+background-color:#C0DCF2;
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">

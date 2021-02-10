@@ -174,7 +174,7 @@ void QRibbon::initialize(QMainWindow* window)
 	window->menuBar()->setParent(0);
 	window->setMenuBar(this);
 
-    setColor("rgb(165, 195, 225)");
+//    setColor("rgb(165, 195, 225)");
 
 	_->_originGeometry = window->normalGeometry();
 }

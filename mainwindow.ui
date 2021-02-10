@@ -17,18 +17,15 @@
    <string notr="true">CustomDockWidgetBar
 {
 	background: rgb(43,87,154);
-	color: rgb(255,255,255);
 }
 CustomDockWidgetBar QLabel
 {
 	font: bold;
 	background: rgb(43,87,154);
-	color: rgb(255,255,255);
 }
 
 QMainWindow,
-QDialog,
-QDockWidget  {
+QDialog{
     background-color: #EAF7FF; /* main background color */
 }
 
@@ -421,6 +418,18 @@ QToolBar::handle:right,
 QToolBar::handle:vertical {
     width: 100%;
     alignment: center left;
+}
+
+QToolBar QToolButton{
+	background:transparent;
+	border:0px solid gray;
+	margin:0;
+}
+
+QToolBar QToolButton:hover,QToolButton:checked{
+	border:1px solid rgba(100,100,100,100);
+	border-radius:2px;
+	background:rgb(180,180,180);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
