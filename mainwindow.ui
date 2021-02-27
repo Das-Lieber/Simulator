@@ -493,6 +493,8 @@ QToolBar QToolButton:hover,QToolButton:checked{
     <addaction name="menuDisplay_Model"/>
     <addaction name="actionRay_Trace"/>
     <addaction name="actionAnti_Aliasing"/>
+    <addaction name="actionStart_Record"/>
+    <addaction name="actionStop_Record"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menuView"/>
@@ -770,6 +772,24 @@ QToolBar QToolButton:hover,QToolButton:checked{
    </property>
    <property name="text">
     <string>Anti-Aliasing</string>
+   </property>
+  </action>
+  <action name="actionStart_Record">
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/start_record.png</normaloff>:/Simulator/icons/start_record.png</iconset>
+   </property>
+   <property name="text">
+    <string>Start Record</string>
+   </property>
+  </action>
+  <action name="actionStop_Record">
+   <property name="icon">
+    <iconset resource="Simulator.qrc">
+     <normaloff>:/Simulator/icons/stop_record.png</normaloff>:/Simulator/icons/stop_record.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop Record</string>
    </property>
   </action>
  </widget>

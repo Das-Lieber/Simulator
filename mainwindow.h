@@ -13,10 +13,12 @@
 #include <QWinTaskbarProgress>
 #include <QInputDialog>
 #include <QLabel>
+#include <QScreen>
 
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
+#include <Image_AlienPixMap.hxx>
 
 #include "delegate/tableViewJointDelegate.h"
 #include "delegate/tableViewJointModel.h"
@@ -38,6 +40,8 @@
 #include "robotics/RLAPI_ConfigurationOptimizer.h"
 #include "robotics/RLConvertAPI.h"
 #include "robotics/RLAPI_DHSetting.h"
+
+#include "gif.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -100,7 +104,9 @@ private slots:
     void on_actionView_Bottom_triggered();
     void on_actionView_Left_triggered();
     void on_actionView_Right_triggered();
-    void on_actionView_Shade_triggered();    
+    void on_actionView_Shade_triggered();
+    void on_actionStart_Record_triggered();
+    void on_actionStop_Record_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -110,6 +116,8 @@ private:
     bool isRayTraceEnable;
     bool isAntialiasingEnable;
     int sliderIndex;
+    QTimer *recordTimer;
+    int recordFps;
 
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;
@@ -122,6 +130,8 @@ private:
     ProcessDataWidget *mProcessData;
     CustomDockWidget *mEditDockDlg;
     CustomDockWidget *mDHDockDlg;
+    Gif gifHandle;
+    Gif::GifWriter *gifWriter;
 
     rl::math::Vector mStartVec;
     rl::plan::VectorList mEndList;

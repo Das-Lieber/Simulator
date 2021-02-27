@@ -44,5 +44,7 @@
         <file>qss/radiobutton_checked_disable.png</file>
         <file>qss/radiobutton_unchecked.png</file>
         <file>qss/radiobutton_unchecked_disable.png</file>
+        <file>icons/start_record.png</file>
+        <file>icons/stop_record.png</file>
     </qresource>
 </RCC>

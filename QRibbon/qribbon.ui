@@ -122,7 +122,11 @@ QTabWidget#tabWidgetMenuBar QTabBar::tab:selected {
 	color:#386487;
 }
 
-QTabWidget#tabWidgetMenuBar QTabBar::tab:hover:!selected {
+QTabWidget#tabWidgetMenuBar QTabBar::tab:hover{
+	color:#386487;
+}
+
+QTabWidget#tabWidgetMenuBar QTabBar::tab:!selected {
     background:rgb(165, 195, 225);
 }
 

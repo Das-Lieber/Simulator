@@ -11,8 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , isRayTraceEnable(false)
     , isAntialiasingEnable(false)
+    , recordFps(10)
+    , gifWriter(0)
     , threadWait(false)
-    , m_dockWidget(nullptr)
+    , m_dockWidget(nullptr)    
 {
     ui->setupUi(this);
 
@@ -22,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Simulator"));
 #endif    
 
+    recordTimer = new QTimer(this);
     aMdlWidget = new OCCWidget(this);
     statusLabel = new QLabel(this);
     //add the progress on the task bar
@@ -46,7 +49,8 @@ void MainWindow::initOCC()
     ui->centralwidget->setLayout(centerLayOut);
 
     Handle(AIS_Shape) processModel = new AIS_Shape(mProcessData->getShape());
-    aMdlWidget->getContext()->Display(processModel,Standard_False);
+    if(!processModel.IsNull())
+        aMdlWidget->getContext()->Display(processModel,Standard_False);
 }
 
 void MainWindow::initInterface()
@@ -137,7 +141,7 @@ void MainWindow::initRL()
     connectThread();
 
     emit initStepChanged(ApplicationInitSteps::ParsePTDContents);
-//    parseProcessData();
+    parseProcessData();
 
     ui->statusbar->showMessage(tr("Init Success!"));
 }
@@ -537,11 +541,11 @@ void MainWindow::on_actionSave_As_Picture_triggered()
     if(picName.isEmpty())
         return;
 
-    Image_PixMap map;
+    Image_AlienPixMap map;
     aMdlWidget->getView()->ToPixMap(map,aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
-    QImage image = QImage(map.Data(),aMdlWidget->width(),aMdlWidget->height(),QImage::Format_RGBA8888);
-    image = image.mirrored(false, true);//need to mirror
-    image.save(picName);
+
+    TCollection_AsciiString theAscii(picName.toUtf8().data());
+    map.Save(theAscii.ToCString());
 }
 
 void MainWindow::on_actionRay_Trace_triggered()
@@ -630,6 +634,60 @@ void MainWindow::on_actionView_Wire_triggered()
 {
     aMdlWidget->getContext()->SetDisplayMode(AIS_WireFrame,Standard_True);
     ui->menuDisplay_Model->setIcon(QIcon(":/Simulator/icons/view_wire.png"));
+}
+
+void MainWindow::on_actionStart_Record_triggered()
+{
+    if(recordTimer->isActive())
+        return;
+
+    if (0 != gifWriter) {
+        delete gifWriter;
+        gifWriter = 0;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this,tr("save gif"),"", "*.gif");
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    gifWriter = new Gif::GifWriter;
+    bool bOk = gifHandle.GifBegin(gifWriter,fileName.toLocal8Bit().data(),width(),height(),recordFps);
+    if (!bOk) {
+        delete gifWriter;
+        gifWriter = 0;
+        return;
+    }
+
+    statusLabel->setText(tr("Start recording..."));
+
+    recordTimer->setInterval(1000 / recordFps);
+    QTimer::singleShot(1000, recordTimer, SLOT(start()));
+
+    recordTimer->setInterval(1000 / recordFps);
+    connect(recordTimer,&QTimer::timeout,this,[=](){
+        if (!gifWriter) {
+            return;
+        }
+//        Image_PixMap map;
+//        aMdlWidget->getView()->ToPixMap(map,aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
+        QScreen *screen = QApplication::primaryScreen();
+        QPixmap pix = screen->grabWindow(0, x(), y(), width(), height());
+        QImage image = pix.toImage().convertToFormat(QImage::Format_RGBA8888);
+        gifHandle.GifWriteFrame(gifWriter, image.bits(), width(), height(), recordFps);
+    });
+}
+
+void MainWindow::on_actionStop_Record_triggered()
+{
+    recordTimer->stop();
+
+    gifHandle.GifEnd(gifWriter);
+
+    delete gifWriter;
+    gifWriter = 0;
+
+    statusLabel->setText(tr("Recording completed"));
 }
 
 void MainWindow::parseProcessData()

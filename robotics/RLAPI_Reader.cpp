@@ -77,6 +77,7 @@ void RLAPI_Reader::ReadJointModels(const QString &aFilePath)
 Handle(AIS_Shape) RLAPI_Reader::ReadAModelFile(const QString &aModelFileName)
 {
     QFileInfo info(aModelFileName);
+    TCollection_AsciiString theAscii(aModelFileName.toUtf8().data());
     std::shared_ptr<XSControl_Reader> aReader;
     if(info.suffix()=="step"||info.suffix()=="stp"||info.suffix()=="STEP"||info.suffix()=="STP")
     {
@@ -90,10 +91,10 @@ Handle(AIS_Shape) RLAPI_Reader::ReadAModelFile(const QString &aModelFileName)
     {
         TopoDS_Shape aShape;
         BRep_Builder aBuilder;
-        BRepTools::Read(aShape,Standard_CString(aModelFileName.toLocal8Bit()),aBuilder);
+        BRepTools::Read(aShape,theAscii.ToCString(),aBuilder);
         return new AIS_Shape(aShape);
     }
-    if(!aReader->ReadFile(Standard_CString(aModelFileName.toLocal8Bit())))
+    if(!aReader->ReadFile(theAscii.ToCString()))
         return nullptr;
 
     aReader->TransferRoots();

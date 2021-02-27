@@ -23,6 +23,9 @@ QList<TcpData> ProcessDataWidget::getProcessPnts()
     TcpData aData;
     TcpData bData;
     double vx=0,vy=0,vz=0;
+    if(mSqlTable->rowCount() == 0)
+        return tcpPnts;
+
     for(int i=0;i<mSqlTable->rowCount();++i)
     {
         gp_Pnt aPnt = gp_Pnt(mSqlTable->data(mSqlTable->index(i,1)).toDouble(),
@@ -54,16 +57,18 @@ QList<TcpData> ProcessDataWidget::getProcessPnts()
 TopoDS_Shape ProcessDataWidget::getShape()
 {
     QList<TcpData> aList = getProcessPnts();
+    if(aList.isEmpty())
+        return TopoDS_Shape();
+
     TColgp_Array2OfPnt array(1,aList.size()/2,1,2);
     for (int k=0;k<aList.size()/2;++k) {
         array.SetValue(k+1,1,aList.at(2*k).tcpPos);
         array.SetValue(k+1,2,aList.at(2*k+1).tcpPos);
     }
     Handle(Geom_BSplineSurface) aSurf =GeomAPI_PointsToBSplineSurface(array).Surface();
-    Handle(Geom_Surface) aFace = Handle(Geom_Surface)::DownCast(aSurf);
     BRep_Builder aBuilder;
     TopoDS_Face aShape;
-    aBuilder.MakeFace(aShape,aFace,1e-6);
+    aBuilder.MakeFace(aShape,aSurf,1e-6);
     return aShape;
 }
 

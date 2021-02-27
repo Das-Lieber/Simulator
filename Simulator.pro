@@ -9,8 +9,7 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 
 QMAKE_CXXFLAGS += /utf-8
 
-SOURCES += \
-    CustomSplashScreen.cpp \
+SOURCES += \    
     MiniDumper.cpp \
     OCC/AIS_Coordinate.cpp \
     OCC/occWidget.cpp \
@@ -23,6 +22,7 @@ SOURCES += \
     dialog/EditLocationWidget.cpp \
     dialog/ProcessDataWidget.cpp \
     dialog/SqlTableViewDelegate.cpp \
+    dialog/CustomSplashScreen.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
@@ -36,7 +36,7 @@ SOURCES += \
     robotics/RLConvertAPI.cpp
 
 HEADERS += \
-    CustomSplashScreen.h \
+    gif.h \
     MiniDumper.h \
     OCC/AIS_Coordinate.h \
     OCC/occWidget.h \
@@ -49,6 +49,7 @@ HEADERS += \
     dialog/EditLocationWidget.h \
     dialog/ProcessDataWidget.h \
     dialog/SqlTableViewDelegate.h \
+    dialog/CustomSplashScreen.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \
@@ -61,12 +62,12 @@ HEADERS += \
     robotics/RLAPI_Writer.h \
     robotics/RLConvertAPI.h
 
-FORMS += \
-    CustomSplashScreen.ui \
+FORMS += \    
     QRibbon/qribbon.ui \
     dialog/DHSettingWidget.ui \
     dialog/EditLocationWidget.ui \
     dialog/ProcessDataWidget.ui \
+    dialog/CustomSplashScreen.ui \
     mainwindow.ui
 
 #TRANSLATIONS += Simulator_CN.ts

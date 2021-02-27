@@ -5,6 +5,13 @@ CustomDockTabBar::CustomDockTabBar(Qt::DockWidgetArea area)
 {
 	setObjectName("DockWidgetBar");
 
+    setStyleSheet(R"(
+QToolBar
+{
+border:none;
+}
+)");
+
 	setFloatable(false);
 	setMovable(false);
 

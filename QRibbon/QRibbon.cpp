@@ -174,7 +174,7 @@ void QRibbon::initialize(QMainWindow* window)
 	window->menuBar()->setParent(0);
 	window->setMenuBar(this);
 
-//    setColor("rgb(165, 195, 225)");
+    setColor("rgb(165, 195, 225)");
 
 	_->_originGeometry = window->normalGeometry();
 }
@@ -207,18 +207,18 @@ void QRibbon::setColor(const QString& colorName)
         _->_mainWindow->setStyleSheet("");
     }
 
-    if (!ui->widgetContainer->styleSheet().isEmpty())
-    {
-        stylesheet += ui->widgetContainer->styleSheet();
-        ui->widgetContainer->setStyleSheet("");
-    }
+//    if (!ui->widgetContainer->styleSheet().isEmpty())
+//    {
+//        stylesheet += ui->widgetContainer->styleSheet();
+//        ui->widgetContainer->setStyleSheet("");
+//    }
 
     if (!qApp->styleSheet().isEmpty())
     {
         stylesheet += qApp->styleSheet();
     }
 
-    stylesheet = stylesheet.replace(currentColor, colorName);
+//    stylesheet = stylesheet.replace(currentColor, colorName);
 
     qApp->setStyleSheet(stylesheet);
 

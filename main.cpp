@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "MiniDumper.h"
-#include "CustomSplashScreen.h"
+#include "dialog/CustomSplashScreen.h"
 
 #if _DEBUG
 #include "vld/vld.h"
