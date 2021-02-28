@@ -13,7 +13,6 @@
 #include <QWinTaskbarProgress>
 #include <QInputDialog>
 #include <QLabel>
-#include <QScreen>
 
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
@@ -41,7 +40,7 @@
 #include "robotics/RLConvertAPI.h"
 #include "robotics/RLAPI_DHSetting.h"
 
-#include "gif.h"
+#include "tools/gifthread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -116,8 +115,6 @@ private:
     bool isRayTraceEnable;
     bool isAntialiasingEnable;
     int sliderIndex;
-    QTimer *recordTimer;
-    int recordFps;
 
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;
@@ -130,8 +127,7 @@ private:
     ProcessDataWidget *mProcessData;
     CustomDockWidget *mEditDockDlg;
     CustomDockWidget *mDHDockDlg;
-    Gif gifHandle;
-    Gif::GifWriter *gifWriter;
+    gifThread *aGifThread;
 
     rl::math::Vector mStartVec;
     rl::plan::VectorList mEndList;

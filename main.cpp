@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "MiniDumper.h"
+#include "tools/MiniDumper.h"
 #include "dialog/CustomSplashScreen.h"
 
 #if _DEBUG

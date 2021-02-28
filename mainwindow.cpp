@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , isRayTraceEnable(false)
     , isAntialiasingEnable(false)
-    , recordFps(10)
-    , gifWriter(0)
     , threadWait(false)
     , m_dockWidget(nullptr)    
 {
@@ -24,7 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Simulator"));
 #endif    
 
-    recordTimer = new QTimer(this);
     aMdlWidget = new OCCWidget(this);
     statusLabel = new QLabel(this);
     //add the progress on the task bar
@@ -305,7 +302,7 @@ void MainWindow::connectThread()
     });
     connect(mPlannerThread,&RLAPI_PlanThread::ComputeOver,this,[=](double pathLength){
         totalPathLen += pathLength;
-        statusLabel->setText(tr("Solved, Value %1").arg(totalPathLen));
+
         if(endsIterator!=optimizedEndList.end())
         {
             mPlannerThread->GetComputeArguments(lastEndVect,*endsIterator);
@@ -315,6 +312,7 @@ void MainWindow::connectThread()
         }
         else
         {
+            statusLabel->setText(tr("Solved, Value %1").arg(totalPathLen));
             mPlannerThread->quit();
             aMdlWidget->getView()->Update();
         }
@@ -638,55 +636,21 @@ void MainWindow::on_actionView_Wire_triggered()
 
 void MainWindow::on_actionStart_Record_triggered()
 {
-    if(recordTimer->isActive())
-        return;
-
-    if (0 != gifWriter) {
-        delete gifWriter;
-        gifWriter = 0;
-    }
-
     QString fileName = QFileDialog::getSaveFileName(this,tr("save gif"),"", "*.gif");
     if (fileName.isEmpty()) {
         return;
     }
 
-    gifWriter = new Gif::GifWriter;
-    bool bOk = gifHandle.GifBegin(gifWriter,fileName.toLocal8Bit().data(),width(),height(),recordFps);
-    if (!bOk) {
-        delete gifWriter;
-        gifWriter = 0;
-        return;
-    }
+    aGifThread = new gifThread(this);
+    aGifThread->StartWork(fileName,ui->centralwidget->geometry());
+    aGifThread->start();
 
     statusLabel->setText(tr("Start recording..."));
-
-    recordTimer->setInterval(1000 / recordFps);
-    QTimer::singleShot(1000, recordTimer, SLOT(start()));
-
-    recordTimer->setInterval(1000 / recordFps);
-    connect(recordTimer,&QTimer::timeout,this,[=](){
-        if (!gifWriter) {
-            return;
-        }
-//        Image_PixMap map;
-//        aMdlWidget->getView()->ToPixMap(map,aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
-        QScreen *screen = QApplication::primaryScreen();
-        QPixmap pix = screen->grabWindow(0, x(), y(), width(), height());
-        QImage image = pix.toImage().convertToFormat(QImage::Format_RGBA8888);
-        gifHandle.GifWriteFrame(gifWriter, image.bits(), width(), height(), recordFps);
-    });
 }
 
 void MainWindow::on_actionStop_Record_triggered()
 {
-    recordTimer->stop();
-
-    gifHandle.GifEnd(gifWriter);
-
-    delete gifWriter;
-    gifWriter = 0;
-
+    aGifThread->StopWork();
     statusLabel->setText(tr("Recording completed"));
 }
 

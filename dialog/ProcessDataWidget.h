@@ -18,7 +18,7 @@
 #include <GeomAPI_PointsToBSplineSurface.hxx>
 #include <BRep_Builder.hxx>
 
-#include "dialog/SqlTableViewDelegate.h"
+#include "delegate/SqlTableViewDelegate.h"
 
 struct TcpData
 {

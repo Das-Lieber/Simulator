@@ -9,58 +9,60 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 
 QMAKE_CXXFLAGS += /utf-8
 
-SOURCES += \    
-    MiniDumper.cpp \
+SOURCES += \
     OCC/AIS_Coordinate.cpp \
     OCC/occWidget.cpp \
     QRibbon/QRibbon.cpp \
+	delegate/SqlTableViewDelegate.cpp \
     delegate/tableViewJointDelegate.cpp \
     delegate/tableViewJointModel.cpp \
     delegate/tableViewPosDelegate.cpp \
     delegate/tableViewPosModel.cpp \
     dialog/DHSettingWidget.cpp \
     dialog/EditLocationWidget.cpp \
-    dialog/ProcessDataWidget.cpp \
-    dialog/SqlTableViewDelegate.cpp \
+    dialog/ProcessDataWidget.cpp \    
     dialog/CustomSplashScreen.cpp \
     dock/CustomDockTabBar.cpp \
     dock/CustomDockTabBarPushButton.cpp \
     dock/CustomDockWidget.cpp \
-    dock/CustomDockWidgetBar.cpp \
+    dock/CustomDockWidgetBar.cpp \    
     main.cpp \
     mainwindow.cpp \
     robotics/RLAPI_DHSetting.cpp \
     robotics/RLAPI_PlanThread.cpp \
     robotics/RLAPI_Reader.cpp \
     robotics/RLAPI_Writer.cpp \
-    robotics/RLConvertAPI.cpp
+    robotics/RLConvertAPI.cpp \
+	tools/gifthread.cpp \
+	tools/MiniDumper.cpp
 
 HEADERS += \
-    gif.h \
-    MiniDumper.h \
     OCC/AIS_Coordinate.h \
     OCC/occWidget.h \
     QRibbon/QRibbon.h \
+	delegate/SqlTableViewDelegate.h \
     delegate/tableViewJointDelegate.h \
     delegate/tableViewJointModel.h \
     delegate/tableViewPosDelegate.h \
     delegate/tableViewPosModel.h \
     dialog/DHSettingWidget.h \
     dialog/EditLocationWidget.h \
-    dialog/ProcessDataWidget.h \
-    dialog/SqlTableViewDelegate.h \
+    dialog/ProcessDataWidget.h \    
     dialog/CustomSplashScreen.h \
     dock/CustomDockTabBar.h \
     dock/CustomDockTabBarPushButton.h \
     dock/CustomDockWidget.h \
-    dock/CustomDockWidgetBar.h \
+    dock/CustomDockWidgetBar.h \    
     mainwindow.h \
     robotics/RLAPI_ConfigurationOptimizer.h \
     robotics/RLAPI_DHSetting.h \
     robotics/RLAPI_PlanThread.h \
     robotics/RLAPI_Reader.h \
     robotics/RLAPI_Writer.h \
-    robotics/RLConvertAPI.h
+    robotics/RLConvertAPI.h \
+	tools/gif.h \
+	tools/gifthread.h \
+	tools/MiniDumper.h
 
 FORMS += \    
     QRibbon/qribbon.ui \
