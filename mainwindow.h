@@ -18,6 +18,7 @@
 #include <GC_MakeSegment.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <Image_AlienPixMap.hxx>
+#include <Image_VideoRecorder.hxx>
 
 #include "delegate/tableViewJointDelegate.h"
 #include "delegate/tableViewJointModel.h"
@@ -57,6 +58,47 @@ enum ApplicationInitSteps
     ParseScene,
     Load3DFile,
     ParsePTDContents
+};
+
+class ImageFlipper
+{
+public:
+
+    //! Empty constructor.
+    ImageFlipper() : myTmp (NCollection_BaseAllocator::CommonBaseAllocator()) {}
+
+    //! Perform flipping.
+    Standard_Boolean FlipY (Image_PixMap& theImage)
+    {
+        if (theImage.IsEmpty()
+                || theImage.SizeX() == 0
+                || theImage.SizeY() == 0)
+        {
+            return Standard_False;
+        }
+
+        const Standard_Size aRowSize = theImage.SizeRowBytes();
+        if (myTmp.Size() < aRowSize
+                && !myTmp.Allocate (aRowSize))
+        {
+            return Standard_False;
+        }
+
+        // for odd height middle row should be left as is
+        Standard_Size aNbRowsHalf = theImage.SizeY() / 2;
+        for (Standard_Size aRowT = 0, aRowB = theImage.SizeY() - 1; aRowT < aNbRowsHalf; ++aRowT, --aRowB)
+        {
+            Standard_Byte* aTop = theImage.ChangeRow (aRowT);
+            Standard_Byte* aBot = theImage.ChangeRow (aRowB);
+            memcpy (myTmp.ChangeData(), aTop,         aRowSize);
+            memcpy (aTop,               aBot,         aRowSize);
+            memcpy (aBot,               myTmp.Data(), aRowSize);
+        }
+        return Standard_True;
+    }
+
+private:
+    NCollection_Buffer myTmp;
 };
 
 class MainWindow : public QMainWindow
@@ -115,6 +157,9 @@ private:
     bool isRayTraceEnable;
     bool isAntialiasingEnable;
     int sliderIndex;
+    QTimer *recordTimer;
+    Handle(Image_VideoRecorder) aRecorder;
+    bool isRecording;
 
     RLAPI_PlanThread *mPlannerThread;
     OCCWidget *aMdlWidget;

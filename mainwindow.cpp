@@ -11,8 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , isRayTraceEnable(false)
     , isAntialiasingEnable(false)
+    , isRecording(false)
+    , aGifThread(nullptr)
     , threadWait(false)
-    , m_dockWidget(nullptr)    
+    , m_dockWidget(nullptr)
 {
     ui->setupUi(this);
 
@@ -22,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Simulator"));
 #endif    
 
+    recordTimer = new QTimer(this);
     aMdlWidget = new OCCWidget(this);
     statusLabel = new QLabel(this);
     //add the progress on the task bar
@@ -636,21 +639,64 @@ void MainWindow::on_actionView_Wire_triggered()
 
 void MainWindow::on_actionStart_Record_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,tr("save gif"),"", "*.gif");
+    if(isRecording)
+        return;
+
+    QString fileName = QFileDialog::getSaveFileName(this,tr("save record"),"", "*.mkv \n *.gif");
     if (fileName.isEmpty()) {
         return;
     }
 
-    aGifThread = new gifThread(this);
-    aGifThread->StartWork(fileName,ui->centralwidget->geometry());
-    aGifThread->start();
+    QFileInfo aInfo(fileName);
+    if(aInfo.suffix() == "mkv"||aInfo.suffix() == "MKV")
+    {
+        aRecorder = new Image_VideoRecorder();
+        Image_VideoParams aVideoParam;
+        aVideoParam.FpsNum = 24;
+        aVideoParam.Height = aMdlWidget->height();
+        aVideoParam.Width = aMdlWidget->width();
+        aVideoParam.Format = "matroska";
+        aVideoParam.PixelFormat = "yuv420p";
+        aVideoParam.VideoCodec = "ffv1";
+        aRecorder->Open(fileName.toLocal8Bit().data(),aVideoParam);
 
-    statusLabel->setText(tr("Start recording..."));
+        recordTimer->start(1000/24);
+        connect(recordTimer,&QTimer::timeout,this,[=](){
+            aMdlWidget->getView()->ToPixMap(aRecorder->ChangeFrame(),aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
+            ImageFlipper aFlipper;
+            aFlipper.FlipY (aRecorder->ChangeFrame());
+            aRecorder->PushFrame();
+
+            recordTimer->start(1000/24);
+        });
+    }
+    else if(aInfo.suffix() == "gif"||aInfo.suffix() == "GIF")
+    {
+        aGifThread = new gifThread(this);
+        aGifThread->StartWork(fileName,ui->centralwidget->geometry());
+        aGifThread->start();
+    }
+
+    isRecording = true;
+    statusLabel->setText(tr("Recording..."));
 }
 
 void MainWindow::on_actionStop_Record_triggered()
 {
-    aGifThread->StopWork();
+    if(!isRecording)
+        return;
+
+    if(aGifThread)
+    {
+        aGifThread->StopWork();
+    }
+    if(aRecorder)
+    {
+        recordTimer->stop();
+        aRecorder->Close();
+    }
+
+    isRecording = false;
     statusLabel->setText(tr("Recording completed"));
 }
 
