@@ -25,7 +25,6 @@
         <file>icons/process_data.png</file>
         <file>icons/view_anti-aliasing.png</file>
         <file>icons/view_rayTrace.png</file>
-        <file>icons/splash.png</file>
         <file>qss/add_bottom.png</file>
         <file>qss/add_left.png</file>
         <file>qss/add_right.png</file>
@@ -46,5 +45,6 @@
         <file>qss/radiobutton_unchecked_disable.png</file>
         <file>icons/start_record.png</file>
         <file>icons/stop_record.png</file>
+        <file>icons/splash.png</file>
     </qresource>
 </RCC>

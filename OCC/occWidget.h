@@ -66,6 +66,7 @@ private:
 
 signals:
     void pickPixel(int x ,int y);
+    void selectShapeChanged(const TopoDS_Shape selected);
 };
 
 #endif // OCCWIDGET_H

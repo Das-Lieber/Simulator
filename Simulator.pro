@@ -13,7 +13,7 @@ SOURCES += \
     OCC/AIS_Coordinate.cpp \
     OCC/occWidget.cpp \
     QRibbon/QRibbon.cpp \
-	delegate/SqlTableViewDelegate.cpp \
+    delegate/SqlTableViewDelegate.cpp \
     delegate/tableViewJointDelegate.cpp \
     delegate/tableViewJointModel.cpp \
     delegate/tableViewPosDelegate.cpp \
@@ -33,14 +33,14 @@ SOURCES += \
     robotics/RLAPI_Reader.cpp \
     robotics/RLAPI_Writer.cpp \
     robotics/RLConvertAPI.cpp \
-	tools/gifthread.cpp \
-	tools/MiniDumper.cpp
+    tools/gifthread.cpp \
+    tools/MiniDumper.cpp
 
 HEADERS += \
     OCC/AIS_Coordinate.h \
     OCC/occWidget.h \
     QRibbon/QRibbon.h \
-	delegate/SqlTableViewDelegate.h \
+    delegate/SqlTableViewDelegate.h \
     delegate/tableViewJointDelegate.h \
     delegate/tableViewJointModel.h \
     delegate/tableViewPosDelegate.h \
@@ -60,16 +60,16 @@ HEADERS += \
     robotics/RLAPI_Reader.h \
     robotics/RLAPI_Writer.h \
     robotics/RLConvertAPI.h \
-	tools/gif.h \
-	tools/gifthread.h \
-	tools/MiniDumper.h
+    tools/gif.h \
+    tools/gifthread.h \
+    tools/MiniDumper.h
 
-FORMS += \    
+FORMS += \
+    dialog/CustomSplashScreen.ui \
     QRibbon/qribbon.ui \
     dialog/DHSettingWidget.ui \
     dialog/EditLocationWidget.ui \
     dialog/ProcessDataWidget.ui \
-    dialog/CustomSplashScreen.ui \
     mainwindow.ui
 
 #TRANSLATIONS += Simulator_CN.ts

@@ -6,6 +6,9 @@ CustomSplashScreen::CustomSplashScreen(QPixmap *map) :
     ui(new Ui::CustomSplashScreen)
 {
     ui->setupUi(this);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setFixedSize(this->size());
+
     ui->label_splashPixmap->setPixmap(*map);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(100);

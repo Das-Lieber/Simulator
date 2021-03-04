@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QDateTime>
 
 QString JointMdlFile = "./mdl/GP8.xml";
 QString JoingtSgFile = "./scene/GP_DMISModel.xml";
@@ -660,14 +661,14 @@ void MainWindow::on_actionStart_Record_triggered()
         aVideoParam.VideoCodec = "ffv1";
         aRecorder->Open(fileName.toLocal8Bit().data(),aVideoParam);
 
-        recordTimer->start(1000/24);
+        recordTimer->start(5);qDebug()<<QDateTime::currentDateTime();
         connect(recordTimer,&QTimer::timeout,this,[=](){
             aMdlWidget->getView()->ToPixMap(aRecorder->ChangeFrame(),aMdlWidget->width(),aMdlWidget->height(),Graphic3d_BT_RGBA);
             ImageFlipper aFlipper;
             aFlipper.FlipY (aRecorder->ChangeFrame());
             aRecorder->PushFrame();
 
-            recordTimer->start(1000/24);
+            recordTimer->start(5);
         });
     }
     else if(aInfo.suffix() == "gif"||aInfo.suffix() == "GIF")
@@ -693,7 +694,7 @@ void MainWindow::on_actionStop_Record_triggered()
     if(aRecorder)
     {
         recordTimer->stop();
-        aRecorder->Close();
+        aRecorder->Close();qDebug()<<QDateTime::currentDateTime();
     }
 
     isRecording = false;

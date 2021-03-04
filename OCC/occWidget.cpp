@@ -123,7 +123,12 @@ void OCCWidget::mouseReleaseEvent(QMouseEvent *event)
             }
             else
             {
-                t_pick_status = m_context->Select(true);
+                t_pick_status = m_context->Select(true);                                
+            }
+
+            if(t_pick_status == AIS_SOP_OneSelected || t_pick_status == AIS_SOP_SeveralSelected)
+            {
+                emit selectShapeChanged(m_context->SelectedShape());
                 m_context-> InitSelected();
             }
 
