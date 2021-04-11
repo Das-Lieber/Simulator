@@ -1,5 +1,5 @@
 # Simulator
-8-axis robot processing simulation project, based on Qt development, opencascade library as the display kernel, robotics library as the robot modeling and computing kernel, mainly includes the following contents
+8-axis robot processing simulation project, developed by Qt, OpenCASCADE library as the display kernel, Robotics Library as the robot modeling and computing kernel, mainly includes the following contents
 
 1. Forward and reverse motion calculation of robot
 
@@ -12,9 +12,11 @@
 
 It can be used for robot visual modeling and path planning. For specific modeling files, please refer to the examples provided in the three folders under bin directory.
 
-If the technical details of the project are helpful to you, I feel honored!
+I feel honored if the technical details of the project are helpful to you!
 
 ![image](https://github.com/HFUTLieber/Simulator/tree/master/snap/snap0.png)
+
+This project will not be updated any more. This note is specially left as a souvenir before I running away.
 
 
 8轴机器人加工仿真项目，基于Qt开发，OpenCASCADE库作为显示内核，Robotics Library库作为机器人建模及计算内核，主要包含以下内容
@@ -35,4 +37,4 @@ If the technical details of the project are helpful to you, I feel honored!
 
 ![image](https://github.com/HFUTLieber/Simulator/tree/master/snap/snap0.png)
 
-由于没钱，不能用爱发电，此项目不再更新
+由于没收到经费，不能用爱发电，此项目不再更新，跑路之前特留此说明以作纪念
