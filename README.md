@@ -14,7 +14,7 @@ It can be used for robot visual modeling and path planning. For specific modelin
 
 I feel honored if the technical details of the project are helpful to you!
 
-![image](https://github.com/HFUTLieber/Simulator/tree/master/snap/snap0.png)
+![image](snap/snap0.png)
 
 This project will not be updated any more. This note is specially left as a souvenir before I running away.
 
@@ -35,6 +35,6 @@ This project will not be updated any more. This note is specially left as a souv
 
 项目包含的技术细节如果对你有所帮助，本人倍感荣幸!
 
-![image](https://github.com/HFUTLieber/Simulator/tree/master/snap/snap0.png)
+![image](snap/snap0.png)
 
 由于没收到经费，不能用爱发电，此项目不再更新，跑路之前特留此说明以作纪念
